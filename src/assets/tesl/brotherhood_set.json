@@ -1,0 +1,1412 @@
+[
+  {
+    "id": "fell-the-mighty",
+    "name": "Fell the Mighty",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Destroy a creature with 4 power or more.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "gj",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creature",
+        "targetCondition": {
+          "type": "hasAttack",
+          "min": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": "garnag-dark-adherent",
+    "name": "Garnag, Dark Adherent",
+    "type": "Creature",
+    "subtypes": [
+      "Orc"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": 4,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Breakthrough Players can't have more than 7 magicka .",
+    "keywords": [
+      "Breakthrough"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "gR",
+    "tier": "B",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "magickaLimit",
+        "amount": 7,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "protector-of-the-innocent",
+    "name": "Protector of the Innocent",
+    "type": "Creature",
+    "subtypes": [
+      "Nord"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Prophecy , Guard",
+    "keywords": [
+      "Guard"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "mt",
+    "tier": "A",
+    "prophecy": true
+  },
+  {
+    "id": "quicksilver-crossbow",
+    "name": "Quicksilver Crossbow",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "+1/+1 Summon : The wielder deals 1 damage.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "my",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 1,
+        "target": "any"
+      }
+    ]
+  },
+  {
+    "id": "skeever-infestation",
+    "name": "Skeever Infestation",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Summon a Skeever in each lane with power and health equal to the number of Infestations you've played. Shuffle two copies of this into your deck.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "oq",
+    "tier": "B",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summonBuffStats",
+        "cardId": "skeever",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summonBuffStats",
+        "cardId": "skeever",
+        "amount": 1,
+        "target": "rightLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "shuffleIntoDeck",
+        "cardId": "skeever-infestation",
+        "target": "player",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "underworld-vigilante",
+    "name": "Underworld Vigilante",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Charge Summon : All enemy creatures in this lane lose Cover .",
+    "keywords": [
+      "Charge"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "re",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "removeKeywords": [ "Cover" ],
+        "target": "creatureEnemyThisLaneAll"
+      }
+    ]
+  },
+  {
+    "id": "unstoppable-rage",
+    "name": "Unstoppable Rage",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 8,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "A friendly creature deals damage equal to its power to all other creatures in its lane .",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "rk",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "powerToLane",
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "blood-sorceress",
+    "name": "Blood Sorceress",
+    "type": "Creature",
+    "subtypes": [
+      "Redguard"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 1,
+    "attack": 2,
+    "health": 1,
+    "rarity": "3Epic",
+    "text": "At the start of your turn, if you have 7 or more max magicka , deal 5 damage to your opponent.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "cg",
+    "tier": "B",
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "damage",
+        "amount": 5,
+        "target": "opponent",
+        "condition": {
+          "type": "maxMagicka",
+          "min": 7
+        }
+      }
+    ]
+  },
+  {
+    "id": "corsair-ship",
+    "name": "Corsair Ship",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Ongoing Summon : Summon a 1/1 Corsair . When you summon a creature, equip it with a Steel Dagger .",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "dB",
+    "tier": "B",
+    "effects": [
+      {
+        "trigger": "SummonCreature",
+        "type": "equip",
+        "cardId": "steel-dagger",
+        "target": "summon"
+      },
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "corsair",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "daggers-in-the-dark",
+    "name": "Daggers in the Dark",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Equip a Steel Dagger to a random friendly creature in each lane.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "dW",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "equip",
+        "cardId": "steel-dagger",
+        "target": "creatureFriendlyRandomLeftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "equip",
+        "cardId": "steel-dagger",
+        "target": "creatureFriendlyRandomRightLane"
+      }
+    ]
+  },
+  {
+    "id": "palace-conspirator",
+    "name": "Palace Conspirator",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Summon : Draw a card, then discard a card.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "lV",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }, 
+      {
+        "trigger": "Summon",
+        "type": "discard",
+        "target": "cardPlayerHand"
+      }
+    ]
+  },
+  {
+    "id": "speaker-terenus",
+    "name": "Speaker Terenus",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 10,
+    "attack": 6,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "After you play an action , put a random action into your hand.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "oU",
+    "tier": "E",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "addToHand",
+        "subtypes": [ "Action" ],
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Action" ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "spear-of-embers",
+    "name": "Spear of Embers",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Prophecy +3/+3 Instead of equipping Spear of Embers, you may throw it at an enemy creature to deal 3 damage.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "oV",
+    "tier": "B",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Equip Spear of Embers",
+            "effect": {
+              "type": "equipCard",
+              "target": "creatureFriendly"
+            }
+          },
+          {
+            "text": "Deal 3 damage to enemy creature",
+            "effect" : {
+              "type": "damage",
+              "amount": 3,
+              "target": "creatureEnemy"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stealer-of-secrets",
+    "name": "Stealer of Secrets",
+    "type": "Creature",
+    "subtypes": [
+      "High Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 6,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Ward Summon : +1/+1 for each action in your discard pile.",
+    "keywords": [
+      "Ward"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "pp",
+    "tier": "E",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "amountPer": "actionsInDiscard",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "blood-pact-messenger",
+    "name": "Blood Pact Messenger",
+    "type": "Creature",
+    "subtypes": [
+      "Khajiit"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Pilfer : Draw two cards. Sacrifice Blood Pact Messenger at the end of the turn.",
+    "keywords": [
+      "Pilfer"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "ce",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "drawCards",
+        "amount": 2,
+        "target": "player"
+      },
+      {
+        "trigger": "Pilfer",
+        "type": "markForDeath",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "chanter-of-akatosh",
+    "name": "Chanter of Akatosh",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 1,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "After you play an action , summon a random creature from your deck with the same cost.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "cU",
+    "tier": "U",
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "summonDeckLastCost",
+        "amount": 1,
+        "target": "randomLane",
+        "condition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Action" ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "knight-of-the-hour",
+    "name": "Knight of the Hour",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Prophecy , Guard Summon : You gain 3 health.",
+    "keywords": [
+      "Guard"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "jq",
+    "tier": "B",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": -3,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "marked-man",
+    "name": "Marked Man",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : Put a 0/2 Makeshift Defenses with Guard into your hand.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "kk",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "addToHand",
+        "amount": 1,
+        "cardId": "makeshift-defenses",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "penitus-oculatus-agent",
+    "name": "Penitus Oculatus Agent",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon : Steal a creature's Keywords .",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "lZ",
+    "tier": "B",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "stealKeywords",
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "sanctuary-raid",
+    "name": "Sanctuary Raid",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Destroy an enemy creature. Give all friendly creatures in its lane +1/+1.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "nx",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureFriendlyThisLaneAll"
+      }
+    ]
+  },
+  {
+    "id": "the-black-dragon",
+    "name": "The Black Dragon",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 4,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Immune to Lethal . Slay : Discard all creatures from your opponent's deck with the same name as the slain creature.",
+    "keywords": [
+      "Slay"
+    ],
+    "immunity": ["Lethal"],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "qn",
+    "tier": "A",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "discardDeck",
+        "cardId": "slain",
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "astrid",
+    "name": "Astrid",
+    "type": "Creature",
+    "subtypes": [
+      "Nord"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Lethal Friendly Lethal creatures have \" Slay : Put a Completed Contract into your hand.\"",
+    "keywords": [
+      "Lethal"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "bk",
+    "tier": "B",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "FriendlyLethalSlay",
+        "type": "addToHand",
+        "cardId": "completed-contract",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "brotherhood-sanctuary",
+    "name": "Brotherhood Sanctuary",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Ongoing When a friendly creature Slays , it receives its reward an extra time.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "cu",
+    "tier": "U",
+    "effects": [
+      {
+        "trigger": "FriendlySlay",
+        "type": "triggerSlay",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "brotherhood-slayer",
+    "name": "Brotherhood Slayer",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Prophecy Slay : Put a Completed Contract into your hand.",
+    "keywords": [
+      "Slay"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "cv",
+    "tier": "S",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "addToHand",
+        "cardId": "completed-contract",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "eclipse-baroness",
+    "name": "Eclipse Baroness",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 8,
+    "attack": 5,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "Summon and Last Gasp : Draw a card and reduce its cost by 2.",
+    "keywords": [
+      "LastGasp"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "fA",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "drawAndReduceCost",
+        "amount": 1,
+        "modCost": -2,
+        "target": "player"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "drawAndReduceCost",
+        "amount": 1,
+        "modCost": -2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "grand-ball",
+    "name": "Grand Ball",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Move all friendly creatures",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "hs",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "moveAll",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "sanctuary-pet",
+    "name": "Sanctuary Pet",
+    "type": "Creature",
+    "subtypes": [
+      "Spider"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Lethal Summon : Shackle an enemy creature in this lane.",
+    "keywords": [
+      "Lethal"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "nw",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "creatureEnemyThisLane"
+      }
+    ]
+  },
+  {
+    "id": "skooma-underboss",
+    "name": "Skooma Underboss",
+    "type": "Creature",
+    "subtypes": [
+      "Khajiit"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Friendly Pilfer abilities are also Slay abilities.",
+    "keywords": [],
+    "mechanics": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "oy",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "pilferSlay",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "cicero-the-betrayer",
+    "name": "Cicero the Betrayer",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 6,
+    "attack": 1,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Lethal Slay : Draw two cards. Cicero can attack friendly creatures.",
+    "keywords": [
+      "Lethal",
+      "Slay"
+    ],
+    "immunity": [ "Loyalty" ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "dd",
+    "tier": "C",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "drawCards",
+        "amount": 2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "dark-guardian",
+    "name": "Dark Guardian",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Guard When your opponent draws a Prophecy from a rune being destroyed, draw a card.",
+    "keywords": [
+      "Guard"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "ed",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "OppProphecy",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "falkreath-defiler",
+    "name": "Falkreath Defiler",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Slay : Draw a creature from your discard pile.",
+    "keywords": [
+      "Slay"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "ga",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "drawDiscard",
+        "subtypes": [ "Creature" ],
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "gravesinger",
+    "name": "Gravesinger",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 10,
+    "attack": 6,
+    "health": 6,
+    "rarity": "3Epic",
+    "text": "At the start of your turn, summon the highest cost creature from your discard pile and give it Charge . At the end of the turn, put it on the bottom of your deck.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "hv",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "summonHighTemp",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "little-girl",
+    "name": "Little Girl",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 0,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "At the start of your turn, Little Girl changes into a 5/5 Ageless Vampire with Drain .",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "jL",
+    "tier": "C",
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "change",
+        "cardId": "ageless-vampire",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "stalking-shadowscale",
+    "name": "Stalking Shadowscale",
+    "type": "Creature",
+    "subtypes": [
+      "Argonian"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Slay : +1/+1",
+    "keywords": [
+      "Slay"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "ph",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1
+      }
+    ]
+  },
+  {
+    "id": "wrath-of-sithis",
+    "name": "Wrath of Sithis",
+    "type": "Creature",
+    "subtypes": [
+      "Spirit"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 6,
+    "rarity": "2Rare",
+    "text": "Summon : Your opponent's cards cost 1 more next turn.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "sd",
+    "tier": "A",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "addTempCost",
+        "amount": 1,
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "flesh-sculpture",
+    "name": "Flesh Sculpture",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Uses: 2 Activate : Transform each card in your hand into a random card.",
+    "keywords": [],
+    "mechanics": [],
+    "set": "Dark Brotherhood",
+    "uses": 2,
+    "deckCodeId": "gC",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Activation",
+        "type": "transform",
+        "target": "playerHand"
+      }
+    ]
+  },
+  {
+    "id": "gristlehide-dreugh",
+    "name": "Gristlehide Dreugh",
+    "type": "Creature",
+    "subtypes": [
+      "Dreugh"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "When Gristlehide Dreugh takes damage and survives, draw a card.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "hH",
+    "tier": "B",
+    "effects": [
+      {
+        "trigger": "DamageTaken",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "isAlive"
+        }
+      }
+    ]
+  },
+  {
+    "id": "knife-to-the-throat",
+    "name": "Knife to the Throat",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Silence a creature. Draw a card.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "jn",
+    "tier": "D",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "silence",
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"        
+      }
+    ]
+  },
+  {
+    "id": "shadowmere",
+    "name": "Shadowmere",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "4Legendary",
+    "text": "Charge Last Gasp : Shuffle Shadowmere into your deck, give it +3/+3, and increase its cost by 3.",
+    "keywords": [
+      "Charge",
+      "LastGasp"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": "nR",
+    "tier": "C",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "buffSelf",
+        "modAttack": 3,
+        "modHealth": 3
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "modCost",
+        "amount": 3,
+        "target": "self"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "shuffleIntoDeck",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "the-night-mother",
+    "name": "The Night Mother",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Uses: Unlimited Activate : Summon a 0/1 Target with Guard for your opponent. When 20 enemy creatures have died, deal 20 damage to your opponent, gain 20 health, and draw up to 10 cards.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "uses": 99,
+    "deckCodeId": "qq",
+    "tier": "E",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Activation",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "randomLane"
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "addCounter",
+        "target": "self"
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "damage",
+        "amount": 20,
+        "target": "opponent",
+        "condition": {
+          "type": "counter",
+          "min": 20
+        }
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "damage",
+        "amount": -20,
+        "target": "player",
+        "condition": {
+          "type": "counter",
+          "min": 20
+        }
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "drawFull",
+        "target": "player",
+        "condition": {
+          "type": "counter",
+          "min": 20
+        }
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "destroy",
+        "target": "self",
+        "condition": {
+          "type": "counter",
+          "min": 20
+        }
+      }
+    ]
+  },
+  {
+    "id": "ageless-vampire",
+    "name": "Ageless Vampire",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "Drain",
+    "keywords": [
+      "Drain"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null
+  },
+  {
+    "id": "completed-contract",
+    "name": "Completed Contract",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Gain 1 magicka this turn.",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "magicka",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "corsair",
+    "name": "Corsair",
+    "type": "Creature",
+    "subtypes": [
+      "Breton"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null
+  },
+  {
+    "id": "makeshift-defenses",
+    "name": "Makeshift Defenses",
+    "type": "Creature",
+    "subtypes": [
+      "Defense"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 0,
+    "attack": 0,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": [
+      "Guard"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null
+  },
+  {
+    "id": "skeever",
+    "name": "Skeever",
+    "type": "Creature",
+    "subtypes": [
+      "Skeever",
+      "Beast"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "",
+    "keywords": [],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null
+  },
+  {
+    "id": "target",
+    "name": "Target",
+    "type": "Creature",
+    "subtypes": [
+      "Khajiit"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 1,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": [
+      "Guard"
+    ],
+    "set": "Dark Brotherhood",
+    "deckCodeId": null
+  }
+]

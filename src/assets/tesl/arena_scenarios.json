@@ -1,0 +1,160 @@
+[
+    {
+        "name": "Ambush",
+        "description": "One of your opponent's creatures gets the drop on you.",
+        "condition": "Opponent starts with a <3-cost card from its deck into a random lane.",
+        "type": "ProAiMajor",
+        "eloModifier": 100,
+        "special": "summonRandomLowCost"
+    },
+    {
+        "name": "Magicka Advantage",
+        "description": "You have encountered a powerful mage who starts with extra magicka.",
+        "condition": "Opponent starts with 2 extra max magicka.",
+        "type": "ProAiMajor",
+        "eloModifier": 50,
+        "maxMagicka": 2
+    },
+    {
+        "name": "Power Struggle",
+        "description": "The battlefield seethes with mystical power, giving both players extra magicka.",
+        "condition": "Both players start with 1 extra max magicka.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "maxMagicka": 1,
+        "playerMaxMagicka": 1
+    },
+    {
+        "name": "Resourceful",
+        "description": "You arrive the arena first and hastily set up some defenses.",
+        "condition": "You start with a 0/2 Makeshift Defenses in your hand.",
+        "type": "ProPlayer",
+        "eloModifier": -25,
+        "playerHand": ["makeshift-defenses"]
+    },
+    {
+        "name": "Close Quarters",
+        "description": "A gladiator is ready to face you.",
+        "condition": "Opponent starts with a Crowd Favorite in a random lane.",
+        "type": "ProAiMinor",
+        "eloModifier": 25,
+        "board": [
+            ["crowd-favorite"],
+            []
+        ]
+    },
+    {
+        "name": "Duel",
+        "description": "Each of you warriors is ready for battle",
+        "condition": "Both player start with a Crowd Favorite in opposite lanes.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "board": [
+            ["crowd-favorite"],
+            []
+        ],
+        "playerBoard": [
+            [],
+            ["crowd-favorite"]
+        ]
+    },
+    {
+        "name": "Guard",
+        "description": "Your opponent comes to battle with defenses ready.",
+        "condition": "Opponent starts with an Altmer Protector in the left lane.",
+        "type": "ProAiMinor",
+        "eloModifier": 0,
+        "board": [
+            ["altmer-protector"],
+            []
+        ]
+    },
+    {
+        "name": "Shields Up",
+        "description": "You each come to battle with defenses ready.",
+        "condition": "Both players start with an Altmer Protector in the left lane.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "board": [
+            ["altmer-protector"],
+            []
+        ],
+        "playerBoard": [
+            ["altmer-protector"],
+            []
+        ]
+    },
+    {
+        "name": "All Out Brawl",
+        "description": "Both of you come to battle with bottles at the ready.",
+        "condition": "Both players start with Broken Bottles in play.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "support": ["broken-bottles"],
+        "playerSupport": ["broken-bottles"]
+    },
+    {
+        "name": "Hero's Call",
+        "description": "Three heroes come to aid you into battle.",
+        "condition": "Three random Unique creature cards are shuffled in both player's deck.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "special": "shuffleRandomUniques"
+    },
+    {
+        "name": "Sheogorath's Game",
+        "description": "Both players start with a mysterious staff in play.",
+        "condition": "Both players start with Wabbajack in play.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "support": ["wabbajack"],
+        "playerSupport": ["wabbajack"]
+    },
+    {
+        "name": "On a Roll",
+        "description": "Delicious pastries have been provided.",
+        "condition": "Both players start with a Sweet Roll in both lanes.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "board": [
+            ["sweet-roll"],
+            ["sweet-roll"]
+        ],
+        "playerBoard": [
+            ["sweet-roll"],
+            ["sweet-roll"]
+        ]
+    },
+    {
+        "name": "Power Unleashed",
+        "description": "The battlefield is overflowing with mystical power, giving both players THREE extra magicka.",
+        "condition": "Both players start with 3 extra max magicka.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "maxMagicka": 3,
+        "playerMaxMagicka": 3
+    },
+    {
+        "name": "Spawning Pool",
+        "description": "Slaughterfish are circling their prey.",
+        "condition": "Both player start with a Slaughterfish in opposite lanes.",
+        "type": "ProBoth",
+        "eloModifier": 0,
+        "board": [
+            ["slaughterfish"],
+            []
+        ],
+        "playerBoard": [
+            [],
+            ["slaughterfish"]
+        ]
+    },
+    {
+        "name": "Hardy",
+        "description": "This foe is especially hardy.",
+        "condition": "Opponent starts with 5 more health.",
+        "type": "ProAiMajor",
+        "eloModifier": 0,
+        "opponentHealth": 35
+    }
+]

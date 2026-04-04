@@ -1,0 +1,158 @@
+{
+  "files": [
+    "LG-audio-ageless_vampire_attack.ogg",
+    "LG-audio-ageless_vampire_enter_play.ogg",
+    "LG-audio-target_enter_play.ogg",
+    "LG-audio-astrid_attack.ogg",
+    "LG-audio-astrid_enter_play.ogg",
+    "LG-audio-blood_price_merchant_attack.ogg",
+    "LG-audio-blood_price_merchant_enter_play.ogg",
+    "LG-audio-brotherhood_initiate_attack.ogg",
+    "LG-audio-brotherhood_initiate_enter_play.ogg",
+    "LG-audio-cicero_attack.ogg",
+    "LG-audio-cicero_enter_play.ogg",
+    "LG-audio-corsair_attack.ogg",
+    "LG-audio-corsair_enter_play.ogg",
+    "LG-audio-falkreath_graverobber_attack.ogg",
+    "LG-audio-falkreath_graverobber_enter_play.ogg",
+    "LG-audio-garnag_attack.ogg",
+    "LG-audio-garnag_enter_play.ogg",
+    "LG-audio-grand_chanter_attack.ogg",
+    "LG-audio-grand_chanter_enter_play.ogg",
+    "LG-audio-gravesinger_attack.ogg",
+    "LG-audio-gravesinger_enter_play.ogg",
+    "LG-audio-hunter_of_assassins_attack.ogg",
+    "LG-audio-hunter_of_assassins_enter_play.ogg",
+    "LG-audio-knight_of_the_hour_attack.ogg",
+    "LG-audio-knight_of_the_hour_enter_play.ogg",
+    "LG-audio-leader_of_the_eclipse_attack.ogg",
+    "LG-audio-leader_of_the_eclipse_enter_play.ogg",
+    "LG-audio-little_girl_attack.ogg",
+    "LG-audio-little_girl_enter_play.ogg",
+    "LG-audio-lurking_shadowscale_attack.ogg",
+    "LG-audio-lurking_shadowscale_enter_play.ogg",
+    "LG-audio-marked_man_attack.ogg",
+    "LG-audio-marked_man_enter_play.ogg",
+    "LG-audio-palace_conspirator_attack.ogg",
+    "LG-audio-palace_conspirator_enter_play.ogg",
+    "LG-audio-penitus_oculatus_agent_attack.ogg",
+    "LG-audio-penitus_oculatus_agent_enter_play.ogg",
+    "LG-audio-protector_of_the_innocent_attack.ogg",
+    "LG-audio-protector_of_the_innocent_enter_play.ogg",
+    "LG-audio-skooma_kingpin_attack.ogg",
+    "LG-audio-skooma_kingpin_enter_play.ogg",
+    "LG-audio-sower_of_revenge_attack.ogg",
+    "LG-audio-sower_of_revenge_enter_play.ogg",
+    "LG-audio-speaker_terenus_attack.ogg",
+    "LG-audio-speaker_terenus_enter_play.ogg",
+    "LG-audio-stealer_of_secrets_attack.ogg",
+    "LG-audio-stealer_of_secrets_enter_play.ogg",
+    "LG-audio-the_black_dragon_attack_01.ogg",
+    "LG-audio-the_black_dragon_attack_02.ogg",
+    "LG-audio-the_black_dragon_enter_play_01.ogg",
+    "LG-audio-the_black_dragon_enter_play_02.ogg"
+  ],
+  "cardToFiles": {
+    "the-black-dragon": [
+      "LG-audio-the_black_dragon_attack_01.ogg",
+      "LG-audio-the_black_dragon_attack_02.ogg",
+      "LG-audio-the_black_dragon_enter_play_01.ogg",
+      "LG-audio-the_black_dragon_enter_play_02.ogg"
+    ],
+    "garnag": [
+      "LG-audio-garnag_attack.ogg",
+      "LG-audio-garnag_enter_play.ogg"
+    ],
+    "cicero": [
+      "LG-audio-cicero_attack.ogg",
+      "LG-audio-cicero_enter_play.ogg"
+    ],
+    "blood-price-merchant": [
+      "LG-audio-blood_price_merchant_attack.ogg",
+      "LG-audio-blood_price_merchant_enter_play.ogg"
+    ],
+    "target": [
+      "LG-audio-target_enter_play.ogg"
+    ],
+    "protector-of-the-innocent": [
+      "LG-audio-protector_of_the_innocent_attack.ogg",
+      "LG-audio-protector_of_the_innocent_enter_play.ogg"
+    ],
+    "corsair": [
+      "LG-audio-corsair_attack.ogg",
+      "LG-audio-corsair_enter_play.ogg"
+    ],
+    "ageless-vampire": [
+      "LG-audio-ageless_vampire_attack.ogg",
+      "LG-audio-ageless_vampire_enter_play.ogg"
+    ],
+    "palace-conspirator": [
+      "LG-audio-palace_conspirator_attack.ogg",
+      "LG-audio-palace_conspirator_enter_play.ogg"
+    ],
+    "falkreath-graverobber": [
+      "LG-audio-falkreath_graverobber_attack.ogg",
+      "LG-audio-falkreath_graverobber_enter_play.ogg"
+    ],
+    "speaker-terenus": [
+      "LG-audio-speaker_terenus_attack.ogg",
+      "LG-audio-speaker_terenus_enter_play.ogg"
+    ],
+    "brotherhood-initiate": [
+      "LG-audio-brotherhood_initiate_attack.ogg",
+      "LG-audio-brotherhood_initiate_enter_play.ogg"
+    ],
+    "penitus-oculatus-agent": [
+      "LG-audio-penitus_oculatus_agent_attack.ogg",
+      "LG-audio-penitus_oculatus_agent_enter_play.ogg"
+    ],
+    "marked-man": [
+      "LG-audio-marked_man_attack.ogg",
+      "LG-audio-marked_man_enter_play.ogg"
+    ],
+    "skooma-kingpin": [
+      "LG-audio-skooma_kingpin_attack.ogg",
+      "LG-audio-skooma_kingpin_enter_play.ogg"
+    ],
+    "leader-of-the-eclipse": [
+      "LG-audio-leader_of_the_eclipse_attack.ogg",
+      "LG-audio-leader_of_the_eclipse_enter_play.ogg"
+    ],
+    "stealer-of-secrets": [
+      "LG-audio-stealer_of_secrets_attack.ogg",
+      "LG-audio-stealer_of_secrets_enter_play.ogg"
+    ],
+    "gravesinger": [
+      "LG-audio-gravesinger_attack.ogg",
+      "LG-audio-gravesinger_enter_play.ogg"
+    ],
+    "little-girl": [
+      "LG-audio-little_girl_attack.ogg",
+      "LG-audio-little_girl_enter_play.ogg"
+    ],
+    "grand-chanter": [
+      "LG-audio-grand_chanter_attack.ogg",
+      "LG-audio-grand_chanter_enter_play.ogg"
+    ],
+    "hunter-of-assassins": [
+      "LG-audio-hunter_of_assassins_attack.ogg",
+      "LG-audio-hunter_of_assassins_enter_play.ogg"
+    ],
+    "sower-of-revenge": [
+      "LG-audio-sower_of_revenge_attack.ogg",
+      "LG-audio-sower_of_revenge_enter_play.ogg"
+    ],
+    "lurking-shadowscale": [
+      "LG-audio-lurking_shadowscale_attack.ogg",
+      "LG-audio-lurking_shadowscale_enter_play.ogg"
+    ],
+    "astrid": [
+      "LG-audio-astrid_attack.ogg",
+      "LG-audio-astrid_enter_play.ogg"
+    ],
+    "knight-of-the-hour": [
+      "LG-audio-knight_of_the_hour_attack.ogg",
+      "LG-audio-knight_of_the_hour_enter_play.ogg"
+    ]
+  }
+}

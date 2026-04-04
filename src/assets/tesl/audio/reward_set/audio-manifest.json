@@ -1,0 +1,130 @@
+{
+  "files": [
+    "LG-audio-adoring_fan_attack_01.ogg",
+    "LG-audio-adoring_fan_attack_02.ogg",
+    "LG-audio-adoring_fan_attack_03.ogg",
+    "LG-audio-adoring_fan_enter_play_01.ogg",
+    "LG-audio-adoring_fan_enter_play_02.ogg",
+    "LG-audio-adoring_fan_enter_play_03.ogg",
+    "LG-audio-adoring_fan_last_gasp_01.ogg",
+    "LG-audio-adoring_fan_last_gasp_02.ogg",
+    "LG-audio-adoring_fan_last_gasp_03.ogg",
+    "LG-audio-altmer_dragonknight_trigger_01.ogg",
+    "LG-audio-altmer_dragonknight_trigger_02.ogg",
+    "LG-audio-ashlander_punisher_attack.ogg",
+    "LG-audio-ashlander_punisher_enter_play.ogg",
+    "LG-audio-battlereeve_of_dusk_attack_01.ogg",
+    "LG-audio-battlereeve_of_dusk_attack_02.ogg",
+    "LG-audio-battlereeve_of_dusk_enter_play_01.ogg",
+    "LG-audio-battlereeve_of_dusk_enter_play_02.ogg",
+    "LG-audio-black_hand_messenger_attack_01.ogg",
+    "LG-audio-black_hand_messenger_attack_02.ogg",
+    "LG-audio-black_hand_messenger_attack_03.ogg",
+    "LG-audio-black_hand_messenger_enter_play_01.ogg",
+    "LG-audio-black_hand_messenger_enter_play_02.ogg",
+    "LG-audio-blackwood_distiller_attack_01.ogg",
+    "LG-audio-blackwood_distiller_enter_play_01.ogg",
+    "LG-audio-conjuration_tutor_attack.ogg",
+    "LG-audio-conjuration_tutor_enter_play.ogg",
+    "LG-audio-dushnik_yal_archer_attack.ogg",
+    "LG-audio-dushnik_yal_archer_enter_play.ogg",
+    "LG-audio-elsweyr_lookout_attack_01.ogg",
+    "LG-audio-elsweyr_lookout_attack_02.ogg",
+    "LG-audio-elsweyr_lookout_enter_play_01.ogg",
+    "LG-audio-elsweyr_lookout_enter_play_02.ogg",
+    "LG-audio-emperors_blade_attack_01.ogg",
+    "LG-audio-emperors_blade_enter_play_01.ogg",
+    "LG-audio-protector_of_the_mane_attack_01.ogg",
+    "LG-audio-protector_of_the_mane_attack_02.ogg",
+    "LG-audio-protector_of_the_mane_attack_03.ogg",
+    "LG-audio-protector_of_the_mane_enter_play_01.ogg",
+    "LG-audio-protector_of_the_mane_enter_play_02.ogg",
+    "LG-audio-pure_blood_elder_attack.ogg",
+    "LG-audio-pure_blood_elder_enter_play.ogg",
+    "LG-audio-sower_of_revenge_attack.ogg",
+    "LG-audio-sower_of_revenge_enter_play.ogg",
+    "LG-audio-ulfrics_housecarl_attack.ogg",
+    "LG-audio-ulfrics_housecarl_enter_play.ogg",
+    "LG-audio-worm_kings_agent_attack.ogg",
+    "LG-audio-worm_kings_agent_enter_play.ogg"
+  ],
+  "cardToFiles": {
+    "blackwood-distiller": [
+      "LG-audio-blackwood_distiller_attack_01.ogg",
+      "LG-audio-blackwood_distiller_enter_play_01.ogg"
+    ],
+    "protector-of-the-mane": [
+      "LG-audio-protector_of_the_mane_attack_01.ogg",
+      "LG-audio-protector_of_the_mane_attack_02.ogg",
+      "LG-audio-protector_of_the_mane_attack_03.ogg",
+      "LG-audio-protector_of_the_mane_enter_play_01.ogg",
+      "LG-audio-protector_of_the_mane_enter_play_02.ogg"
+    ],
+    "black-hand-messenger": [
+      "LG-audio-black_hand_messenger_attack_01.ogg",
+      "LG-audio-black_hand_messenger_attack_02.ogg",
+      "LG-audio-black_hand_messenger_attack_03.ogg",
+      "LG-audio-black_hand_messenger_enter_play_01.ogg",
+      "LG-audio-black_hand_messenger_enter_play_02.ogg"
+    ],
+    "emperors-blade": [
+      "LG-audio-emperors_blade_attack_01.ogg",
+      "LG-audio-emperors_blade_enter_play_01.ogg"
+    ],
+    "ashlander-punisher": [
+      "LG-audio-ashlander_punisher_attack.ogg",
+      "LG-audio-ashlander_punisher_enter_play.ogg"
+    ],
+    "adoring-fan": [
+      "LG-audio-adoring_fan_attack_01.ogg",
+      "LG-audio-adoring_fan_attack_02.ogg",
+      "LG-audio-adoring_fan_attack_03.ogg",
+      "LG-audio-adoring_fan_enter_play_01.ogg",
+      "LG-audio-adoring_fan_enter_play_02.ogg",
+      "LG-audio-adoring_fan_enter_play_03.ogg",
+      "LG-audio-adoring_fan_last_gasp_01.ogg",
+      "LG-audio-adoring_fan_last_gasp_02.ogg",
+      "LG-audio-adoring_fan_last_gasp_03.ogg"
+    ],
+    "battlereeve-of-dusk": [
+      "LG-audio-battlereeve_of_dusk_attack_01.ogg",
+      "LG-audio-battlereeve_of_dusk_attack_02.ogg",
+      "LG-audio-battlereeve_of_dusk_enter_play_01.ogg",
+      "LG-audio-battlereeve_of_dusk_enter_play_02.ogg"
+    ],
+    "elsweyr-lookout": [
+      "LG-audio-elsweyr_lookout_attack_01.ogg",
+      "LG-audio-elsweyr_lookout_attack_02.ogg",
+      "LG-audio-elsweyr_lookout_enter_play_01.ogg",
+      "LG-audio-elsweyr_lookout_enter_play_02.ogg"
+    ],
+    "worm-kings-agent": [
+      "LG-audio-worm_kings_agent_attack.ogg",
+      "LG-audio-worm_kings_agent_enter_play.ogg"
+    ],
+    "pure-blood-elder": [
+      "LG-audio-pure_blood_elder_attack.ogg",
+      "LG-audio-pure_blood_elder_enter_play.ogg"
+    ],
+    "ulfrics-housecarl": [
+      "LG-audio-ulfrics_housecarl_attack.ogg",
+      "LG-audio-ulfrics_housecarl_enter_play.ogg"
+    ],
+    "conjuration-tutor": [
+      "LG-audio-conjuration_tutor_attack.ogg",
+      "LG-audio-conjuration_tutor_enter_play.ogg"
+    ],
+    "sower-of-revenge": [
+      "LG-audio-sower_of_revenge_attack.ogg",
+      "LG-audio-sower_of_revenge_enter_play.ogg"
+    ],
+    "dushnik-yal-archer": [
+      "LG-audio-dushnik_yal_archer_attack.ogg",
+      "LG-audio-dushnik_yal_archer_enter_play.ogg"
+    ],
+    "altmer-dragonknight": [
+      "LG-audio-altmer_dragonknight_trigger_01.ogg",
+      "LG-audio-altmer_dragonknight_trigger_02.ogg"
+    ]
+  }
+}

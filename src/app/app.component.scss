@@ -1,0 +1,21 @@
+/* Remove default padding from nb-layout-column */
+.no-padding {
+    padding: 0 !important;
+}
+
+/* Container for app-board to control its size */
+.board-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+  
+  /* Ensure app-board fills the container */
+app-tesl {
+    display: block; /* Ensure it behaves as a block element */
+    width: calc(100% - 0px); /* 100% minus left and right margins */
+    height: calc(100% - 0px); /* 100% minus top and bottom margins */
+    margin: 0px; /* 10px margin on all sides */
+    flex: 1; /* Make app-board take up all available space */
+}

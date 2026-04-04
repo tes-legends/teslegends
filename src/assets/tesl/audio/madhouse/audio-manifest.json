@@ -1,0 +1,40 @@
+{
+  "files": [
+    "LG-audio-forsaken_champion_attack_01.ogg",
+    "LG-audio-forsaken_champion_attack_02.ogg",
+    "LG-audio-forsaken_champion_attack_03.ogg",
+    "LG-audio-forsaken_champion_enter_play_01.ogg",
+    "LG-audio-forsaken_champion_enter_play_02.ogg",
+    "LG-audio-gardener_of_swords_attack_01.ogg",
+    "LG-audio-gardener_of_swords_attack_02.ogg",
+    "LG-audio-gardener_of_swords_enter_play_01.ogg",
+    "LG-audio-gardener_of_swords_enter_play_02.ogg",
+    "LG-audio-shivering_apothecary_attack.ogg",
+    "LG-audio-shivering_apothecary_enter_play.ogg",
+    "LG-audio-stoneshard_orc_attack_01.ogg",
+    "LG-audio-stoneshard_orc_enter_play_01.ogg"
+  ],
+  "cardToFiles": {
+    "gardener-of-swords": [
+      "LG-audio-gardener_of_swords_attack_01.ogg",
+      "LG-audio-gardener_of_swords_attack_02.ogg",
+      "LG-audio-gardener_of_swords_enter_play_01.ogg",
+      "LG-audio-gardener_of_swords_enter_play_02.ogg"
+    ],
+    "forsaken-champion": [
+      "LG-audio-forsaken_champion_attack_01.ogg",
+      "LG-audio-forsaken_champion_attack_02.ogg",
+      "LG-audio-forsaken_champion_attack_03.ogg",
+      "LG-audio-forsaken_champion_enter_play_01.ogg",
+      "LG-audio-forsaken_champion_enter_play_02.ogg"
+    ],
+    "shivering-apothecary": [
+      "LG-audio-shivering_apothecary_attack.ogg",
+      "LG-audio-shivering_apothecary_enter_play.ogg"
+    ],
+    "stoneshard-orc": [
+      "LG-audio-stoneshard_orc_attack_01.ogg",
+      "LG-audio-stoneshard_orc_enter_play_01.ogg"
+    ]
+  }
+}

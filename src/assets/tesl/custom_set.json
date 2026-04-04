@@ -1,0 +1,183 @@
+[
+  {
+    "id": "ragnaros-the-firelord",
+    "name": "Ragnaros, the Firelord",
+    "type": "Creature",
+    "subtypes": [
+      "Atronach"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 8,
+    "attack": 8,
+    "health": 8,
+    "rarity": "4Legendary",
+    "text": "Can't attack. End of Turn: Deal 8 damage to a random enemy.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xa",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "freeze",
+        "target": "self"
+      },
+      {
+        "trigger": "EndOfTurn",
+        "type": "damage",
+        "amount": 8,
+        "target": "enemyRandom"
+      }
+    ]
+  },
+  {
+    "id": "cenarius",
+    "name": "Cenarius",
+    "type": "Creature",
+    "subtypes": [ "Centaur" ],
+    "attributes": [ "Y" ],
+    "cost": 8,
+    "attack": 5,
+    "health": 8,
+    "rarity": "4Legendary",
+    "text": "Summon: Give your other minions +2/+2 or summon two 2/2 Treants with Guard.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xb",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Give your other minions +2/+2",
+            "effect": {
+              "type": "buffTarget",
+              "modAttack": 2,
+              "modHealth": 2,
+              "target": "creatureFriendlyOtherAll"
+            }
+          },
+          {
+            "text": "summon two 2/2 Treants with Guard",
+            "effect": {
+              "type": "summon",
+              "cardId": "treant",
+              "amount": 2,
+              "target": "thisLane"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "treant",
+    "name": "Treant",
+    "type": "Creature",
+    "subtypes": [ "Spriggan" ],
+    "attributes": [ "Y" ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": [ "Guard" ],
+    "set": "Custom Set",
+    "deckCodeId": null
+  },
+  {
+    "id": "archmage-antonidas",
+    "name": "Archmage Antonidas",
+    "type": "Creature",
+    "subtypes": [
+      "Breton"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 7,
+    "attack": 5,
+    "health": 7,
+    "rarity": "4Legendary",
+    "text": "Whenever you play an action, add a Fireball to your hand.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xe",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "addToHand",
+        "cardId": "fireball",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Action" ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "sylvanas-windrunner",
+    "name": "Sylvanas Windrunner",
+    "type": "Creature",
+    "subtypes": [
+      "Spirit"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Last Gasp: Steal a random enemy creature.",
+    "keywords": [ "LastGasp" ],
+    "set": "Custom Set",
+    "deckCodeId": "Xc",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "steal",
+        "target": "creatureEnemyRandom"
+      }
+    ]
+  },
+  {
+    "id": "edwin-vancleef",
+    "name": "Edwin VanCleef",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "4Legendary",
+    "text": "Summon: Gain +2/+2 for each other card you've played this turn.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xd",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "modHealth": 2,
+        "amountPer": "cardsPlayedTurn",
+        "target": "self"
+      }
+    ]
+  }
+]

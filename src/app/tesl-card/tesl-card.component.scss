@@ -1,0 +1,439 @@
+/*tesl-card.component.scss*/
+.card {
+  -webkit-user-drag: none;
+  user-select: none;
+  position: relative;
+  //width: 84px;
+  //height: 120px;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;           // or 'cover' if you want to fill + crop
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  transform: scale(1.07);
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: inset 0 0 16px 5px rgba(255, 215, 0, 0.5);
+  }
+
+  &.playable {
+    border: 1px solid gold;
+    box-shadow: inset 0 0 14px 4px rgba(255, 215, 0, 0.5);
+  } 
+
+  &.targetable {
+    animation: target-glow 1.2s infinite;
+    border: 3px solid #ff4444 !important;
+    cursor: pointer !important;
+    
+    &:hover {
+      border-color: #ff4444 !important;
+      transform: scale(1.16) !important;
+    }
+  }
+
+  &.attackable, &.activatable {
+    border: 1px solid #00ccff !important;
+    box-shadow: inset 0 0 12px 3px rgba(0, 204, 255, 0.5);
+    cursor: pointer;
+  }
+
+  &.selected {
+    border: 1px solid lime !important;
+    box-shadow: inset 0 0 14px 4px rgba(0, 255, 0, 0.5) !important;
+  }
+
+  .card-image.small {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .enlarge-trigger {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    cursor: zoom-in;
+  }
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+  -webkit-touch-callout: none; /* iOS Safari */
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  color: white;
+  text-shadow: 1px 1px 3px black;
+  font-weight: bold;
+}
+
+.name {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 4px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.stats {
+  bottom: 33%; //50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  width: 85%;
+  //gap: 45%; //40px;
+  font-size: 1.6rem;
+  justify-content: space-between;
+
+  .power, .health {
+    color: white;
+
+    text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000,
+     0 4px 8px rgba(0,0,0,0.8);
+  }
+
+  .buffed {
+    color: lime;
+  }
+
+  .nerfed {
+    color: orange;
+  }
+}
+
+.cost {
+  top: 5px;
+  left: 5px;
+  font-size: 1.6rem;
+  color: #6bb3ff;
+}
+
+.rarity {
+  top: 8px;
+  right: 12px;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.floating-actions {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 30;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  .card.selected & {
+    opacity: 1;
+  }
+}
+
+.action-btn {
+  background: #1a1a1a;
+  color: white;
+  border: 2px solid;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.play { border-color: gold; background: rgba(255,215,0,0.2); }
+.attack { border-color: #ff4444; background: rgba(255,68,68,0.2); }
+.activate { border-color: lime; background: rgba(0,255,0,0.2); }
+
+.attached-items {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,215,0,0.9);
+  color: black;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 5;
+}
+
+.attached-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,215,0,0.9);
+  color: black;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 5;
+}
+
+.shackled-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, transparent, rgba(0,0,0,1));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.shackled-icon {
+  width: 48px;
+  height: auto;
+  max-width: 48px;
+  opacity: 1;
+}
+
+.covered-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,1));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cover-icon {
+  width: 60%;
+  height: auto;
+  opacity: 1;
+}
+
+.silenced-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.silenced-icon {
+  width: 60%;
+  height: auto;
+  opacity: 1;
+}
+
+.ward-shield {
+  position: absolute;
+  inset: 4px;                    // slightly overflows card edges
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 12px;
+  
+  // Main bubble glow
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 255, 120, 0.35) 0%,    // brighter center
+    rgba(0, 200, 100, 0.20) 50%,   // softer fade
+    transparent 75%
+  );
+  
+  // Inner solid layer
+  .shield-inner {
+    position: absolute;
+    inset: 4px;
+    border-radius: 8px;
+    background: radial-gradient(
+      circle,
+      rgba(80, 255, 160, 0.45) 0%,
+      rgba(0, 255, 120, 0.25) 60%,
+      transparent 80%
+    );
+    border: 1px solid rgba(0, 255, 120, 0.6); // subtle green border
+  }
+}
+
+.keyword-icons {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 0px;
+  z-index: 5;                     
+  pointer-events: none;
+
+  .keyword-icon {
+    width: 24px;                 
+    height: 24px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); 
+    background: rgba(0,0,0,0.4);   
+    border-radius: 6px;
+    padding: 2px;                 
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.3);      
+    }
+  }
+}
+
+/*.hand-grid app-tesl-card,
+.big-hand {
+  width: 130px !important;
+  height: 195px !important;
+}*/
+
+:host-context(.in-hand) .keyword-icons .keyword-icon {
+  width: 16px;
+  height: 16px;
+}
+:host-context(.desktop-layout) .keyword-icons .keyword-icon,
+:host-context(.big-hand) .keyword-icons .keyword-icon {
+  width: 28px;
+  height: 28px;
+}
+
+:host-context([isGraveyard]) .card {
+  opacity: 0.92;
+  border: 1px solid #555;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  }
+}
+
+:host {
+    position: relative;              // ← Important: relative by default
+    left: auto;
+    top: auto;
+    transform: none;                 // ← Reset hand transforms
+    //width: 84px;
+    //height: 120px;
+    display: block;               // important for sizing
+    width: 100%;
+    height: 100%;
+    transition: all 0.25s ease-out;
+    z-index: 1;
+    
+}
+
+/* Default small size — used on board, discard, etc. */
+:host-context(.in-board),
+:host-context(.in-hand),
+:host-context(.in-discard),
+:host-context(.small-card) {
+  width: 84px;
+  height: 120px;
+}
+
+:host-context(.big-hand) {
+  width: 130px;
+  height: 195px;
+}
+
+@media (max-width: 768px) {
+  :host(.in-hand) {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      transform: translate(-50%, -50%) translateX(var(--shift, 0px));
+      --z-index: calc(20 - var(--card-index)); 
+      z-index: var(--z-index);
+
+      --shift: calc( 
+          (var(--card-index) - (var(--total-cards) - 1) / 2) 
+          * -60px 
+      );
+
+      &[style*="--total-cards: 7"],
+      &[style*="--total-cards: 8"] {
+          --shift: calc( 
+          (var(--card-index) - (var(--total-cards) - 1) / 2) 
+          * -40px 
+          );
+      }
+      &[style*="--total-cards: 9"],
+      &[style*="--total-cards: 10"] {
+          --shift: calc( 
+          (var(--card-index) - (var(--total-cards) - 1) / 2) 
+          * -30px 
+          );
+      }
+  }
+}
+@media (min-width: 769px) {
+  :host(.in-hand) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) translateX(var(--shift, 0px));
+    --z-index: calc(20 - var(--card-index));
+    z-index: var(--z-index);
+
+    /* Always use the same strong fan formula — no reduction */
+    --shift: calc(
+      (var(--card-index) - (var(--total-cards) - 1) / 2) * -60px
+    );
+  }
+}
+
+@keyframes target-glow {
+  0%, 100% { 
+    box-shadow: 0 0 15px #00ff88, inset 0 0 10px rgba(0,255,136,0.3); 
+  }
+  50% { 
+    box-shadow: 0 0 25px #00ff88, 0 0 35px #00ff88, inset 0 0 15px rgba(0,255,136,0.5); 
+  }
+}

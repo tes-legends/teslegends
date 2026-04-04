@@ -1,0 +1,165 @@
+<!--collection.component.html-->
+<div class="collection-viewer">
+    <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;">
+    <!-- invisible focus trap start -->
+  </button>
+  <div class="collection-header">
+    <!--<h2>Card Collection</h2>-->
+    <button class="close-btn" *ngIf="!hideStorySet" (click)="close()">X</button>
+  </div>
+  <!-- Filter Rows -->
+  <div class="filter-rows">
+    <div class="filter-row" *ngIf="showFilters">
+      <button 
+        class="filter-btn"
+        (click)="toggleFilter('set')">
+        <img *ngIf="selectedSet !== 'All'" [src]="setIcons[selectedSet]" [alt]="selectedSet" class="filter-icon">        
+        <span *ngIf="selectedSet === 'All'">{{ selectedSet }}</span>
+      </button>
+      <button 
+        class="filter-btn"
+        (click)="toggleFilter('attribute')">
+        <img [src]="attributeIcons[selectedAttribute]" [alt]="selectedAttribute" class="filter-icon">
+      </button>
+      <button 
+        class="filter-btn"
+        (click)="toggleFilter('magicka')">
+        <div class="magicka-preview">
+          <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+          <span class="cost-overlay">{{ selectedMagicka }}</span>
+        </div>
+      </button>
+      <button 
+        class="filter-btn"
+        (click)="toggleUnlockedOnly()">
+        <img [src]="showUnlockedOnly ? '/assets/tesl/images/icons/icon_green.png'
+          : '/assets/tesl/images/icons/icon_gray.png'" alt="unlockedCards" class="filter-icon">
+      </button>
+      <button 
+        class="filter-btn toggle-extra-btn"
+        [class.active]="selectedType !== 'All' || selectedSubtype !== 'All' || selectedKeyword !== 'All'"
+        (click)="toggleExtraFilters()">
+        <span class="triangle">{{ showExtraFilters ? '▲' : '▼' }}</span>
+      </button>
+    </div>
+    <div class="filter-options magicka-options" *ngIf="!showFilters">
+      <button 
+        *ngFor="let cost of availMagicka"
+        class="filter-btn magicka-btn"
+        [class.active]="selectedMagicka === cost"
+        (click)="selectMagicka(cost)">
+        <div class="magicka-preview">
+          <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+          <span class="cost-overlay">{{ cost }}</span>
+        </div>
+      </button>
+    </div>
+    <div class="filter-row extra-filters" *ngIf="hideStorySet || (showFilters && showExtraFilters)">
+      <button class="extra-btn" (click)="toggleFilter('type')">
+        <span>{{ selectedType }}</span>
+      </button>
+      <button class="extra-btn" (click)="toggleFilter('subtype')">
+        <span>{{ selectedSubtype }}</span>
+      </button>
+      <button class="extra-btn" (click)="toggleFilter('keyword')">
+        <span>{{ selectedKeyword }}</span>
+      </button>
+    </div>
+      
+    <div class="filter-options" *ngIf="filterExpanded.set && showFilters">
+      <button 
+        *ngFor="let set of setIcons | keyvalue"
+        class="filter-btn"
+        [class.active]="selectedSet === set.key"
+        (click)="selectSet(set.key)">
+        <img *ngIf="set.key !== 'All'" [src]="set.value" [alt]="set.key" class="filter-icon">
+        <span *ngIf="set.key === 'All'">{{ set.key }}</span>
+      </button>
+    </div>
+    
+    <div class="filter-options" *ngIf="filterExpanded.attribute && showFilters">
+      <button 
+        *ngFor="let attr of attributeIcons | keyvalue"
+        class="filter-btn"
+        [class.active]="selectedAttribute === attr.key"
+        (click)="selectAttribute(attr.key)">
+        <img [src]="attr.value" [alt]="attr.key" class="filter-icon">
+      </button>
+    </div>
+    
+    <div class="filter-options magicka-options" *ngIf="filterExpanded.magicka && showFilters">
+      <button 
+        *ngFor="let cost of availMagicka"
+        class="filter-btn magicka-btn"
+        [class.active]="selectedMagicka === cost"
+        (click)="selectMagicka(cost)">
+        <div class="magicka-preview">
+          <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+          <span class="cost-overlay">{{ cost }}</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Type Options -->
+    <div class="filter-options" *ngIf="filterExpanded.type && (showFilters || hideStorySet)">
+      <button *ngFor="let t of typeOptions"
+              class="extra-btn" 
+              [class.active]="selectedType === t"
+              (click)="selectType(t)">
+        {{ t }}
+      </button>
+    </div>
+
+    <!-- Subtype Options -->
+    <div class="filter-options" *ngIf="filterExpanded.subtype && (showFilters || hideStorySet)">
+      <button *ngFor="let sub of subtypeOptions"
+              class="extra-btn" 
+              [class.active]="selectedSubtype === sub"
+              (click)="selectSubtype(sub)">
+        {{ sub }}
+      </button>
+    </div>
+
+    <!-- Keyword Options -->
+    <div class="filter-options" *ngIf="filterExpanded.keyword && (showFilters || hideStorySet)">
+      <button *ngFor="let kw of keywordOptions"
+              class="filter-btn" 
+              [class.active]="selectedKeyword === kw"
+              (click)="selectKeyword(kw)">
+        <img *ngIf="getIconFileName(kw); let iconSrc" 
+            [src]="iconSrc" 
+            [alt]="kw" 
+            class="filter-icon">
+        <!-- Fallback to text if no icon -->
+        <span *ngIf="!getIconFileName(kw)" class="keyword-text">{{ kw }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Card Grid -->
+  <div class="card-grid">
+    <app-tesl-card
+      *ngFor="let card of displayedCards; trackBy: trackByInstanceId"
+      [class.locked] ="isCardLocked(card)"
+      [card]="card"
+      [isStagingActive]="true"
+      class="collection-card"
+      (click)="enlargeCard(card)">
+    </app-tesl-card>
+
+    <div class="no-results" *ngIf="displayedCards.length === 0">
+      No cards match the selected filters
+    </div>
+  </div>
+
+  <!-- Full-size card modal -->
+  <div class="modal" *ngIf="enlargedCard">
+  <div class="modal-content">
+
+      <img [src]="enlargedCardImage" draggable="false" alt="Enlarged image">
+
+      <button class="close-btn" (click)="closeCard()">X</button>
+  </div>
+  
+  </div>
+</div>

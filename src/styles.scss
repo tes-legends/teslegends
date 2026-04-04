@@ -1,0 +1,32 @@
+@import 'themes';
+
+@import '@nebular/theme/styles/globals';
+
+@import 'global_styles.css';
+
+@include nb-install() {
+  @include nb-theme-global();
+};
+/* You can add global styles to this file, and also import other style files */
+/* === DISABLE PULL-TO-REFRESH ON MOBILE (Android + iOS) === */
+html, body {
+  font-family: 'Eva', sans-serif;
+}
+html {
+  overscroll-behavior-y: none;    /* Strongest for Safari/iOS standalone PWA */
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overscroll-behavior-y: contain; /* Primary for Chrome/Android – disables refresh */
+  height: 100%;
+  margin: 0;
+}
+
+
+
+/* Your existing global styles */
+* {
+  -webkit-font-smoothing: antialiased;
+}

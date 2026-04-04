@@ -1,0 +1,2371 @@
+[
+    {
+        "name": "Captain Mera",
+        "title": "The Undefeated",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1600,
+        "theme": "Imperial Tokens",
+        "avatar": "LG-arena-Captain_Mera.png",
+        "deckCodeId": "SPAFaKfWgVkSlYALcxcZdRfRiIlJlTnpqNrEsfABnI"
+    },
+    {
+        "name": "Chaos Magician",
+        "title": "The Mad",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1450,
+        "theme": "Random",
+        "avatar": "LG-arena-Daedric_Cultists.png",
+        "deckCodeId": "SPBEadbybKcHdIdOeXfvfFgdggCagIjEjHjRkjkRlllDlLlMnroeowprpMpNqMCbAAAA"
+    },
+    {
+        "name": "Cheydinhal Sergeant",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 800,
+        "theme": "Imperials",
+        "avatar": "LG-arena-Cheydinhal_Sergeant.png",
+        "deckCodeId": "SPAECciLmdrEANcZewfHgphWiGiJjCjDlEnIogouAA"
+    },
+    {
+        "name": "Cursed Skull",
+        "title": "The Immortal",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 950,
+        "theme": "Undead",
+        "avatar": "LG-arena-Gloom_Wraith.png",
+        "deckCodeId": "SPAAAOdMdRdUemeohihUmfmZnqCdCepfCfAA"
+    },
+    {
+        "name": "Forgotten Machines",
+        "title": "The Victorious",
+        "attributes": [
+            "N"
+        ],
+        "elo": 1700,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Dwemer.png",
+        "deckCodeId": "SPAAAAAKaifnfofrfshOoSoZpGpH"
+    },
+    {
+        "name": "Frostbringer",
+        "title": "The Miraculous",
+        "attributes": [
+            "B"
+        ],
+        "elo": 1050,
+        "theme": "Ice Spike",
+        "avatar": "LG-arena-Glenumbra_Sorceress.png",
+        "deckCodeId": "SPAHcrhhihiyizoerRAAABix"
+    },
+    {
+        "name": "Gatecrasher",
+        "title": "The Untouchable",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1500,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Gatecrasher.png",
+        "deckCodeId": "SPACkyrwAObPdDdRgggxgIjRkakNlJmEnhnVrlAA"
+    },
+    {
+        "name": "The Iron Atronach",
+        "title": "The Immortal",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1750,
+        "theme": "Atronachs",
+        "avatar": "LG-arena-Iron_Atronach.png",
+        "deckCodeId": "SPADjajEpSAMaXcJCgfrgyCaCiixjHChoeCjABfU"
+    },
+    {
+        "name": "Master of Sorcery",
+        "title": "The Cunning",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1250,
+        "theme": "Actions",
+        "avatar": "LG-arena-Master_of_Sorcery.png",
+        "deckCodeId": "SPAHamaSbmbqdOnZrRAKdMfWgyhWixizjEjHlYnBABew"
+    },
+    {
+        "name": "Scarza, Warrior Mudcrab",
+        "title": "The Victorious",
+        "attributes": [
+            "R"
+        ],
+        "elo": 750,
+        "theme": "Mudcrabs",
+        "avatar": "LG-arena-Mudcrab.png",
+        "deckCodeId": "SPAAADfTCknDAA"
+    },
+    {
+        "name": "Spider Queen",
+        "title": "The Deadly",
+        "attributes": [
+            "G"
+        ],
+        "elo": 900,
+        "theme": "Spiders",
+        "avatar": "LG-arena-Spider_Queen.png",
+        "deckCodeId": "SPAEClCnCoCpABCmAA"
+    },
+    {
+        "name": "The Mad Conjurer",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1200,
+        "theme": "Desperate Conjuring",
+        "avatar": "LG-arena-The_Mad_Conjurer.png",
+        "deckCodeId": "SPADcygxrzACfsjSAGfTmjnDoZpgeu"
+    },
+    {
+        "name": "Wild Beastcaller",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 850,
+        "theme": "Animals",
+        "avatar": "LG-arena-Wild_Spriggan.png",
+        "deckCodeId": "SPAHCldhfThdmIoKrLAHahbACnhbjSCoCqADCkCpnD"
+    },
+    {
+        "name": "Wispmother",
+        "title": "The Clonemaster",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1000,
+        "theme": "< 3-cost cards",
+        "avatar": "LG-arena-Wispmother.png",
+        "deckCodeId": "SPARCrCscZCtfsfUgehWihCulTmpCvoZpgpMCwACewoSADjEkiCf"
+    },
+    {
+        "name": "Ageless One",
+        "title": "The Victorious",
+        "attributes": [
+            "N"
+        ],
+        "elo": 1100,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Dwemer.png",
+        "deckCodeId": "SPACdMkiAIaifnfofrmjpGpHpJAEfshOoSoZ"
+    },
+    {
+        "name": "Agent of Venom",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1000,
+        "theme": "Lethal",
+        "avatar": "LG-arena-Argonian_4.png",
+        "deckCodeId": "SPAEaQeEialpANaLeeemglgngsComZoxoCpgpRqkAA"
+    },
+    {
+        "name": "Ancient Dragon",
+        "title": "The Risen",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1600,
+        "theme": "Dragons",
+        "avatar": "LG-arena-Skeletal_Dragon.png",
+        "deckCodeId": "SPAWaocJedeKeNeOeQfzfUgygZiAiVjbjHjTlllVoroMpapLAEaDkxljqNAA"
+    },
+    {
+        "name": "Beastbrother",
+        "title": "The Nimble",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1170,
+        "theme": "Animals",
+        "avatar": "LG-arena-Woodelf_1.png",
+        "deckCodeId": "SPAMahcacjcPdhgomGnMoDoKqkryAJaQgiCkhbiZjSnDoCpgAA"
+    },
+    {
+        "name": "Beastmaster",
+        "title": "The Lightfooted",
+        "attributes": [
+            "G"
+        ],
+        "elo": 1130,
+        "theme": "Animals",
+        "avatar": "LG-arena-Argonian_1.png",
+        "deckCodeId": "SPAMcXdhgihdhAkImFmIoKqkrLrNAJaQdQhbiijSCooCCqryAA"
+    },
+    {
+        "name": "Black Marsh Raider",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1340,
+        "theme": "Ramp",
+        "avatar": "LG-arena-Argonian_4.png",
+        "deckCodeId": "SPAGcXmFmOnNoQqBAMaLaMaQbTfIgsikkepEpRqwqNAA"
+    },
+    {
+        "name": "Black Stone",
+        "title": "The Victorious",
+        "attributes": [
+            "N"
+        ],
+        "elo": 800,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Highelf_3.png",
+        "deckCodeId": "SPAJaidMfEglgJlaoHoSpJAJfnfrfsfTjSmjoCoZpgABki"
+    },
+    {
+        "name": "Blood Taker",
+        "title": "The Victorious",
+        "attributes": [
+            "R"
+        ],
+        "elo": 1700,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Orc_3.png",
+        "deckCodeId": "SPACmEoCAOahbHcaclgogJkzlDlGlLmCmVpgprAA"
+    },
+    {
+        "name": "Bowlord",
+        "title": "The Dragonslayer",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 850,
+        "theme": "Wounded",
+        "avatar": "LG-arena-Woodelf_1.png",
+        "deckCodeId": "SPAGcLfvguhbhXoKAMaQbUcPdQgihBiZkinDnVolrlAA"
+    },
+    {
+        "name": "Bringer of Chains",
+        "title": "The Untouchable",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 920,
+        "theme": "Shackle",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAGeZnGocoeqUrRAMaXcHewfrhhipjCjXkimQoSpgAA"
+    },
+    {
+        "name": "Brother Swiftstance",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 2000,
+        "theme": "Pilfer",
+        "avatar": "LG-arena-Khajiit_1.png",
+        "deckCodeId": "SPADajjrrgAGbrimknlhlYqjAFeberfWkImD"
+    },
+    {
+        "name": "Brutal Brawler",
+        "title": "The Conqueror",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 760,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Nord_3.png",
+        "deckCodeId": "SPAObydMeDhwhXipiZjekQlYnGqUrJrKAIfTfWCkiPjDlDnhpnAA"
+    },
+    {
+        "name": "Champion of Cloudrest",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1400,
+        "theme": "Actions",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAGbCfLgwmpnroBAMambmcydrdPfkfWixjEjJlYpQAA"
+    },
+    {
+        "name": "Champion of the Sun",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1310,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Nord_3.png",
+        "deckCodeId": "SPAMbeeDfxhLkQlDlYmVneowqYrKAJdMewfWhZjPkakRmCnzAA"
+    },
+    {
+        "name": "Clawed Traitor",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1300,
+        "theme": "Werewolves/Animals",
+        "avatar": "LG-arena-Khajiit_4.png",
+        "deckCodeId": "SPAIcadbeokRlulvlwnVALahardReQgoiUjSkymCmVpkAA"
+    },
+    {
+        "name": "Clear Shot",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Woodelf_1.png",
+        "deckCodeId": "SPAWazbUcjcXdQesfgfsgogxgIiakilsmLninVooowoSrKrYAEbHgumGrnAA"
+    },
+    {
+        "name": "Clover Shield",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1200,
+        "theme": "Supports/Health Gain",
+        "avatar": "LG-arena-Khajiit_2.png",
+        "deckCodeId": "SPAYajaQbmbUcZdrelesfhfWgpgugJhzhBjrkekImpmzmYqcqyqXADfakTlzAA"
+    },
+    {
+        "name": "Coldsoul",
+        "title": "The Cunning",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1200,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_3.png",
+        "deckCodeId": "SPBEazaQaXcycIcXdQfkfFgyhlhAhBihjEjXkTleltmjmFnroKoOoZpHqyqGryrCAAAA"
+    },
+    {
+        "name": "Corsair Captain",
+        "title": "The Captain",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 2000,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_1.png",
+        "deckCodeId": "SPAJdVdWjXkjklnHoepSqFAGdIkNmCotoVrCADardBeP"
+    },
+    {
+        "name": "Crookedclaw",
+        "title": "The Deadly",
+        "attributes": [
+            "G"
+        ],
+        "elo": 1660,
+        "theme": "Goblins",
+        "avatar": "LG-arena-Goblin.png",
+        "deckCodeId": "SPAEkIkVlfmFANaQcXhliajSkTlblclelglhlzqkAA"
+    },
+    {
+        "name": "Cultmaster",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 860,
+        "theme": "Undead",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPAHcjdDdUhUiZlNniAHahgnhwjTmZrlrKADeolDnD"
+    },
+    {
+        "name": "Cursed Greybeard",
+        "title": "The Thu'um Master",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1500,
+        "theme": "Stat Reduction",
+        "avatar": "LG-arena-Greybeard.png",
+        "deckCodeId": "SPALcvedeIjMkvnMorpXqyrnsaAIdQeShlhCkelflhnXABoP"
+    },
+    {
+        "name": "Cursegiver",
+        "title": "The Cunning",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPAZcxdUewfxfEfIfWhVhZikiCiGiIiLjrlpmZnGnIogoSpipEpOqIABlJABam"
+    },
+    {
+        "name": "Dark General",
+        "title": "The Ironmonger",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1100,
+        "theme": "Ramp",
+        "avatar": "LG-arena-Argonian_1.png",
+        "deckCodeId": "SPAIbPcdcmlklwlxmOnNAFdRgnikjTmmAEkypiqBqN"
+    },
+    {
+        "name": "Dark Scoundrel",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Orc_3.png",
+        "deckCodeId": "SPAWahbHbKcwdRfRfThUjTkykNlplFlMlOmGmLmVmZnzpwpzAEemgolDpEAA"
+    },
+    {
+        "name": "Dark Sword",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1250,
+        "theme": "Items",
+        "avatar": "LG-arena-Breton_1.png",
+        "deckCodeId": "SPAGdIePhMhYkipUAMdUemeWfkiGjXltoeotpsqFsfAA"
+    },
+    {
+        "name": "Darkbeast",
+        "title": "The Skirmisher",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1480,
+        "theme": "Animals",
+        "avatar": "LG-arena-Argonian_2.png",
+        "deckCodeId": "SPAMdhdRdUgihdkIlsoXpkpUqkrLAJaEeogngsgMhbhVikqNAA"
+    },
+    {
+        "name": "Darkblade",
+        "title": "The Assassin",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1050,
+        "theme": "Undead",
+        "avatar": "LG-arena-Breton_1.png",
+        "deckCodeId": "SPAGfkhhhDkSlpocAMcydRemeWgnhUixjEjHmZoSCxAA"
+    },
+    {
+        "name": "Darkstriker",
+        "title": "The Clever",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1410,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Orc_3.png",
+        "deckCodeId": "SPAOahbecjeTfvgnhwjRjTmfmgpzpUrQAIdUeegMhrmZnVrlsmAA"
+    },
+    {
+        "name": "Daybirth, Mage of Light",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1000,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Highelf_2.png",
+        "deckCodeId": "SPBCadamcJdFdOdXeWfFfUgdgeglgyicipixizjlkFltmempmDnGoIpMpNpQABmQAA"
+    },
+    {
+        "name": "Deadly Beastcaller",
+        "title": "The Animal Lover",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1500,
+        "theme": "Animals/Lethal",
+        "avatar": "LG-arena-area-Eldergleam_Matron.png",
+        "deckCodeId": "SPASaMcSgigMjSkekilsnwnOnRoxoKpEpUqkqNryAGemfDijlXnSrNAA"
+    },
+    {
+        "name": "Deathcaller",
+        "title": "The Gravedigger",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1900,
+        "theme": "Reanimate",
+        "avatar": "LG-arena-Breton_3.png",
+        "deckCodeId": "SPAKcJddhvhUjajXlxoeqeqFAHbQedeogykvoVrQACgalV"
+    },
+    {
+        "name": "Deathgaze",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 500,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Breton_4.png",
+        "deckCodeId": "SPANcIdOdPdReQeWfUgeizjJjXlFqFAHlJmLmQoSqNrprEABnq"
+    },
+    {
+        "name": "Deathtip",
+        "title": "The Tactician",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 800,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Woodelf_2.png",
+        "deckCodeId": "SPAYbUcPcXdMdQfgCkhBiPkilolDmAmGnknMowoGoQCyoZqMrlrHADaQiZqwAA"
+    },
+    {
+        "name": "Deathwalker",
+        "title": "The Victorious",
+        "attributes": [
+            "P"
+        ],
+        "elo": 500,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAEfEjSlFpiANeofRgnhVlpmfnqCdoCoSoZpgpRAA"
+    },
+    {
+        "name": "Delta, the Charger",
+        "title": "The Prophet",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 2000,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Nord_2.png",
+        "deckCodeId": "SPAEfvkaqYrwAHahbHhwiPlGmEpwAEgokzmVne"
+    },
+    {
+        "name": "Dragon Guard",
+        "title": "The Defender",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1900,
+        "theme": "Dragons/Guard",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPASaoeLeOfwfOgniHiVjbjjjrjPjWktlklYorrfAGaDdkexkxndpaAA"
+    },
+    {
+        "name": "Dragonblade",
+        "title": "The Blademaster",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1400,
+        "theme": "Items/Dragons",
+        "avatar": "LG-arena-Inspiring_Stormcloak.png",
+        "deckCodeId": "SPAWaHbFdIeNfzfNfUgygZisiAkxkNninjnHnYotozrcrsrOAEbXfkljoVAA"
+    },
+    {
+        "name": "Dreadrunner",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 500,
+        "theme": "0-cost",
+        "avatar": "LG-arena-Argonian_2.png",
+        "deckCodeId": "SPBCaLaOaQbrdQetfsfCfGhlhBhKhViikelblclhlplFnqogoSoZpRqwrnrNABnMAA"
+    },
+    {
+        "name": "Drownmouth, The Risen",
+        "title": "The Risen",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Argonian_4.png",
+        "deckCodeId": "SPAVdUebfsfRgnhVikkekSlclFmZoxoQCyoSpJpRqyrnrEADaQfrhiABeo"
+    },
+    {
+        "name": "Dwemer Sentry",
+        "title": "The Centurion",
+        "attributes": [
+            "N"
+        ],
+        "elo": 1700,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Dwarven_Dynamo.png",
+        "deckCodeId": "SPAQaibAbSeefnfohghOjgjnjSkimjnRpGpHAHdMfqfrkpkXoSoZAA"
+    },
+    {
+        "name": "Executioner of Talos",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1500,
+        "theme": "< 2-power destroyer",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAEeygVmemXANcwcxeDfBgpiGiJiKiLkylTnBogAA"
+    },
+    {
+        "name": "Falmer Nightcrawler",
+        "title": "The Untouchable",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1000,
+        "theme": "Cover",
+        "avatar": "LG-npc-Pit_Falmer.png",
+        "deckCodeId": "SPAMbebrcVeTgohwiZjMlWmFmLqwAJcjfCfGhjlclynQoirKAA"
+    },
+    {
+        "name": "Fanged Templar",
+        "title": "The Immortal",
+        "attributes": [
+            "P"
+        ],
+        "elo": 1400,
+        "theme": "Undead Ramp",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPACcdlxAOaEdRemeoeEhDhMhUiklplwmZqNskAA"
+    },
+    {
+        "name": "Farsight ARchmage",
+        "title": "The Daedric Master",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1900,
+        "theme": "Actions",
+        "avatar": "LG-arena-Highelf_2.png",
+        "deckCodeId": "SPADbqfWjJADbmqerRAHadamaSdOgyjHlY"
+    },
+    {
+        "name": "Five Hundred Eyes",
+        "title": "The Victorious",
+        "attributes": [
+            "G"
+        ],
+        "elo": 960,
+        "theme": "Spiders",
+        "avatar": "LG-arena-Spider.png",
+        "deckCodeId": "SPACoKrLAOClCndhdQhbhdCoCpoHoYCzqkryCmAA"
+    },
+    {
+        "name": "Fireflinger",
+        "title": "The Master Wizard",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1160,
+        "theme": "Actions",
+        "avatar": "LG-arena-Redguard_4.png",
+        "deckCodeId": "SPAKcPgwgxjHnrnZocooCjrRAKdMdOgyiZjEjJmCmGnVrJAA"
+    },
+    {
+        "name": "Firewalker",
+        "title": "The Mad",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1400,
+        "theme": "Aggro/Dragons",
+        "avatar": "LG-arena-Redguard_1.png",
+        "deckCodeId": "SPAOaXbHcceThwixjRmEmGmVnVoeprrRAIahcydMfTjHkzlLnhAA"
+    },
+    {
+        "name": "Fist of the Empire",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1370,
+        "theme": "Imperial Tokens",
+        "avatar": "LG-arena-Imperial_1.png",
+        "deckCodeId": "SPAHfIfRfWgpgVmennAKcwewfBiGiIiKjrjCkylYABnB"
+    },
+    {
+        "name": "Flamescale Terror",
+        "title": "The Destructive",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1300,
+        "theme": "Dragons/Pings",
+        "avatar": "LG-arena-Dovah.png",
+        "deckCodeId": "SPAPbXexgxiYjjkxmyndolozpDpIpWqMrOAGdkgghHmGnVooABmB"
+    },
+    {
+        "name": "Frostfire",
+        "title": "The Mastermind",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1400,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_1.png",
+        "deckCodeId": "SPAMdhfkgeihjHkImFnuoeqjrnrCAJadbrcygyiiixjEkTqwAA"
+    },
+    {
+        "name": "Frostforce",
+        "title": "The Deflector",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1800,
+        "theme": "Ward",
+        "avatar": "LG-arena-Breton_3.png",
+        "deckCodeId": "SPAEdUfIigiyANcremfFfRfUgyhhiCjEodqFrCrQAA"
+    },
+    {
+        "name": "Frostland Sentinel",
+        "title": "The Defiant",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1000,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Breton_4.png",
+        "deckCodeId": "SPAWcJdPeEeQfafkgJhhigihjEjHjOjTjXmZnrocpipEqFsmAEdIeeeoeWAA"
+    },
+    {
+        "name": "Futurecrafter",
+        "title": "The Prophet",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1200,
+        "theme": "Actions/Dwemer",
+        "avatar": "LG-arena-Breton_1.png",
+        "deckCodeId": "SPACemrzAOadaXbwcyeofkfLgyhUihmZoOoZrUAA"
+    },
+    {
+        "name": "Garahk Gro-Shak",
+        "title": "The Clan Chieftain",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1200,
+        "theme": "Orcs",
+        "avatar": "LG-arena-Orc_4.png",
+        "deckCodeId": "SPAGdadDkBlLlOshAMbybHdMeQgIiGkNlMlNmfpzsfAA"
+    },
+    {
+        "name": "Gatestormer",
+        "title": "The Conqueror",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1800,
+        "theme": "Breaking Runes",
+        "avatar": "LG-arena-Nord_4.png",
+        "deckCodeId": "SPACheqYAOaherfWgokakNkQlLlYmJmVnenVprAA"
+    },
+    {
+        "name": "Grand Chanter",
+        "title": "The Master Wizard",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1900,
+        "theme": "Actions",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAQaRbqcJdPeifWgyhWimiyiRjqjrjElZoUAHcUdMjHkklYoeppAA"
+    },
+    {
+        "name": "Grave Warder",
+        "title": "The Gravedigger",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1400,
+        "theme": "Reanimate",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPAObQeEfNgagBgMhhhvkDoroMoVpLsaAIdAdUgvjEkvlVoPrCAA"
+    },
+    {
+        "name": "Gravebane",
+        "title": "The Master of Flesh",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1700,
+        "theme": "Guard/Renamimate",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPAEejgVkhlkANfWimjrjCjPjTkylJlYnppiqNrEAA"
+    },
+    {
+        "name": "Greybeard Dragoncaller",
+        "title": "The Seer",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1300,
+        "theme": "Shouts/Dragons",
+        "avatar": "LG-arena-Greybeard.png",
+        "deckCodeId": "SPALdkexeNfUgygZjjlRoepLslAIcFdfhCiAkxljndsaABgv"
+    },
+    {
+        "name": "Grey Golem",
+        "title": "The Tormenter",
+        "attributes": [
+            "N"
+        ],
+        "elo": 740,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Dwemer.png",
+        "deckCodeId": "SPAHeefmfnfEgloCrpAKaidMfrfsfTkimjoZpgpJABoS"
+    },
+    {
+        "name": "Greysteel",
+        "title": "The Blademaster",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1060,
+        "theme": "Items",
+        "avatar": "LG-arena-Imperial_1.png",
+        "deckCodeId": "SPAOdMdUewfwfRisjKlumjoSpirEsfskAICcgGiCkilJmpnICfAA"
+    },
+    {
+        "name": "Grim Gatekeeper",
+        "title": "The Defender",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 900,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPBEbybAbHdUemeoeQeUfafRgngJhwiPjSkakNlDlMmGmLmVmZnqoSpipUqNrErYAAAA"
+    },
+    {
+        "name": "Grim Guardsman",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Breton_2.png",
+        "deckCodeId": "SPBAadaMaXcIdMdReEeQeWfUgnhhjljHjXkulxDalFlJmZnNocoepkqFACgypiAA"
+    },
+    {
+        "name": "Grimeye",
+        "title": "The Seer",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1200,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Argonian_2.png",
+        "deckCodeId": "SPAGaMeeeseymArxAMaQdQfagshVjSkekTkVlumFrQAA"
+    },
+    {
+        "name": "Guildmaster",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1220,
+        "theme": "Pilfer",
+        "avatar": "LG-arena-Khajiit_3.png",
+        "deckCodeId": "SPAJeriejAkelUmAoxqjqAAGbrebewfimDnpADaQDbqw"
+    },
+    {
+        "name": "Headhunter",
+        "title": "The Assassin",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Woodelf_4.png",
+        "deckCodeId": "SPALdhgihdhXkTlcmIoKqkrLrNAIahcjgohbhzjSolrlABmG"
+    },
+    {
+        "name": "Heart of the Woods",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1280,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Woodelf_3.png",
+        "deckCodeId": "SPAKbecletgxiZjylGmFowqRAKaQbUfvguhrhBiinVolrlAA"
+    },
+    {
+        "name": "He Who Slithers",
+        "title": "The Victorious",
+        "attributes": [
+            "G"
+        ],
+        "elo": 1070,
+        "theme": "Goblins",
+        "avatar": "LG-arena-Argonian_3.png",
+        "deckCodeId": "SPAGcXfEhdlUmFqAAMaQfGhKiejSlblclelgmAoSqwAA"
+    },
+    {
+        "name": "Hidden Sorcerer",
+        "title": "The Master of Mirrors",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Prophecy",
+        "avatar": "LG-arena-Breton_1.png",
+        "deckCodeId": "SPAWadbAbQcycIcJdIdUeefkgdgegngwgMhhixiGlJmmoZpsAEfTjEjHoeAA"
+    },
+    {
+        "name": "High Rock Sentry",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1200,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_4.png",
+        "deckCodeId": "SPAWbAbHcyfnfofUgygIhwihjXkjlalDlNlOmQninVocpSrCAEnhnjqFrlAA"
+    },
+    {
+        "name": "Ikar, the Black",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 800,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_3.png",
+        "deckCodeId": "SPAVaXcIcJcLdPeeeXeZguhbhhiejJnMocoSqcqwqyqFrUADbCbUhBABix"
+    },
+    {
+        "name": "Iron Root",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Nord_1.png",
+        "deckCodeId": "SPAYbebHcXebfrfvfZgigsguhbjykIkNlDmLnMoSprqyrlrnrrryADdMfhooAA"
+    },
+    {
+        "name": "Ivory Crusader",
+        "title": "The General",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Nord_1.png",
+        "deckCodeId": "SPATcFcMfHfJgxhghWiKjCjDlDmrmDnhnIoLpWqMrlAEbHisndqUABje"
+    },
+    {
+        "name": "Knight of Winter",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1330,
+        "theme": "Actions",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPAMaSbmewfWCaimlYmpnZoBqUrRAJadamdOgyhWjElHjJpQAA"
+    },
+    {
+        "name": "Lawbringer",
+        "title": "The General",
+        "attributes": [
+            "Y"
+        ],
+        "elo": 890,
+        "theme": "Imperials",
+        "avatar": "LG-arena-Highelf_3.png",
+        "deckCodeId": "SPADaRiIiLAJcxcQcZgpiKjPmjpOqUADewhWnB"
+    },
+    {
+        "name": "Leaf Walker",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 700,
+        "theme": "Aggro/Wounded",
+        "avatar": "LG-arena-Woodelf_4.png",
+        "deckCodeId": "SPBAbUdMdQfrgogsgugIgJhlhzhXitiPiZkikTlclMninVoloooxprpwAClDlLAA"
+    },
+    {
+        "name": "Lightblade",
+        "title": "The Deadly",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 800,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_1.png",
+        "deckCodeId": "SPAUavcScZewfShihVhWiojnjrmfmLnannoIoLpkpxskAFdUfJislTmoAA"
+    },
+    {
+        "name": "Light Fingers",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 940,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_4.png",
+        "deckCodeId": "SPAGaOaRfGlUlYqAAMbrbRbUDbdXebewfgfWhWiaqGAA"
+    },
+    {
+        "name": "Lightmage",
+        "title": "The Master Wizard",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1620,
+        "theme": "Actions",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPABiFAKaRbmdVixjEjHjJlYnrnZADamdOgy"
+    },
+    {
+        "name": "Lurking Shadow",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Argonian_2.png",
+        "deckCodeId": "SPAEgJkepUqkANaQbrdUetgnhBhKikmZpgpRqwryAA"
+    },
+    {
+        "name": "Mammoth Herder",
+        "title": "The Strong",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1700,
+        "theme": "Mammoths/Giants",
+        "avatar": "LG-arena-Cradlecrush_Giant.png",
+        "deckCodeId": "SPAQbKcSdAdRedgKgLjbktkSoRpjpxpWrrsbAHcMfwgnmtpkqNsmAA"
+    },
+    {
+        "name": "Marsh Captain",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1380,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Argonian_1.png",
+        "deckCodeId": "SPALcXdUgMjTlhmmmOnNpUryrLAIbTdhgshbikmZqyqNABlc"
+    },
+    {
+        "name": "Master of Death",
+        "title": "The Victorious",
+        "attributes": [
+            "P"
+        ],
+        "elo": 1360,
+        "theme": "Undead",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPAJbQcdcmdRgBiOjTmfrxAJdUemeognhihDhUlppRABmZ"
+    },
+    {
+        "name": "Master of Elements",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1350,
+        "theme": "Atronachs",
+        "avatar": "LG-arena-Highelf_3.png",
+        "deckCodeId": "SPAMcJdVgyixiylYnZoeCjpOqFrCAJCaCihWihjCjHjJmjoBAA"
+    },
+    {
+        "name": "Monarch of Ice",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1140,
+        "theme": "Ice Based Actions / Creatures",
+        "avatar": "LG-arena-Darkelf_2.png",
+        "deckCodeId": "SPAIeshdiRjHkelUrNrRALadaiaQcHgJhBiiixjXkToeAA"
+    },
+    {
+        "name": "Mournhold Strangler",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 830,
+        "theme": "Last Gasp",
+        "avatar": "LG-arena-Darkelf_1.png",
+        "deckCodeId": "SPAEbAcyitrpANaQetfrgigyhbixjSkTmQoOCyrnAA"
+    },
+    {
+        "name": "Namira's Blessed",
+        "title": "The Healer",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1900,
+        "theme": "Health Gain",
+        "avatar": "LG-arena-Khajiit_2.png",
+        "deckCodeId": "SPAQbnczdXejelfWhbhWimitjqjAmznmrfryAHcxkIlWlYmpmumFAA"
+    },
+    {
+        "name": "Nightblade",
+        "title": "The Tactician",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1240,
+        "theme": "Cover",
+        "avatar": "LG-arena-Darkelf_2.png",
+        "deckCodeId": "SPAEitiRnurgANbCcydPesfkgyjEjHkTltoHoOrnAA"
+    },
+    {
+        "name": "Night Slayer",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 2000,
+        "theme": "Slay",
+        "avatar": "LG-arena-Doomcrag_Vampire.png",
+        "deckCodeId": "SPAQaMbkbTcddddUemeEfhfAgagihsjQlsrgAEcufilUnMACcvph"
+    },
+    {
+        "name": "Night Watchman",
+        "title": "The Seer",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPAYaKbAcwcxeeeofsfRfTgJiGiIiOjSjTkimfmjmDmZoSpRpUrpADdUjrlTAA"
+    },
+    {
+        "name": "Oathkeeper",
+        "title": "The Unvanquished",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1700,
+        "theme": "Wounded",
+        "avatar": "LG-arena-Woodelf_3.png",
+        "deckCodeId": "SPACasfZAOcLfvguhrhzjylhlDmCmGnVoloorlAA"
+    },
+    {
+        "name": "Orderguard",
+        "title": "The Mastermind",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1000,
+        "theme": "Guards",
+        "avatar": "LG-arena-Highelf_3.png",
+        "deckCodeId": "SPAAAPaRcJewfUgyimCujDmjmpmQnIoBpspQAA"
+    },
+    {
+        "name": "Orsimer Outrider",
+        "title": "The Clan Chieftain",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1320,
+        "theme": "Orcs",
+        "avatar": "LG-arena-Orc_1.png",
+        "deckCodeId": "SPAFgxhqkikBpzAIdadDdMkNlMlOpRshADgIiGlL"
+    },
+    {
+        "name": "Packmaster",
+        "title": "The Clever",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1020,
+        "theme": "Wolves",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPAGdXgphZjHocoHAMewgeipjEjSlTmInpoCoIpnCwAA"
+    },
+    {
+        "name": "Pride of Summerset",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 500,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPAWaXbAcxcycHdIdMeWfkfTgehWioiIjCjEmpmDmQoSpsqUAEewixmjnIAA"
+    },
+    {
+        "name": "Priest of Balance",
+        "title": "The victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 900,
+        "theme": "Health Gain",
+        "avatar": "LG-arena-Khajiit_2.png",
+        "deckCodeId": "SPAVajbmcXeefWhdhLitiLjrkekhknlzlTlYmYnBnGpQrnAEdrmjmpqUAA"
+    },
+    {
+        "name": "Queen Barenziah",
+        "title": "The victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1600,
+        "theme": "Dunmer",
+        "avatar": "LG-arena-Queen_Barenziah.png",
+        "deckCodeId": "SPACiRmxAObCcyesfkfLgyitjHlhlonuoOqernAA"
+    },
+    {
+        "name": "Quicksilver",
+        "title": "The victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1230,
+        "theme": "Aggro/Items",
+        "avatar": "LG-arena-Redguard_4.png",
+        "deckCodeId": "SPAKbHcjcyCiiPkRlDlOmEprAKfkgogyCaixDcjEjHoSrRAA"
+    },
+    {
+        "name": "Ragetongue",
+        "title": "The victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 910,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Argonian_3.png",
+        "deckCodeId": "SPAOazaLbTdUemfIhKkikSnqnNpUqyrNAIaQgsiaikoCpEpRqNAA"
+    },
+    {
+        "name": "Rampager",
+        "title": "The Unvanquished",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1030,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Redguard_2.png",
+        "deckCodeId": "SPAKeTfsgejHkimjoCrlrprCAKcyeggohwiZjEjXlDoeCjAA"
+    },
+    {
+        "name": "Restless Warrior",
+        "title": "The victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPAPcPdRemeogxhViGlGmjmEmGmZnipipUAGhXiZkNkRlDpgABgI"
+    },
+    {
+        "name": "Riften Trapper",
+        "title": "The Cunning",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1200,
+        "theme": "Shackle",
+        "avatar": "LG-arena-Darkelf_2.png",
+        "deckCodeId": "SPAEfFnwoYrRANaQbfcVepfrfNfUiAkDlXoersrCAA"
+    },
+    {
+        "name": "Rikke's Army",
+        "title": "The Conqueror",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1300,
+        "theme": "Imperial Tokens",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPAQaPbncwfSgKhViKiLjqjBlZmfmXnanxrEAHgpgLiHjrktoJoLAA"
+    },
+    {
+        "name": "Ruler of the March",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 1800,
+        "theme": "Ramp",
+        "avatar": "LG-arena-Argonian_3.png",
+        "deckCodeId": "SPAGcdgBlklsmOqcAMbPdRhdiklhmmpEqkqyqBqNjTAA"
+    },
+    {
+        "name": "Runeslayer",
+        "title": "The Conqueror",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1540,
+        "theme": "Breaking Runes",
+        "avatar": "LG-arena-Nord_3.png",
+        "deckCodeId": "SPAGfxhohLneqRqYAMahaRhwkakzkQlYmVnhpwqMrKAA"
+    },
+    {
+        "name": "Safesword",
+        "title": "The Blademaster",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1580,
+        "theme": "Ward",
+        "avatar": "LG-arena-Breton_2.png",
+        "deckCodeId": "SPAIaXcrcHdIdMeogeoeALcIcJdUfUgwgyixiCmIrCrQAA"
+    },
+    {
+        "name": "Savageshield",
+        "title": "The Defender",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1080,
+        "theme": "Guards/Ward",
+        "avatar": "LG-arena-Breton_3.png",
+        "deckCodeId": "SPAGdIegfFgwlulEAMaXcHcIgyixjEkilFlJpRrCrQAA"
+    },
+    {
+        "name": "Scales of Prophecy",
+        "title": "The Prophet",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1800,
+        "theme": "Dragons/Prophecy",
+        "avatar": "LG-arena-Icewing_Dragon.png",
+        "deckCodeId": "SPAMcJeeeIeNfzgZiWkIlRmFnJoeAJbUfNgegsiAjHkxljrZAA"
+    },
+    {
+        "name": "Seashadow",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Orc_3.png",
+        "deckCodeId": "SPAEglkalDpwANcPgnCkhViPiZkilplNmGnDoHpRAA"
+    },
+    {
+        "name": "Shadow Guard",
+        "title": "The Captain",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 780,
+        "theme": "Imperials",
+        "avatar": "LG-arena-Imperial_4.png",
+        "deckCodeId": "SPAAAJaRewfBfIiGiIlFlJqUAEcZjCnBnI"
+    },
+    {
+        "name": "Shadowflame",
+        "title": "The Cunning",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1680,
+        "theme": "Orcs",
+        "avatar": "LG-arena-Orc_4.png",
+        "deckCodeId": "SPAGdagIhqkBlMrYAMbybHdDeQgxkNlLlNlOpwpzshAA"
+    },
+    {
+        "name": "Shadowstep",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1900,
+        "theme": "Wounded/Lethal",
+        "avatar": "LG-arena-Woodelf_2.png",
+        "deckCodeId": "SPAFashdqcrgrwAFdheeguqkrpAFbHbUgskInV"
+    },
+    {
+        "name": "Shield of Camlorn",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "P"
+        ],
+        "elo": 1120,
+        "theme": "Guard/Ward",
+        "avatar": "LG-arena-Breton_4.png",
+        "deckCodeId": "SPAOcHcIdMeWgwgMjEjHkilplulJmZCjAIemfUhhmIoSpspRrCAA"
+    },
+    {
+        "name": "Shoreborn",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1000,
+        "theme": "Animals",
+        "avatar": "LG-arena-Woodelf_3.png",
+        "deckCodeId": "SPAIhdieiZkvlXoDpwqkALahcPgoCkjSmBmInDnMoCpgAA"
+    },
+    {
+        "name": "Silent Guardian",
+        "title": "The Untouchable",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1110,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_3.png",
+        "deckCodeId": "SPAFcXeinnoQpQALaidhgphBiIjCjPlYnBoSpOABmj"
+    },
+    {
+        "name": "Skeever Legion",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1900,
+        "theme": "Skeever Tokens",
+        "avatar": "LG-arena-Nord_2.png",
+        "deckCodeId": "SPANcecPeDgjiLjCkjlGlYmVnxnRqnAHfvgpkklDlLmtmCABoq"
+    },
+    {
+        "name": "Skooma Gang",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1800,
+        "theme": "Pilfer/Move/Stay",
+        "avatar": "LG-arena-Khajiit_3.png",
+        "deckCodeId": "SPALfhfifAfWhskemznMqjqnqAAIcecucvcGdQebhllUABoy"
+    },
+    {
+        "name": "Skullcrusher",
+        "title": "The Deadly",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Orc_2.png",
+        "deckCodeId": "SPBAaEaKaMbebHcccdeoeEfsikjKjTmCmVmZninznVoloopiprpEpUsfAClLskAA"
+    },
+    {
+        "name": "Skullpeak Tyrant",
+        "title": "The Untouchable",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 800,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAYcZdMdRemeohVhZikiGiJiKjSkylJlYmjnpnBnIoSoZpRqNskADaMgnqUAA"
+    },
+    {
+        "name": "Skyforge Swordsmith",
+        "title": "The Forger",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1600,
+        "theme": "Items/Werewolf",
+        "avatar": "LG-arena-Circle_Initiate.png",
+        "deckCodeId": "SPASafaraBaHbFcMcPdIfNgyisjXnHnYoApDqFrcAGagdeePkootoVAA"
+    },
+    {
+        "name": "Slashmaster",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 720,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_3.png",
+        "deckCodeId": "SPAGfajXmGniotpgAMaXbedIfkhXiPiZkinknDprpsAA"
+    },
+    {
+        "name": "Snarecaster",
+        "title": "The Clever",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1270,
+        "theme": "Supports",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAGgyhhicimixjlAMdFegeljrltlYmpoepMpOqXrCAA"
+    },
+    {
+        "name": "Softstep",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1490,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_2.png",
+        "deckCodeId": "SPAQajdXerfigihbiiknmpmzmFmJnMoGoQqjAHaQcQeblYmDnpqAAA"
+    },
+    {
+        "name": "Soulless Knight",
+        "title": "The Victorious",
+        "attributes": [
+            "G",
+            "P"
+        ],
+        "elo": 910,
+        "theme": "Dwemer",
+        "avatar": "LG-arena-Argonian_1.png",
+        "deckCodeId": "SPANaidQeIfrfsfShbhgDdmjnaoSpUAHbSDefnkiluDfpJABnq"
+    },
+    {
+        "name": "Steelshaper",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 500,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_2.png",
+        "deckCodeId": "SPAIePhhhXjlklkupssgALbefsCkiPiZkinknDotoZprAA"
+    },
+    {
+        "name": "Stormcloak Rebellion",
+        "title": "The Runebreaker",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1800,
+        "theme": "Nords",
+        "avatar": "LG-arena-Inspiring_Stormcloak.png",
+        "deckCodeId": "SPANcMdLeDhChFkjmVpBpCqRqYqZslAHdedfiYnenYpDriABcF"
+    },
+    {
+        "name": "Stormcloak Swindler",
+        "title": "The Nimble",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1200,
+        "theme": "0-cost cards",
+        "avatar": "LG-arena-Woodelf_4.png",
+        "deckCodeId": "SPAQaOaQcvcLguhBjMkikjlXoFpBpXpZrcrKAHdQhljekRlclDpDAA"
+    },
+    {
+        "name": "Student of Winterhold",
+        "title": "College Scholar",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1500,
+        "theme": "Blink",
+        "avatar": "LG-arena-Winterhold_Illusionist.png",
+        "deckCodeId": "SPAOabaAdrdtdOeieMgwgyjcjHkhlYrTAIadaXdvihiWkbnbqmAA"
+    },
+    {
+        "name": "Summerset Sentry",
+        "title": "The Victorious",
+        "attributes": [
+            "B"
+        ],
+        "elo": 2000,
+        "theme": "Intelligence",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAEocpSqFrRAHdPdVeWfkixjHrCAEbCdIgyoe"
+    },
+    {
+        "name": "Supreme Commander",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1900,
+        "theme": "Ramp/Prophecy",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAEcdgVkhlkABrpAIeefBgnjTkylYqNrE"
+    },
+    {
+        "name": "Swiftfoot",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1700,
+        "theme": "Guard",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAEeljXqFqXANcJdIeefUgyicimiIiLjrjHnGocAA"
+    },
+    {
+        "name": "Swornsteel, the Mighty",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1100,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Highelf_2.png",
+        "deckCodeId": "SPBCadbmbRcycHcQcZdIdMdPfnfrfEglhoixiLjDjEjHjSlTmDmQocpsqFqUABnIAA"
+    },
+    {
+        "name": "Tamer of the Wild",
+        "title": "The Victorious",
+        "attributes": [
+            "G"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Goblin.png",
+        "deckCodeId": "SPAEfChKlelzANaQbretfggihBkikTlfnMCypgqwAA"
+    },
+    {
+        "name": "Terror of the North",
+        "title": "The Victorious",
+        "attributes": [
+            "R"
+        ],
+        "elo": 1400,
+        "theme": "Nord Aggro",
+        "avatar": "LG-arena-Orc_4.png",
+        "deckCodeId": "SPAHgghXiZlGlLnhrKAHbHhwiPmCmEnVrlADkRlDlN"
+    },
+    {
+        "name": "Thieves Guild Smuggler",
+        "title": "The Smuggler",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1100,
+        "theme": "Cover/Move",
+        "avatar": "LG-arena-Khajiit_4.png",
+        "deckCodeId": "SPASaOczfDfKhjhsiejWlWmDmFmJnpnJnMnQqxqGAGcNfhfikGlyqwAA"
+    },
+    {
+        "name": "Toughskin, the Brute",
+        "title": "The Skirmisher",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1000,
+        "theme": "Tempo",
+        "avatar": "LG-arena-npc-Goblins.png",
+        "deckCodeId": "SPBAazaOaRbRcXdQfTgpgJhbhAhWiaiiiJkTlelompmFmYoSoZpcqwqGACcZnIAA"
+    },
+    {
+        "name": "Twilight Sentry",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1000,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_2.png",
+        "deckCodeId": "SPAUemeofxfBfRfWgMhUikioiIjTkykSlYmZnIpQpRqUAFcxfsjrqNrQAA"
+    },
+    {
+        "name": "Vicious Scavenger",
+        "title": "The Smuggler",
+        "attributes": [
+            "R"
+        ],
+        "elo": 840,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Orc_4.png",
+        "deckCodeId": "SPACdMeTAOahbAcjfaCkiZjejSmjmInDoCoHpgAA"
+    },
+    {
+        "name": "Warden of the Sun",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1160,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPAGdMimjEnICfqXAMadcJdFegfWixizltnpocpMpQAA"
+    },
+    {
+        "name": "Watcher of the Night",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 820,
+        "theme": "Guard",
+        "avatar": "LG-arena-Imperial_1.png",
+        "deckCodeId": "SPAKavemfBfIipjTkylJnGrEAKeCgnhWiGjrjCjDnIogouAA"
+    },
+    {
+        "name": "Weathered Warrior",
+        "title": "The Golden",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_2.png",
+        "deckCodeId": "SPAUaLaRcZdXemfsfRfTgphWiIiKjClplYmZnpnBoIpzAFeognjrlFoSAA"
+    },
+    {
+        "name": "Weed Strangler",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 900,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_1.png",
+        "deckCodeId": "SPBAaQcxcZdhfafHfWgsgJhbiJiKjrkQlclelhlzlYmDnpnBoIpQqyrnACaGewAA"
+    },
+    {
+        "name": "Whispering One",
+        "title": "The Mad",
+        "attributes": [
+            "B"
+        ],
+        "elo": 1420,
+        "theme": "Wispmother",
+        "avatar": "LG-arena-Redguard_2.png",
+        "deckCodeId": "SPACkurzAOaXbCcydPfkfUgyihizjHmIoeoZrVAA"
+    },
+    {
+        "name": "Whiterun Companions",
+        "title": "Companion Initiates",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1400,
+        "theme": "Werewolves",
+        "avatar": "LG-arena-Circle_Initiate.png",
+        "deckCodeId": "SPAOafcAdbdMfvkakNlvlOmtmVnYowrIAIagdedugohwhEnhoAAA"
+    },
+    {
+        "name": "Wild Arrow",
+        "title": "The Deadly",
+        "attributes": [
+            "R",
+            "G"
+        ],
+        "elo": 1440,
+        "theme": "Wounded",
+        "avatar": "LG-arena-Woodelf_1.png",
+        "deckCodeId": "SPAIasclfvfCjykeoorNALbebUcLfTguhrhBiimGnVrlAA"
+    },
+    {
+        "name": "Wildstalker",
+        "title": "The Lightfooted",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1060,
+        "theme": "Animals",
+        "avatar": "LG-arena-Nord_4.png",
+        "deckCodeId": "SPALcjeCCklNlYmemCmGnBoICwAIahgolTmJoHpnqUCbABnD"
+    },
+    {
+        "name": "Willbreaker",
+        "title": "The Persistent",
+        "attributes": [
+            "Y"
+        ],
+        "elo": 1520,
+        "theme": "Willpower Tokens",
+        "avatar": "LG-arena-Highelf_3.png",
+        "deckCodeId": "SPAKbncxdXeDimiFlTlYnGqUAKcQerewiojPmemJmYnBpcAA"
+    },
+    {
+        "name": "Wrothgar Warlock",
+        "title": "The Creator",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1900,
+        "theme": "Ramp",
+        "avatar": "LG-arena-Orc_3.png",
+        "deckCodeId": "SPAIcdcmhqlklvlwrrrwAFgMjTlJmEnNAEbHikkyqN"
+    },
+    {
+        "name": "Young Assassin",
+        "title": "The Cunning",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 500,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_4.png",
+        "deckCodeId": "SPAWaQcHegetePfgfkfrgdgwhBhKjEkioQoZpspNqkqwqyrUAEdQixmQrnAA"
+    },
+    {
+        "name": "The Alchemist",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 700,
+        "theme": "Elixir Supports",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPABnIANaGcxcQDgcZfEfHfIfRfWhWippRABqI"
+    },
+    {
+        "name": "The Arcanist",
+        "title": "The Victorious",
+        "attributes": [
+            "B"
+        ],
+        "elo": 1260,
+        "theme": "Actions",
+        "avatar": "LG-arena-Redguard_2.png",
+        "deckCodeId": "SPAIbCgeCijHkdocCjrRALcydIdOfkfUgyCaixjEjJnZAA"
+    },
+    {
+        "name": "The Baron of Tear",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1800,
+        "theme": "Small intelligence creatures",
+        "avatar": "LG-arena-Darkelf_3.png",
+        "deckCodeId": "SPAFaXdIiRmxnuALbwbCcydPfkfLgyixjloeoOABjH"
+    },
+    {
+        "name": "The Blade of Slaughter",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 600,
+        "theme": "Imperials",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAKcxeCfBfEfHfIiLkynBpRAHDgcZewhViGjrqIACaGnI"
+    },
+    {
+        "name": "The Cunning Blade",
+        "title": "The Victorious",
+        "attributes": [
+            "B"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_4.png",
+        "deckCodeId": "SPAEcHdPglkiANaXcydMfsgwgyixjEjSmQoHpsrUAA"
+    },
+    {
+        "name": "The Collector",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1700,
+        "theme": "Pilfer",
+        "avatar": "LG-arena-Khajiit_1.png",
+        "deckCodeId": "SPACajejAObreberfWknlYmpmzmDmJnpqjqAqGAA"
+    },
+    {
+        "name": "The Dark Flayer",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 2000,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_3.png",
+        "deckCodeId": "SPADklkwpwADargyniAHdIjXmVnjnHotpr"
+    },
+    {
+        "name": "The Dark Prophet",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 700,
+        "theme": "Prophecy",
+        "avatar": "LG-arena-Highelf_4.png",
+        "deckCodeId": "SPAIcJdrewgegwjHlTlYAIgdixjCjSkimjoepsAChWoS"
+    },
+    {
+        "name": "The Defiler",
+        "title": "The Gravedigger",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 2000,
+        "theme": "Orcs",
+        "avatar": "LG-arena-Orc_2.png",
+        "deckCodeId": "SPADeQhqsfAJbybHgniPkBlLlMrYshADdDhwpw"
+    },
+    {
+        "name": "The Devoted",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1100,
+        "theme": "Health Gain",
+        "avatar": "LG-arena-Khajiit_3.png",
+        "deckCodeId": "SPAFbmdXlzmJryALaGcxcZewhAitmpmFnMoGqwABhW"
+    },
+    {
+        "name": "The Ender",
+        "title": "The Victorious",
+        "attributes": [
+            "R"
+        ],
+        "elo": 500,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Orc_2.png",
+        "deckCodeId": "SPADkNmGqMAMfrfsgoiPiZjekilDlNnDoSoZABrJ"
+    },
+    {
+        "name": "The Forged Arrow",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Redguard_3.png",
+        "deckCodeId": "SPAUcHePeWfsgdCkgIiziPjEkdkikulDlNmjmGmMnVoOAFhXixiZpsrUAA"
+    },
+    {
+        "name": "The Forged Soul",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 900,
+        "theme": "Items/Dwemer",
+        "avatar": "LG-arena-Redguard_3.png",
+        "deckCodeId": "SPAClDlGAObedIfsgIiZDckakinknDnVotoSpJAA"
+    },
+    {
+        "name": "The Great Protector",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "P"
+        ],
+        "elo": 1200,
+        "theme": "Supports",
+        "avatar": "LG-arena-Imperial_3.png",
+        "deckCodeId": "SPAEfWgVlYnGANeCfBimjrjCjTkylJnpnIpiqNrEAA"
+    },
+    {
+        "name": "The Hidden Danger",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 1560,
+        "theme": "Supports",
+        "avatar": "LG-arena-Highelf_1.png",
+        "deckCodeId": "SPAIaXbqdFdXgegwixpcALadegelfUgyicimltoepMqXAA"
+    },
+    {
+        "name": "The Honorguard",
+        "title": "The Victorious",
+        "attributes": [
+            "Y"
+        ],
+        "elo": 500,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_2.png",
+        "deckCodeId": "SPACfHoSAObAewfsfEjrjCjDjSkilTnBnIpQqIAA"
+    },
+    {
+        "name": "THe Hooded One",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 700,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Darkelf_1.png",
+        "deckCodeId": "SPAKazbCdhfkfLihiilUoCpsAKbrcydQetixmImQCqCyrnAA"
+    },
+    {
+        "name": "The Immortal",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 500,
+        "theme": "Health Gain",
+        "avatar": "LG-arena-Khajiit_2.png",
+        "deckCodeId": "SPABmFANaGcxcZeCfshbhKhWkimjmpnMoGABqw"
+    },
+    {
+        "name": "The Judge",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1300,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_1.png",
+        "deckCodeId": "SPACiFqjAObrebfhfifWgshdimkemDmJnpnMqAAA"
+    },
+    {
+        "name": "The Lifetaker",
+        "title": "The Deadly",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 700,
+        "theme": "Orcs",
+        "avatar": "LG-arena-Orc_1.png",
+        "deckCodeId": "SPAKbHcPdadDdMdUlOmGpzshAHeQhViPiZkilMpRAClNnD"
+    },
+    {
+        "name": "The Listener",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1390,
+        "theme": "Small lethal creatures",
+        "avatar": "LG-arena-Darkelf_4.png",
+        "deckCodeId": "SPAIbrbCitiyjHkenurgALcydIesfkgyjEmQoeCyqFrnAA"
+    },
+    {
+        "name": "The Mad Alchemist",
+        "title": "The Mad",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1290,
+        "theme": "Actions",
+        "avatar": "LG-arena-Darkelf_3.png",
+        "deckCodeId": "SPAGfCfLkelfmQrNAMadaQdOgyhbhBiijEjJCqqwrnAA"
+    },
+    {
+        "name": "The Many-Clawed",
+        "title": "The Victorious",
+        "attributes": [
+            "Y",
+            "G"
+        ],
+        "elo": 1300,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Khajiit_4.png",
+        "deckCodeId": "SPAIambUcQfEiijDmeoHALbrcxcZglgphlhBjrlclYCyAA"
+    },
+    {
+        "name": "The Mindslayer",
+        "title": "The Victorious",
+        "attributes": [
+            "B"
+        ],
+        "elo": 870,
+        "theme": "Summon",
+        "avatar": "LG-arena-Redguard_1.png",
+        "deckCodeId": "SPAEaXbCdIocANadcycJdPgyixjEjHjXmjmQoerUAA"
+    },
+    {
+        "name": "The Priest of Pain",
+        "title": "The Victorious",
+        "attributes": [
+            "Y"
+        ],
+        "elo": 880,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Imperial_1.png",
+        "deckCodeId": "SPAKaGDgdMfHfWgpiojPqUrpAKcQhWjClTmpmDmYoSpOpQAA"
+    },
+    {
+        "name": "The Raider",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 920,
+        "theme": "0-cost",
+        "avatar": "LG-arena-Goblin.png",
+        "deckCodeId": "SPACadetAOaQcIdQfTgyhbhljEjSlcmQnMCyqwAA"
+    },
+    {
+        "name": "The Reckoner",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1000,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Orc_1.png",
+        "deckCodeId": "SPAYdDemeTfsfvgIhqhrhVikiGjOkSlpmGnNoooCpwpRqNrEsgskADlDlFoZAA"
+    },
+    {
+        "name": "The Red Fury",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "Y"
+        ],
+        "elo": 1460,
+        "theme": "Aggro",
+        "avatar": "LG-arena-Nord_1.png",
+        "deckCodeId": "SPAHahbebyhXkQoIpcAKbHcZfxiokNlLlYmgmJnVABlD"
+    },
+    {
+        "name": "The Returned",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1040,
+        "theme": "Undead",
+        "avatar": "LG-arena-Undead.png",
+        "deckCodeId": "SPAGbedUeEfRhDjQAMdRemeohihUhXiGjTmfmZCdrxAA"
+    },
+    {
+        "name": "The Silent Skirmisher",
+        "title": "The Victorious",
+        "attributes": [
+            "G"
+        ],
+        "elo": 1700,
+        "theme": "Goblins",
+        "avatar": "LG-arena-Goblin.png",
+        "deckCodeId": "SPABqcANaQdhhbhlkIlblelflglhnMqwryABlc"
+    },
+    {
+        "name": "The Smith",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1640,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_1.png",
+        "deckCodeId": "SPAEklkwlOmUANarcldIePfkjXmgninjnHotprrHAA"
+    },
+    {
+        "name": "The Sword of the King",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "B"
+        ],
+        "elo": 1200,
+        "theme": "Items",
+        "avatar": "LG-arena-Redguard_1.png",
+        "deckCodeId": "SPAWbAcydFegfnfogIhwiPjXkjlalDlOninznVocpGpSrlrCAEfUnhnjqFAA"
+    },
+    {
+        "name": "The Tormenter",
+        "title": "The Victorious",
+        "attributes": [
+            "B",
+            "G"
+        ],
+        "elo": 1240,
+        "theme": "Shackle",
+        "avatar": "LG-arena-Darkelf_1.png",
+        "deckCodeId": "SPAHcyesfkhdjXkTrRAKaQcJCndPfrfCiimjoernABeZ"
+    },
+    {
+        "name": "The Unwavered",
+        "title": "The Victorious",
+        "attributes": [
+            "P"
+        ],
+        "elo": 1430,
+        "theme": "Dwemer/Ramp",
+        "avatar": "LG-arena-Breton_3.png",
+        "deckCodeId": "SPACfojSAOaiemfnfrfshOikiGkylJoZpGpHqNAA"
+    },
+    {
+        "name": "The Vengeful Axe",
+        "title": "The Victorious",
+        "attributes": [
+            "R",
+            "P"
+        ],
+        "elo": 1200,
+        "theme": "Orcs/Items",
+        "avatar": "LG-arena-Orc_2.png",
+        "deckCodeId": "SPBCaKbybHcjdafngogxhrhwhMhXiGiPkykBkSlLmCninVpipwpzpRrKsfshABeoAA"
+    },
+    {
+        "name": "The Wise One",
+        "title": "The victorious",
+        "attributes": [
+            "B",
+            "Y"
+        ],
+        "elo": 600,
+        "theme": "Tempo",
+        "avatar": "LG-arena-Highelf_2.png",
+        "deckCodeId": "SPAEeCjSpnqUANDbewgyipixjEkilTmpmQnIpsrUAA"
+    }
+]

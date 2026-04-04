@@ -1,0 +1,1629 @@
+<!--tesl.component.html-->
+<div class="game-wrapper">
+  <audio #musicPlayer 
+    [volume]="musicVolume" 
+    (ended)="onMusicEnded()">
+  </audio>
+  <!-- Main Menu (shown when isMainMenu = true) -->
+  <div class="main-menu" *ngIf="isMainMenu">
+    <img 
+      src="/assets/icons/icon-512x512.png" 
+      alt="Background Image" 
+      class="menu-bg"
+    >
+    <div class="menu-content">
+      <span class="game-title">TES Legends</span>
+      <button *ngIf="cheatsActive" (click)="revertCheats()" class="lock-btn">🔓</button>
+      <div class="menu-buttons">
+        <button 
+          *ngFor="let option of menuOptions"
+          class="menu-btn"
+          [class.disabled]="option.disabled"
+          (click)="option.action()"
+          [disabled]="option.disabled">
+          <!-- Icon + Text -->
+          <img 
+            *ngIf="option.icon"
+            [src]="option.icon" 
+            [alt]="option.name + ' icon'"
+            class="menu-icon"
+          >
+          <span class="menu-text">{{ option.name }}</span>
+
+          <!-- Extra info (optional) -->
+          <span 
+            *ngIf="option.info"
+            class="menu-info">
+            {{ option.info() }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Mode Treeview -->
+  <div class="story-treeview" *ngIf="!isMainMenu && !currentVideo && isStoryMode && !game.gameRunning">
+    <img 
+      src="/assets/icons/icon-512x512.png" 
+      alt="Background Image" 
+      class="menu-bg"
+    >
+    <h2>The Forgotten Hero</h2>
+    <div class="mode-toggle-grid" *ngIf="this.lastCompletedChapterIndex >= 21">
+    <div class="mode-toggle-container">
+      <button 
+        class="mode-btn cpu-btn" 
+        [class.active]="!hardMode"
+        (click)="toggleStoryDifficulty()">
+        Normal
+      </button>
+      
+      <button 
+        class="mode-btn twop-btn" 
+        [class.active]="hardMode"
+        (click)="toggleStoryDifficulty()">
+        Hard
+      </button>
+    </div>
+    </div>
+    <div class="act-list">
+      <div *ngFor="let actEntry of acts" class="act-group">
+        <div class="act-header" 
+          [ngClass]="{
+            'all-completed': getActStatus(actEntry[0]) === 'all-completed',
+            'all-locked': getActStatus(actEntry[0]) === 'all-locked'
+          }"
+          (click)="toggleAct(actEntry[0])">
+          <span>Act {{ actEntry[0] }}</span>
+          <span class="toggle-icon">{{ expandedAct === actEntry[0] ? '▼' : '▶' }}</span>
+        </div>
+
+        <div class="chapter-list" *ngIf="expandedAct === actEntry[0]">
+          <button 
+            *ngFor="let chapter of actEntry[1]; let i = index"
+            class="chapter-btn"
+            [ngClass]="chapterClass(i)"
+            [disabled]="!unlockedAll && (chapterIndex(i)+(hardMode ? 30 : 0)) > lastCompletedChapterIndex + 1"
+            (click)="startChapter(chapter)">
+            {{ chapter.name }}
+            <span class="chapter-label" *ngIf="chapter.chapter">Ch. {{ chapter.chapter }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button class="back-btn" (click)="backToMenu()">Back to Menu</button>
+    <button class="back-btn" (click)="toggleSettingsOverlay()">Deck/Settings</button>
+  </div>
+
+  <!-- Full-screen Video Overlay -->
+  <div class="video-overlay" *ngIf="currentVideo">
+    <video 
+      autoplay 
+      (ended)="onVideoEnd()" 
+      (keydown.escape)="onVideoEnd()" 
+      tabindex="0">
+      <source [src]="currentVideo" type="video/mp4">
+      Your browser does not support video.
+    </video>
+    <!-- Scrollable Dialogue Panel (only if dialogue exists) -->
+    <div class="dialogue-panel" *ngIf="currentChapter?.startDialogue || currentChapter?.endDialogue">
+      <div class="dialogue-content" [innerHTML]="currentDialogue"></div>
+    </div>
+    <div class="video-controls">
+      <button (click)="onVideoEnd()">Skip</button>
+    </div>
+  </div>
+
+<div class="staging-overlay" *ngIf="currentHintMessage">
+  <div class="staging-text">
+    {{ currentHintMessage }}
+  </div>
+</div>  
+
+<div *ngIf="!isMainMenu && showGameBoard && (game.gameRunning || !isStoryMode)" class="game-board-container"
+  [class.desktop-layout]="isDesktopMode">
+  <!-- Prophecy flash overlay -->
+  <div 
+    *ngIf="showProphecyFlash" 
+    class="prophecy-flash"
+  >
+    PROPHECY!
+  </div>
+  <div class="cpu-overlay" *ngIf="cpuThinking">
+    <div class="spinner"></div>
+    <p>Opponent is thinking...</p>
+  </div>
+  <!-- Opponent Area (top) -->
+  <div class="player-area opponent">
+    <div class="opponent-info">
+        <!-- Support count box (left) -->
+        <div class="magicka opponent-support" 
+            (click)="toggleOpponentSupportBar()"
+            [class.highlight]="showOpponent && hasAvailableSupportActivations(game)">
+            <div class="magicka-icon">
+                <img src="/assets/tesl/images/icons/icon_gray.png" draggable="false" alt="Supports" class="magicka-bg">
+                <span class="current">{{ opponentSupportCount }}</span>
+            </div>
+        </div>
+        <button *ngIf="!showOpponent"
+            class="history-btn" 
+            (click)="showHistoryModal = !showHistoryModal"
+            title="Game History">
+            📜
+        </button>
+
+        <div *ngIf="showOpponent" class="magicka" (click)="toggleMagickaOverlay()">
+            <div class="magicka-icon">
+                <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" draggable="false" alt="Magicka" class="magicka-bg">
+                <span class="current">{{ game.opponent.currentMagicka }}</span>
+            </div>
+
+            <!-- Overlay (appears when clicked) -->
+            <div class="magicka-opp-overlay" *ngIf="showMagickaOverlay">
+                <div class="overlay-content">
+                <h4>Game Status</h4>
+                <ul>
+                    <li>Round: {{ game.currentRound }}</li>
+                    <li>Turn: {{ game.currentTurn }}</li>
+                    <li>Current Magicka: {{ game.opponent.currentMagicka }}</li>
+                    <li>Max Magicka: {{ game.player.maxMagicka }}</li>
+                    <li>Opp. Max Magicka: {{ game.opponent.maxMagicka }}</li>
+                    <li>Deck: {{ playerDeckSize }} </li>
+                    <li>Opp. Deck: {{ opponentDeckSize }} </li>
+                </ul>
+                <button class="close-overlay">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero portrait (center) -->
+        <div class="hero-portrait opponent-hero"
+            [class.targetable]="isHeroTargetable(game,true)"
+            (click)="game.gameRunning ? onPlayerTargetClick(game, game.opponent) : openAvatarModal('opponent')">
+            <img [src]="oppHeroImage" 
+              draggable="false" alt="Opponent Hero">
+            <div class="health">{{ game.opponent.health }}</div>
+            <!-- Opponent runes as dots -->
+            <div class="runes-container">
+                <div *ngFor="let rune of game.opponent.runes; let i = index" 
+                    class="rune-dot" 
+                    [class.active]="rune"
+                    [class.broken]="!rune">
+                </div>
+            </div>
+            <div class="deck-attributes">
+              <img 
+                *ngFor="let attr of getDeckAttributes('opponent') || []" 
+                [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                [alt]="attr"
+                class="attr-icon"
+                draggable="false"
+              >
+            </div>
+        </div>
+
+        <button *ngIf="showOpponent" 
+            class="end-turn-btn"
+            [class.no-actions]="!hasPossibleActions(game, game.opponent)"
+            (click)="onEndTurn(game)" 
+            [disabled]="(game.gameRunning && !game.opponent.turn && !isProphecyStaging) && !cancelButtonActive">
+            {{ isSummonTargeting ? '→' : cancelButtonActive || isAttackStaging ? '✕' : game.gameRunning ? '■' : '▶'}}
+        </button>
+
+        <!-- Hand count (right of avatar) -->
+        <div class="hand-count" *ngIf="!showOpponent">
+          <div class="hand-icon">
+              <img src="/assets/tesl/images/icons/cards_in_hand.png" 
+                alt="Hand" class="hand-bg" draggable="false">
+              <span class="current">{{ opponentHandCount }}</span>
+          </div>
+        </div>
+
+        <!-- Hamburger / Settings button -->
+        <button 
+          class="settings-btn" 
+          (click)="toggleSettingsOverlay()"
+          title="Settings & Deck Selection"
+          aria-label="Open settings">
+          ☰
+        </button>
+    </div>
+    <div class="hand player-hand" *ngIf="showOpponent"
+        [attr.data-card-count]="game.opponent.hand.length"
+        [style.--total-cards]="game.opponent.hand.length"
+        [attr.hand-version]="handVersion">
+      <app-tesl-card
+        *ngFor="let card of game.opponent.hand; let i = index; trackBy: trackByHand"
+        draggable="false"
+        [card]="card"
+        class="in-hand"
+        [isOpponent]="true"
+        [attr.data-instance-id]="card.instanceId"
+        [index]="i"
+        [canPlay]="getCardHighlightState(card).playable"
+        [isStagingActive]="isSummonTargeting || cancelButtonActive"
+        [isTargetable]="getCardHighlightState(card).targetable"
+        [isSelected]="selectedCard?.instanceId === card.instanceId"
+        [style.--card-index]="i"
+        [style.--total-cards]="game.opponent.hand.length"
+        (mouseenter)="onCardHover(card)"
+        (mouseleave)="onCardLeave()"
+        (cardSelect)="onCardSelect(card)"
+        (playCard)="stageCardForPlay(game, card, game.opponent)"
+        (click)="onHandClick(game,card)"
+        (enlarge)="enlargeCard($event)"
+      ></app-tesl-card>
+    </div>
+  </div>
+
+  <!-- Board: lanes stacked top-to-bottom -->
+  <div class="board"
+    [class.desktop-layout]="isDesktopMode"
+    (click)="onBoardBackgroundClick()">
+    <!-- Field Lane (Lane 0) -->
+    <div class="lane-group">
+        <!-- Lane icon (top-left) -->
+        <div class="lane-icon">
+        <img [src]="getLaneIconImage(game.laneTypes[0])" 
+        draggable="false" alt="Shadow Lane" class="lane-icon-img"
+        (click)="showLaneHelp(0)">
+        </div>
+      <!-- Opponent's shadow lane cards -->
+      <div class="lane opponent-lane"
+        [class.targetable]="isLaneTargetable(game,0,true,false)"
+        [class.full-targetable]="isLaneTargetable(game,0,true,true)"
+        [attr.data-lane]="0"
+        (click)="finalizePlay(game,0)">
+        <app-tesl-card
+            *ngFor="let card of game.opponent.board[0]; 
+            let i = $index; track: trackById"
+          draggable="false"
+          [card]="card"
+          class="in-board"
+          [isOpponent]="true"
+          [laneIndex]="0"
+          [index]="i"
+          [attr.data-instance-id]="card.instanceId"
+          [isStagingActive]="cancelButtonActive || isAttackStaging"
+          [isAttackable]="getCardHighlightState(card).attackable"
+          [isTargetable]="getCardHighlightState(card).targetable"
+          [isSelected]="selectedCard?.instanceId === card.instanceId"
+          (mouseenter)="onCardHover(card)"
+          (mouseleave)="onCardLeave()"
+          (cardSelect)="onCardSelect(card)"
+          (attack)="stageAttack(game,$event)"      
+          (click)="onBoardCardClick(game,card, 0)"
+          (enlarge)="enlargeCard($event)"
+        ></app-tesl-card>
+
+        <div class="target-overlay" 
+            *ngIf="showOpponent && showLaneHighlights && game.laneTypes[0] !== 'Disabled'"
+            [class.valid]="!isLaneFull(game,0)"
+            [class.full]="isLaneFull(game,0)">
+            <span *ngIf="!isLaneFull(game,0)">Play Here</span>
+            <span *ngIf="isLaneFull(game,0)">Full (Sacrifice?)</span>
+        </div>
+      </div>
+
+
+      <!-- Player's shadow lane cards -->
+      <div class="lane player-lane"
+        [class.targetable]="isLaneTargetable(game,0,false,false)"
+        [class.full-targetable]="isLaneTargetable(game,0,false,true)"
+        [attr.data-lane]="2"
+        (click)="finalizePlay(game,0)">
+        <app-tesl-card
+            *ngFor="let card of game.player.board[0]; 
+            let i = $index; track: trackById"
+          draggable="false"
+          [card]="card"
+          class="in-board"
+          [isOpponent]="false"
+          [laneIndex]="0"
+          [index]="i"
+          [attr.data-instance-id]="card.instanceId"
+          [isStagingActive]="cancelButtonActive"
+          [isAttackable]="getCardHighlightState(card).attackable"
+          [isTargetable]="getCardHighlightState(card).targetable"
+          [isSelected]="selectedCard?.instanceId === card.instanceId"
+          (mouseenter)="onCardHover(card)"
+          (mouseleave)="onCardLeave()"
+          (cardSelect)="onCardSelect(card)"
+          (attack)="stageAttack(game,$event)"               
+          (click)="onBoardCardClick(game,card, 0)"
+          (enlarge)="enlargeCard($event)"
+        ></app-tesl-card>
+
+        <!-- NEW: Target overlay -->
+        <div class="target-overlay" 
+            *ngIf="!showOpponent && showLaneHighlights && game.laneTypes[0] !== 'Disabled'"
+            [class.valid]="!isLaneFull(game,0)"
+            [class.full]="isLaneFull(game,0)">
+            <span *ngIf="!isLaneFull(game,0)">Play Here</span>
+            <span *ngIf="isLaneFull(game,0)">Full (Sacrifice?)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shadow Lane (Lane 1) -->
+    <div class="lane-group">
+        <!-- Lane icon (top-left) -->
+        <div class="lane-icon">
+        <img [src]="getLaneIconImage(game.laneTypes[1])" 
+        draggable="false" alt="Regular Lane" class="lane-icon-img"
+        (click)="showLaneHelp(1)">
+        </div>
+      <!-- Opponent's regular lane cards -->
+      <div class="lane opponent-lane"
+        [class.targetable]="isLaneTargetable(game,1,true,false)"
+        [class.full-targetable]="isLaneTargetable(game,1,true,true)"
+        [attr.data-lane]="1"
+        (click)="finalizePlay(game,1)">
+        <app-tesl-card
+            *ngFor="let card of game.opponent.board[1]; 
+            let i = $index; track: trackById"
+          draggable="false"
+          [card]="card"
+          class="in-board"
+          [isOpponent]="true"
+          [laneIndex]="1"
+          [index]="i"
+          [attr.data-instance-id]="card.instanceId"
+          [isStagingActive]="cancelButtonActive || isAttackStaging"
+          [isAttackable]="getCardHighlightState(card).attackable"
+          [isTargetable]="getCardHighlightState(card).targetable"
+          [isSelected]="selectedCard?.instanceId === card.instanceId"
+          (mouseenter)="onCardHover(card)"
+          (mouseleave)="onCardLeave()"
+          (cardSelect)="onCardSelect(card)"
+          (attack)="stageAttack(game,$event)"      
+          (click)="onBoardCardClick(game,card, 1)"
+          (enlarge)="enlargeCard($event)"
+        ></app-tesl-card>
+        <div class="target-overlay" 
+            *ngIf="showOpponent && showLaneHighlights && game.laneTypes[1] !== 'Disabled'"
+            [class.valid]="!isLaneFull(game,1)"
+            [class.full]="isLaneFull(game,1)">
+            <span *ngIf="!isLaneFull(game,1)">Play Here</span>
+            <span *ngIf="isLaneFull(game,1)">Full (Sacrifice?)</span>
+        </div>
+      </div>
+
+
+      <!-- Player's regular lane cards -->
+      <div class="lane player-lane"
+        [class.targetable]="isLaneTargetable(game,1,false,false)"
+        [class.full-targetable]="isLaneTargetable(game,1,false,true)"
+        [attr.data-lane]="3"
+        (click)="finalizePlay(game,1)">
+        <app-tesl-card
+            *ngFor="let card of game.player.board[1]; 
+            let i = $index; track: trackById"
+          draggable="false"
+          [card]="card"
+          class="in-board"
+          [isOpponent]="false"
+          [laneIndex]="1"
+          [index]="i"
+          [attr.data-instance-id]="card.instanceId"
+          [isStagingActive]="cancelButtonActive"
+          [isAttackable]="getCardHighlightState(card).attackable"
+          [isSelected]="selectedCard?.instanceId === card.instanceId"
+          [isTargetable]="getCardHighlightState(card).targetable"
+          (mouseenter)="onCardHover(card)"
+          (mouseleave)="onCardLeave()"
+          (cardSelect)="onCardSelect(card)"
+          (attack)="stageAttack(game,$event)"               
+          (click)="onBoardCardClick(game,card, 1)"
+          (enlarge)="enlargeCard($event)"
+        ></app-tesl-card>
+        <!-- NEW: Target overlay -->
+        <div class="target-overlay" 
+            *ngIf="showLaneHighlights && game.laneTypes[1] !== 'Disabled'"
+            [class.valid]="!isLaneFull(game,1)"
+            [class.full]="isLaneFull(game,1)">
+            <span *ngIf="!isLaneFull(game,1)">Play Here</span>
+            <span *ngIf="isLaneFull(game,1)">Full (Sacrifice?)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Player Area (bottom) -->
+  <div class="player-area player">
+
+    <!-- Support bar overlay for opponent -->
+    <div class="support-bar-overlay" *ngIf="showOpponentSupportBar">
+        <div class="support-bar">
+        Supports
+        <button class="close-btn" (click)="toggleOpponentSupportBar()">×</button>
+        <div class="support-cards">
+            <app-tesl-card
+            *ngFor="let card of game.opponent.support; let i = index; trackBy: trackById"
+            draggable="false"
+            [card]="card"
+            class="in-board"
+            [isOpponent]="true"
+            [attr.data-instance-id]="card.instanceId"
+            [isStagingActive]="isSummonTargeting || cancelButtonActive"
+            [isActivatable]="getCardHighlightState(card).activatable"
+            [isSelected]="selectedCard?.instanceId === card.instanceId"
+            [isTargetable]="getCardHighlightState(card).targetable"
+            (mouseenter)="onCardHover(card)"
+            (mouseleave)="onCardLeave()"
+            (activateSupport)="stageSupportActivation(game,card)"
+            (cardSelect)="onCardSelect(card)"
+            (click)="onSupportBarClick(game,card)"
+            (enlarge)="enlargeCard($event)"
+            ></app-tesl-card>
+        </div>
+        <!--
+            (click)="onSupportBarClick(card)"-->
+            <div class="ring-tooltip" *ngIf="hasRingOfMagicka(game,'opponent')">
+                Second player starts with Ring of Magicka (+1 magicka per turn)
+            </div>
+        </div>
+    </div>
+    <!-- Support bar overlay for player -->
+    <div class="support-bar-overlay" *ngIf="showPlayerSupportBar">
+      <div class="support-bar">
+        Supports
+        <button class="close-btn" (click)="togglePlayerSupportBar()">×</button>
+        <div class="support-cards">
+          <app-tesl-card
+            *ngFor="let card of game.player.support; let i = index; trackBy: trackById"
+            draggable="false"
+            [card]="card"
+            class="in-board"
+            [index]="i"
+            [isOpponent]="false"
+            [attr.data-instance-id]="card.instanceId"
+            [isStagingActive]="isSummonTargeting || cancelButtonActive"
+            [isActivatable]="getCardHighlightState(card).activatable"
+            [isSelected]="selectedCard?.instanceId === card.instanceId"
+            [isTargetable]="getCardHighlightState(card).targetable"
+            (mouseenter)="onCardHover(card)"
+            (mouseleave)="onCardLeave()"
+            (activateSupport)="stageSupportActivation(game,card)"
+            (cardSelect)="onCardSelect(card)"
+            (click)="onSupportBarClick(game,card)"
+            (enlarge)="enlargeCard($event)"
+          ></app-tesl-card>
+        </div>
+        <div class="ring-tooltip" *ngIf="hasRingOfMagicka(game,'player')">
+            Second player starts with Ring of Magicka (+1 magicka per turn)
+        </div>
+      </div>
+    </div>
+
+    <div class="hand player-hand" *ngIf="!showOpponent"
+        [attr.data-card-count]="game.player.hand.length"
+        [style.--total-cards]="game.player.hand.length"
+        [attr.hand-version]="handVersion">
+      <app-tesl-card
+        *ngFor="let card of game.player.hand; let i = index; trackBy: trackByHand"
+        draggable="false"
+        [card]="card"
+        class="in-hand"
+        [isOpponent]="false"
+        [index]="i"
+        [attr.data-instance-id]="card.instanceId"
+        [canPlay]="getCardHighlightState(card).playable"
+        [isTargetable]="isHandTargetable(game,card)"
+        [isStagingActive]="isSummonTargeting || cancelButtonActive"
+        [isSelected]="selectedCard?.instanceId === card.instanceId"
+        [style.--card-index]="i"
+        [style.--total-cards]="game.player.hand.length"
+        (mouseenter)="onCardHover(card)"
+        (mouseleave)="onCardLeave()"
+        (cardSelect)="onCardSelect(card)"
+        (playCard)="stageCardForPlay(game, card, game.player)"
+        (click)="onHandClick(game,card)"
+        (enlarge)="enlargeCard($event)"
+      ></app-tesl-card>
+    </div>
+
+    <div class="player-info">
+      <div class="player-row">
+        <!-- Support count box (left) -->
+        <div class="magicka player-support" 
+            (click)="togglePlayerSupportBar()"
+            [class.highlight]="!showOpponent && hasAvailableSupportActivations(game)">
+            <!--<span class="support-icon">🛡️</span>
+            <span class="support-count">{{ playerSupportCount }}</span>-->
+            <div class="magicka-icon">
+                <img src="/assets/tesl/images/icons/icon_gray.png" draggable="false" alt="Supports" class="magicka-bg">
+                <span class="current">{{ playerSupportCount }}</span>
+            </div>
+        </div>
+
+        <button *ngIf="showOpponent"
+            class="history-btn" 
+            (click)="showHistoryModal = !showHistoryModal"
+            title="Game History">
+            📜
+        </button>
+        <div *ngIf="!showOpponent" class="magicka" (click)="toggleMagickaOverlay()">
+            <div class="magicka-icon">
+                <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" draggable="false" alt="Magicka" class="magicka-bg">
+                <span class="current">{{ game.player.currentMagicka }}</span>
+            </div>
+
+            <!-- Overlay (appears when clicked) -->
+            <div class="magicka-overlay" *ngIf="showMagickaOverlay">
+                <div class="overlay-content">
+                <h4>Game Status</h4>
+                <ul>
+                    <li>Round: {{ game.currentRound }}</li>
+                    <li>Turn: {{ game.currentTurn }}</li>
+                    <li>Current Magicka: {{ game.player.currentMagicka }}</li>
+                    <li>Max Magicka: {{ game.player.maxMagicka }}</li>
+                    <li>Opp. Max Magicka: {{ game.opponent.maxMagicka }}</li>
+                    <li>Deck: {{ playerDeckSize }} </li>
+                    <li>Opp. Deck: {{ opponentDeckSize }} </li>
+                </ul>
+                <button class="close-overlay">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="hero-portrait player-hero"
+            [class.targetable]="isHeroTargetable(game,false)"
+            (click)="game.gameRunning ? onPlayerTargetClick(game,game.player) : openAvatarModal('player')">
+            <img [src]="userHeroImage" draggable="false" alt="Your Hero">
+            <div class="health">{{ game.player.health }}</div>
+            <!-- Player runes as dots -->
+            <div class="runes-container">
+                <div *ngFor="let rune of game.player.runes; let i = index" 
+                    class="rune-dot" 
+                    [class.active]="rune"
+                    [class.broken]="!rune">
+                </div>
+            </div>
+            <div class="deck-attributes">
+              <img 
+                *ngFor="let attr of getDeckAttributes('player') || []" 
+                [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                [alt]="attr"
+                class="attr-icon"
+                draggable="false"
+              >
+            </div>
+        </div>
+
+
+        <button *ngIf="!showOpponent" 
+            class="end-turn-btn"
+            [class.no-actions]="!hasPossibleActions(game,game.player)"
+            (click)="onEndTurn(game)" 
+            [disabled]="(game.gameRunning && !game.player.turn && !isProphecyStaging) && !cancelButtonActive">
+            {{ isSummonTargeting ? '→' : cancelButtonActive || isAttackStaging ? '✕' : game.gameRunning ? '■' : '▶'}}
+        </button>
+
+        <!-- Hand count (right of avatar) -->
+        <div class="hand-count" *ngIf="showOpponent">
+          <div class="hand-icon">
+              <img src="/assets/tesl/images/icons/cards_in_hand.png" 
+                alt="Hand" class="hand-bg" draggable="false">
+              <span class="current">{{ playerHandCount }}</span>
+          </div>
+        </div>
+
+        <div class="discard-box player" (click)="openDiscard()">
+            <span class="discard-icon">💀</span>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- Burn hint (floating text) -->
+  <div 
+    *ngIf="burnHintVisible && currentBurnMessage"
+    class="burn-hint"
+    [ngClass]="{
+      'top-center': currentBurnIsOpponent,
+      'bottom-center': !currentBurnIsOpponent
+    }">
+    <div class="burn-content">
+      <!-- Card preview (small image) -->
+      <img *ngIf="lastBurnedCard"
+          [src]="getCardImage(lastBurnedCard)"
+          alt="{{ lastBurnedCard.name }}"
+          class="burn-card-preview"
+          draggable="false">
+
+      <!-- Text -->
+      <span class="burn-text">{{ currentBurnMessage }}</span>
+    </div>
+  </div>
+<!-- Full-size card modal -->
+<div class="modal" *ngIf="enlargedCard">
+  <div class="modal-content">
+
+    <!-- Attack button: only show for player's non-exhausted creature when it's their turn -->
+    <div class="card-actions-left" *ngIf="canAttack(game,enlargedCard)">
+      <button class="attack-btn" (click)="stageAttack(game,enlargedCard)">
+        Attack
+      </button>
+    </div>
+
+    <!-- Add activation button when applicable -->
+    <div class="support-actions" *ngIf="canActivate(game,enlargedCard)">
+    <button class="attack-btn" (click)="stageSupportActivation(game,enlargedCard)">Activate</button>
+    </div>
+    
+
+    <!-- Play button - LEFT SIDE -->
+    <div class="modal-actions-left" *ngIf="canPlayCard(game,enlargedCard, game.player.turn? game.player : game.opponent)">
+      <button class="play-btn" (click)="playCardFromModal(enlargedCard)">
+        Play 
+      </button>
+      <!--({{ player.currentMagicka - enlargedCard.cost >= 0 ? player.currentMagicka - enlargedCard.cost : 'X' }} left)-->
+    </div>
+
+    <img [src]="enlargedCardImage" draggable="false" alt="Enlarged image">
+
+    <!-- Keywords & Mechanics -->
+    <div class="card-info-panel">
+      <!-- Attached Items -->
+      <div class="attached-items-section" *ngIf="enlargedCard.attachedItems?.length">
+        <strong>Attached Items:</strong>
+        <div class="item-list" *ngFor="let item of enlargedCard.attachedItems">
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-text" *ngIf="item.text">
+            {{ item.text }}
+          </div>
+        </div>
+      </div>
+      <div class="keywords" *ngIf="enlargedCard.currentKeywords && enlargedCard.currentKeywords.length > 0">
+        <strong>Keywords:</strong>
+        {{ enlargedCard.currentKeywords.join(', ') }}
+      </div>
+      <div class="keywords" *ngIf="enlargedCard.maxHealth ?? 0 > 0">
+        <strong>Stats:</strong> Attack: 
+        {{ enlargedCard.currentAttack }}, Health: 
+        {{ enlargedCard.currentHealth }}, Max.Health: 
+        {{ enlargedCard.maxHealth }}
+      </div>
+      <div class="text" *ngIf="enlargedCard.text">
+        <strong>Text:</strong> {{ enlargedCard.text }}
+      </div>
+    </div>
+
+    <button class="close-btn" (click)="closeModal()">X</button>
+  </div>
+  
+</div>
+<!-- Mulligan modal (shown at game start) -->
+<div class="mulligan-modal" *ngIf="mulliganActive">
+    <div class="mulligan-content">
+
+        <!-- New: Who goes first/second -->
+        <div *ngIf="!game.cpuPlaying && mulliganPhase === 'first'" class="turn-order-info">
+            <h2 *ngIf="game.firstPlayer === 'player'" class="first-player">
+                BotPlayer (1ST)
+            </h2>
+            <h2 *ngIf="game.firstPlayer === 'opponent'" class="second-player">
+                BotPlayer (2ND)
+            </h2>
+        </div>
+        <div *ngIf="!game.cpuPlaying && mulliganPhase === 'second'" class="turn-order-info">
+            <h2 *ngIf="game.firstPlayer === 'player'" class="first-player">
+                TopPlayer (2ND)
+            </h2>
+            <h2 *ngIf="game.firstPlayer === 'opponent'" class="second-player">
+                TopPlayer (1ST)
+            </h2>
+        </div>
+        <div *ngIf="game.cpuPlaying" class="turn-order-info">
+            <h2 *ngIf="game.firstPlayer === 'player'" class="first-player">
+                Mulligan (1ST)
+            </h2>
+            <h2 *ngIf="game.firstPlayer === 'opponent'" class="second-player">
+                Mulligan (2ND)
+            </h2>
+        </div>
+
+        <!--<h3>Mulligan</h3>-->
+        <!--<p>Choose cards to return to your deck (red X = return)</p>-->
+
+        <div class="mulligan-cards">
+            <div class="mulligan-card-wrapper" *ngFor="let card of mulliganCards">
+                <div class="mulligan-card"
+                    [class.to-return]="mulliganToReturn.has(card.instanceId!)"
+                    (click)="mulliganToggle(card)">
+                <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}" />
+                <div class="red-x" *ngIf="mulliganToReturn.has(card.instanceId!)">✖</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="continue-btn" (click)="completeMulligan(game)">
+        Continue
+        </button>
+    </div>
+</div>
+
+<!-- Prophecy offer popup -->
+<div class="prophecy-modal" *ngIf="isProphecyStaging && !isTargeting && !isSummonTargeting && game.stagedProphecy">
+    <div class="prophecy-content">
+        <h3>Prophecy!</h3>
+        <div class="prophecy-cards">
+            <img [src]="prophecyCardImage" draggable="false" alt="Enlarged image" 
+                (click)="playProphecyCard(game,game.stagedProphecy)">
+        </div>
+        <button (click)="skipProphecy(game)">Skip</button>
+    </div>
+</div>
+
+<!-- Choice Modal -->
+<div class="choice-modal" *ngIf="showChoiceModal">
+  <div class="choice-content">
+    <h3>Choose an effect</h3>
+    
+    <div class="choice-options">
+      <button 
+        *ngFor="let option of currentChoiceOptions; let i = index"
+        class="choice-btn"
+        [class.selected]="selectedChoiceIndex === i"
+        (click)="selectChoice(i)">
+        {{ option.text }}
+      </button>
+    </div>
+
+    <!-- Confirm / Cancel -->
+    <div class="choice-actions">
+      <button 
+        class="confirm-btn"
+        [disabled]="selectedChoiceIndex === null"
+        (click)="confirmChoice(game)">
+        Confirm
+      </button>
+      <button class="cancel-btn" (click)="cancelChoice()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reveal Overlay -->
+<div class="reveal-overlay" *ngIf="showRevealOverlay">
+  <div class="reveal-content">
+    
+    <!-- Title -->
+    <div class="reveal-title">{{ revealTitle }}</div>
+    
+    <!-- Action prompt -->
+    <div class="reveal-action" *ngIf="revealAction">
+      {{ revealAction }}
+    </div>
+
+    <div class="mulligan-cards">
+      <div class="mulligan-card-wrapper" *ngFor="let card of revealCards; let i = index">
+          <div class="mulligan-card"
+              (click)="revealCallback && revealCallback(i)">
+          <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}" />
+          </div>
+      </div>
+  </div>
+
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="history-modal" *ngIf="showHistoryModal">
+  <div class="history-modal-content">
+    <div class="modal-header">
+      <h3>Game History</h3>
+      <button class="close-btn" (click)="showHistoryModal = false">×</button>
+    </div>
+
+    <div class="history-list">
+      <div *ngFor="let turn of groupedHistory; let i = index" class="history-turn">
+        <!-- Turn header - clickable to expand/collapse -->
+        <div 
+          class="turn-header"
+          (click)="toggleTurnExpansion(i)"
+        >
+          <span class="turn-title">
+            Turn {{ turn.turnNumber }} 
+            <small>({{ (turn.turnNumber % 2 === 1)
+              ? (game.firstPlayer === 'player' ? (game.cpuPlaying ? 'You' : 'Bottom') : (game.cpuPlaying ? 'Opponent' : 'Top'))
+              : (game.firstPlayer === 'player' ? (game.cpuPlaying ? 'Opponent' : 'Top') : (game.cpuPlaying ? 'You' : 'Bottom')) }})</small>
+          </span>
+          <span class="toggle-icon">
+            {{ turn.isExpanded ? '▼' : '▶' }}
+          </span>
+        </div>
+
+        <!-- Expanded content -->
+        <div class="turn-entries" *ngIf="turn.isExpanded">
+            <div *ngFor="let entry of turn.entries">
+                <div class="history-entry">
+                    <span class="entry-type">[{{ entry.actionType }}]</span>
+                    <span class="entry-desc">{{ entry.description }}</span>
+                </div>
+
+                <div class="entry-details" *ngIf="entry.details?.length">
+                    <ul>
+                    <li *ngFor="let detail of entry.details">{{ detail }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      </div>  
+
+      <div class="no-history" *ngIf="game.history.length === 0">
+        No actions recorded yet.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hand Modal -->
+<div class="discard-modal" *ngIf="showHandModal">
+  <div class="discard-modal-content">
+    <div class="modal-header">
+      <span class="title" *ngIf="!handReveal">Hand</span>
+      <div class="view-toggle" *ngIf="handReveal">
+        <button 
+          class="view-btn" 
+          [class.active]="handView === 'player'"
+          (click)="switchHandView('player')"
+        >
+          You ({{ game.player.hand.length }})
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="handView === 'opponent'"
+          (click)="switchHandView('opponent')"
+        >
+          Opp ({{ game.opponent.hand.length }})
+        </button>
+      </div>
+      <button class="close-btn" (click)="closeHandModal()">×</button>
+    </div>
+
+    <div class="hand-grid" *ngIf="handView === 'player'"
+        [attr.hand-version]="handVersion">
+      <app-tesl-card
+        *ngFor="let card of game.player.hand; let i = index; trackBy: trackByHand"
+        draggable="false"
+        [card]="card"
+        class="big-hand"
+        [isOpponent]="false"
+        [index]="i"
+        [attr.data-instance-id]="card.instanceId"
+        [canPlay]="getCardHighlightState(card).playable"
+        [isStagingActive]="isSummonTargeting || cancelButtonActive"
+        [isSelected]="selectedCard?.instanceId === card.instanceId"
+        (mouseenter)="onCardHover(card)"
+        (mouseleave)="onCardLeave()"
+        (cardSelect)="onCardSelect(card)"
+        (playCard)="stageCardForPlay(game, card, game.player)"
+        (click)="onHandClick(game,card)"
+        (enlarge)="enlargeCard($event)"
+      ></app-tesl-card>
+    </div>
+    <div class="hand-grid" *ngIf="handView === 'opponent'"
+        [attr.hand-version]="handVersion">
+      <app-tesl-card
+        *ngFor="let card of game.opponent.hand; let i = index; trackBy: trackByHand"
+        draggable="false"
+        [card]="card"
+        class="big-hand"
+        [isOpponent]="true"
+        [index]="i"
+        [attr.data-instance-id]="card.instanceId"
+        [canPlay]="getCardHighlightState(card).playable"
+        [isStagingActive]="isSummonTargeting || cancelButtonActive"
+        [isSelected]="selectedCard?.instanceId === card.instanceId"
+        (mouseenter)="onCardHover(card)"
+        (mouseleave)="onCardLeave()"
+        (cardSelect)="onCardSelect(card)"
+        (playCard)="stageCardForPlay(game, card, game.opponent)"
+        (click)="onHandClick(game,card)"
+        (enlarge)="enlargeCard($event)"
+      ></app-tesl-card>
+    </div>
+
+    <div class="no-cards" *ngIf="(showOpponent ? game.opponent.hand : game.player.hand).length === 0">
+      Empty hand
+    </div>
+  </div>
+</div>
+
+<!-- Discard Modal -->
+<div class="discard-modal" *ngIf="showDiscardModal">
+  <div class="discard-modal-content">
+    <div class="modal-header">
+      <!-- Toggle buttons instead of h3 -->
+      <div class="view-toggle">
+        <button 
+          class="view-btn" 
+          [class.active]="discardView === 'player'"
+          (click)="switchDiscardView('player')"
+        >
+          You ({{ game.player.discard.length }})
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="discardView === 'opponent'"
+          (click)="switchDiscardView('opponent')"
+        >
+          Opp ({{ game.opponent.discard.length }})
+        </button>
+      </div>
+      <button class="close-btn" (click)="closeDiscardModal()">×</button>
+    </div>
+
+    <div class="discard-grid">
+      <app-tesl-card
+        *ngFor="let card of (discardView === 'player' ? game.player.discard : game.opponent.discard); let i = index; trackBy: trackById"
+        draggable="false"
+        [card]="card"
+        class="in-discard"
+        [isOpponent]="discardView === 'opponent'"
+        [isGraveyard]="true"
+        (enlarge)="enlargeCard(card)"
+      ></app-tesl-card>
+    </div>
+
+    <div class="no-cards" *ngIf="(discardView === 'player' ? game.player.discard : game.opponent.discard).length === 0">
+      Empty discard pile
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- Avatar Selection Modal -->
+<div class="avatar-modal-backdrop" *ngIf="showAvatarModal" (click)="closeAvatarModal()">
+  <div class="avatar-modal-content" (click)="$event.stopPropagation()">
+    <h2>Select Avatar for {{ avatarModalFor === 'player' ? 'You' : 'Opponent' }}</h2>
+    
+    <div class="avatar-grid">
+      <div 
+        class="avatar-item" 
+        *ngFor="let avatar of availableAvatars"
+        (click)="selectAvatar(avatar)">
+        <img [src]="avatar" draggable="false" alt="Avatar">
+      </div>
+    </div>
+
+    <button class="close-avatar-btn" (click)="closeAvatarModal()">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Resume Game Modal -->
+<div class="resume-modal-backdrop" *ngIf="showResumeModal">
+  <div class="resume-modal-content" (click)="$event.stopPropagation()">
+    <h1>Resume Game?</h1>
+    <p>Continue from <strong>Turn {{ resumeTurnNumber }}</strong>?</p>
+    
+    <div class="resume-buttons">
+      <button class="resume-btn" (click)="resumeSavedGame(game)">
+        Resume
+      </button>
+      <button class="new-game-btn" (click)="concede()">
+        Concede
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="help-modal-backdrop" *ngIf="isHelpVisible" (click)="closeHelpModal()">
+  <div class="help-modal-content" (click)="$event.stopPropagation()">
+    <button class="help-close-btn" (click)="closeHelpModal()">×</button>
+
+    <h2>{{ currentHelpRule.title }}</h2>
+
+    <div class="help-content" [innerHTML]="currentHelpRule.content"></div>
+
+    <div class="navigation">
+      <button 
+        class="help-nav-btn prev" 
+        [disabled]="isFirstHelpStep" 
+        (click)="previousPage()">
+        Previous
+      </button>
+
+      <div class="help-dots">
+        <span 
+          *ngFor="let rule of helpRules; let i = index"
+          [class.active]="i === currentHelpStep">
+        </span>
+      </div>
+
+      <button 
+        class="help-nav-btn next" 
+        (click)="isLastHelpStep ? closeHelpModal() : nextPage()">
+        {{ isLastHelpStep ? 'Got it!' : 'Next' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Game Over Modal -->
+<div class="game-over-modal" *ngIf="gameOverVisible">
+  <div class="game-over-modal-content">
+    <h1>{{ gameOverTitle }}</h1>
+    <p>{{ gameOverMessage }}</p>
+    
+    <button class="game-over-okay-btn" (click)="dismissGameOver()">
+      Okay
+    </button>
+  </div>
+</div>
+
+<div class="game-over-modal" *ngIf="unlockOverlayVisible">
+  <div class="game-over-modal-content">
+    <h1>Deck Unlocked</h1>
+    <p>{{ unlockOverlayMessage }}</p>
+    
+    <button class="game-over-okay-btn" (click)="dismissUnlock()">
+      Okay
+    </button>
+  </div>
+</div>
+
+<!-- Settings Overlay -->
+<div class="settings-overlay" *ngIf="showSettingsOverlay">
+  <div class="settings-content">
+    <div class="settings-modal-header">
+      <h3>Game Setup</h3>
+      <button class="settings-close-btn" (click)="toggleSettingsOverlay()">×</button>
+    </div>    
+
+
+    <!-- Replace the old button -->
+    <div class="mode-toggle-grid">
+    <div class="mode-toggle-container">
+      <button 
+        class="mode-btn cpu-btn" 
+        [class.active]="!isDesktopMode"
+        (click)="toggleDesktopMode()">
+        📱
+      </button>
+      
+      <button 
+        class="mode-btn twop-btn" 
+        [class.active]="isDesktopMode"
+        (click)="toggleDesktopMode()">
+        🖥️
+      </button>
+    </div>
+    <div class="mode-toggle-container">
+      <button 
+        class="mode-btn cpu-btn" 
+        [class.active]="audioEnabled"
+        (click)="toggleAudio()">
+        🔊
+      </button>
+      
+      <button 
+        class="mode-btn twop-btn" 
+        [class.active]="!audioEnabled"
+        (click)="toggleAudio()">
+        🔇
+      </button>
+    </div>
+    <div *ngIf="!showOpponent" class="mode-toggle-container">
+      <button 
+        class="mode-btn cpu-btn" 
+        [class.active]="cpuTogglePlaying"
+        (click)="toggleCPU()">
+        CPU
+      </button>
+      
+      <button 
+        class="mode-btn twop-btn" 
+        [class.active]="!cpuTogglePlaying"
+        (click)="toggleCPU()">
+        2P
+      </button>
+    </div>
+    <div class="mode-toggle-container">
+      <button 
+        class="mode-btn cpu-btn" 
+        [class.active]="animationsEnabled"
+        (click)="toggleAnimations()">
+        🎬
+      </button>
+      
+      <button 
+        class="mode-btn twop-btn" 
+        [class.active]="!animationsEnabled"
+        (click)="toggleAnimations()">
+        🚫🎬
+      </button>
+    </div>
+    </div>
+
+    <div *ngIf="!isMainMenu && !game.gameRunning && !isStoryMode" class="testing-section">
+      <h4>Handicap</h4>
+      <label class="settings-label">
+        Magicka
+        <select [(ngModel)]="oppHandicapMagicka" class="test-input">
+          <option *ngFor="let value of handicapOptions" [ngValue]="value">
+            {{ value }}
+          </option>
+        </select>
+      </label>
+      <label class="settings-label">
+        Cards
+        <select [(ngModel)]="oppHandicapCards" class="test-input">
+          <option *ngFor="let value of handicapOptions" [ngValue]="value">
+            {{ value }}
+          </option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Deck Selection -->
+    <!-- Deck Selection -->
+
+    <!-- Deck Selection -->
+    <div class="deck-selection">
+      <!-- Top / Opponent Deck -->
+      <div class="deck-section" *ngIf="!isStoryMode">
+        <h4>{{ cpuTogglePlaying ? 'Opponent' : 'Top' }} Deck</h4>
+
+        <!-- Compact view (always visible when collapsed) -->
+        <div class="deck-option active" 
+            [class.expanded]="expandedDeckSide === 'opponent'"
+            (click)="toggleDeckSelector('opponent')">
+          <div class="deck-icons">
+            <img *ngFor="let attr of selectedOpponentDeck?.attributes || []"
+                [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                [alt]="attr"
+                class="deck-icon"
+                draggable="false">
+          </div>
+          <span class="deck-name">
+            {{ selectedOpponentDeck?.name || 'Select Deck' }}
+          </span>
+          <span class="expand-icon" *ngIf="!game.gameRunning">
+            {{ expandedDeckSide === 'opponent' ? '▲' : '▼' }}
+          </span>
+        </div>
+
+        <!-- Expanded view (only when tapped and game not running) -->
+        <div class="expanded-content" *ngIf="expandedDeckSide === 'opponent' && !game.gameRunning">
+          <div class="deck-mode-tabs">
+            <button 
+              *ngFor="let mode of availableModes"
+              [class.active]="opponentDeckMode === mode.toLowerCase()"
+              (click)="opponentDeckMode = mode.toLowerCase()">
+              {{ mode }}
+            </button>
+          </div>
+
+          <!-- Deck list based on mode -->
+          <div class="deck-list">
+            <ng-container [ngSwitch]="opponentDeckMode">
+              <ng-container *ngSwitchCase="'starter'">
+                <div class="deck-option" 
+                    *ngFor="let deck of starterDecks; let i = index"
+                    [class.active]="selectedOpponentDeck === deck"
+                    [class.locked]="!unlockedAll && deck.locked && !isExhibitionMode"
+                    (click)="selectDeck('opponent', 'starter', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'random'">
+                <div class="deck-option" 
+                    *ngFor="let deck of randomDeckOptions; let i = index"
+                    [class.active]="selectedOpponentDeck?.class === deck.class"
+                    (click)="selectDeck('opponent', 'random', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'npc'">
+                <div class="deck-option" 
+                    *ngFor="let deck of npcDecks; let i = index"
+                    [class.active]="selectedOpponentDeck === deck"
+                    (click)="selectDeck('opponent', 'npc', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'arena'">
+                <div class="deck-option" 
+                    *ngFor="let deck of arenaOpponents; let i = index"
+                    [class.active]="selectedOpponentDeck === deck"
+                    (click)="selectDeck('opponent', 'arena', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'custom'">
+                <div class="deck-option" 
+                    *ngFor="let deck of customDecks; let i = index"
+                    [class.active]="selectedOpponentDeck === deck"
+                    (click)="selectDeck('opponent', 'custom', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom / Player Deck (mirror the structure above) -->
+      <div class="deck-section">
+        <h4>{{ cpuTogglePlaying ? 'Player' : 'Bottom' }} Deck</h4>
+
+        <!-- Compact view (always visible when collapsed) -->
+        <div class="deck-option active" 
+            [class.expanded]="expandedDeckSide === 'player'"
+            (click)="toggleDeckSelector('player')">
+          <div class="deck-icons">
+            <img *ngFor="let attr of selectedPlayerDeck?.attributes || []"
+                [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                [alt]="attr"
+                class="deck-icon"
+                draggable="false">
+          </div>
+          <span class="deck-name">
+            {{ selectedPlayerDeck?.name || 'Select Deck' }}
+          </span>
+          <span class="expand-icon" *ngIf="!game.gameRunning">
+            {{ expandedDeckSide === 'player' ? '▲' : '▼' }}
+          </span>
+        </div>
+
+        <!-- Expanded view (only when tapped and game not running) -->
+        <div class="expanded-content" *ngIf="expandedDeckSide === 'player' && !game.gameRunning">
+          <div class="deck-mode-tabs">
+            <button 
+              *ngFor="let mode of availableModes"
+              [class.active]="playerDeckMode === mode.toLowerCase()"
+              (click)="playerDeckMode = mode.toLowerCase()">
+              {{ mode }}
+            </button>
+          </div>
+
+          <!-- Deck list based on mode -->
+          <div class="deck-list">
+            <ng-container [ngSwitch]="playerDeckMode">
+              <ng-container *ngSwitchCase="'starter'">
+                <div class="deck-option" 
+                    *ngFor="let deck of starterDecks; let i = index"
+                    [class.active]="selectedPlayerDeck === deck"
+                    [class.locked]="!unlockedAll && deck.locked && !isExhibitionMode"
+                    (click)="selectDeck('player', 'starter', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }}   
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'random'">
+                <div class="deck-option" 
+                    *ngFor="let deck of randomDeckOptions; let i = index"
+                    [class.active]="selectedPlayerDeck?.class === deck.class"
+                    (click)="selectDeck('player', 'random', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }}   
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'npc'">
+                <div class="deck-option" 
+                    *ngFor="let deck of npcDecks; let i = index"
+                    [class.active]="selectedPlayerDeck === deck"
+                    (click)="selectDeck('player', 'npc', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }}   
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'arena'">
+                <div class="deck-option" 
+                    *ngFor="let deck of arenaOpponents; let i = index"
+                    [class.active]="selectedPlayerDeck === deck"
+                    (click)="selectDeck('player', 'arena', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'custom'">
+                <div class="deck-option" 
+                    *ngFor="let deck of customDecks; let i = index"
+                    [class.active]="selectedPlayerDeck === deck"
+                    (click)="selectDeck('player', 'custom', deck)">
+                  <div class="deck-icons">
+                    <img *ngFor="let attr of deck.attributes"
+                        [src]="'/assets/tesl/images/icons/' + attributeIcons[attr]"
+                        [alt]="attr"
+                        class="deck-icon"
+                        draggable="false">
+                  </div>
+                  {{ deck.name }} 
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testing Section (only visible when showTestInputs is true) -->
+    <div *ngIf="!isMainMenu && !isStoryMode && showTestInputs && !game.gameRunning" class="testing-section">
+      <h4>Testing(Dev)</h4>
+
+      <!-- Starting Max Magicka -->
+      <label class="settings-label">
+        Magicka
+        <input 
+          type="text" 
+          inputmode="numeric"
+          pattern="[0-9]"
+          maxlength="1"
+          [(ngModel)]="testStartingMaxMagicka"
+          (focus)="selectAll($event)"
+          (input)="onMagickaInput($event)"
+          class="test-input number-input"
+        >
+      </label>
+
+      <!-- Set selector -->
+      <label class="settings-label">
+        Set
+        <select [(ngModel)]="selectedSet" 
+                (ngModelChange)="onSetChange()"
+                class="test-input set-selector">
+          <option *ngFor="let set of availableSets" [value]="set">
+            {{ set }}
+          </option>
+        </select>
+      </label>
+
+      <!-- Starting Card 1 -->
+      <label class="settings-label">
+        Card #1
+        <select [(ngModel)]="testStartingCard1" class="test-input">
+          <option *ngFor="let card of filteredCards" [value]="card.id">
+            {{ card.name }}
+          </option>
+        </select>
+      </label>
+
+      <!-- Preview image for Card 1 -->
+      <div class="test-card-preview" *ngIf="testStartingCard1 !== 'None'">
+        <img [src]="getCardImageByName(testStartingCard1Name)" 
+            alt="{{ testStartingCard1 }}"
+            class="preview-image"
+            draggable="false">
+      </div>
+
+      <!-- Starting Card 2 -->
+      <label class="settings-label">
+        Card #2
+        <select [(ngModel)]="testStartingCard2" class="test-input">
+          <option *ngFor="let card of filteredCards" [value]="card.id">
+            {{ card.name }}
+          </option>
+        </select>
+      </label>
+
+      <!-- Preview image for Card 2 -->
+      <div class="test-card-preview" *ngIf="testStartingCard2 !== 'None'">
+        <img [src]="getCardImageByName(testStartingCard2Name)" 
+            alt="{{ testStartingCard2 }}"
+            class="preview-image"
+            draggable="false">
+      </div>
+
+      <p class="settings-desc test-desc">
+        These apply only on new game start. "None" = no card.
+      </p>
+    </div>
+
+    <div *ngIf="!game.gameRunning">
+      <label class="settings-label" *ngIf="isExhibitionMode">
+        Show Test Options
+        <input 
+          type="checkbox" 
+          [(ngModel)]="showTestInputs"
+        >
+      </label>
+      <span *ngIf="isExhibitionMode"><br></span>
+
+      <label class="settings-label" *ngIf="isExhibitionMode">
+        Show Target Hints
+        <input 
+          type="checkbox" 
+          [(ngModel)]="showHelpHints"
+          (change)="onHintToggle()"
+        >
+      </label>
+      <span *ngIf="isExhibitionMode"><br></span>
+
+      <label class="settings-label">
+        Classic Summon Targeting
+        <input 
+          type="checkbox" 
+          [(ngModel)]="classicTargeting"
+          (change)="onTargetToggle()"
+        >
+      </label>
+      <span><br></span>
+
+      <label class="settings-label">
+        Custom Cards
+        <input 
+          type="checkbox" 
+          [(ngModel)]="customSets"
+          (change)="onCustomToggle()"
+        >
+      </label>
+      <!--<p class="settings-desc">Brief instructions appear when staging cards or summons</p>-->
+    </div>
+
+    <!-- Concede Button -->
+    <div class="concede-section" *ngIf="game.gameRunning">
+      <button class="concede-btn" (click)="concede()">
+        Concede
+      </button>     
+    </div>
+
+
+    <div class="concede-section" *ngIf="!game.gameRunning && isExhibitionMode && !isMainMenu">
+      <button class="start-btn" (click)="callStartGame()">
+        Start
+      </button>     
+    </div>
+
+    <!-- toggle cpu/2p button-->
+    <!--<button class="settings-close-bottom-btn" (click)="toggleCPU()">
+      {{ cpuPlaying ? 'CPU': '2P'}}
+    </button>-->
+
+    
+    <!-- Close button at bottom for mobile -->
+    <button class="settings-close-bottom-btn" (click)="showHelpModal()">
+      Help
+    </button>
+
+    <!-- Close button at bottom for mobile -->
+    <button class="settings-close-bottom-btn" (click)="toggleSettingsOverlay()">
+      Close
+    </button>
+
+    <!-- Close button at bottom for mobile -->
+    <button class="settings-close-bottom-btn" *ngIf="!game.gameRunning && !isMainMenu" (click)="backToMenu()">
+      Main Menu
+    </button>
+
+    <div class="cheat-section" *ngIf="!game.gameRunning && isMainMenu">
+      
+      <!-- When NO cheats active -->
+      <div *ngIf="!cheatsActive" class="cheat-input-row">
+        <input
+          type="text"
+          [(ngModel)]="cheatCodeInput"
+          placeholder="Enter cheat code..."
+          class="cheat-input"
+          (keyup.enter)="submitCheat()"
+        />
+        <button class="cheat-btn" (click)="submitCheat()">
+          Submit
+        </button>
+      </div>
+
+      <!-- When cheats ARE active -->
+      <div *ngIf="cheatsActive" class="cheat-active-row">
+        <span class="active-cheat-text">
+          Active: {{ activeCheat }}
+        </span>
+        <button class="cheat-btn revert" (click)="revertCheats()">
+          Revert
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Version Section -->
+    <div *ngIf="!game.gameRunning" class="version-section">
+      <div class="version-info">
+        <span class="version-label">
+          Version {{ appVersion }}
+        </span>
+
+        <button 
+          *ngIf="updateAvailable"
+          class="update-btn"
+          (click)="forceUpdate()">
+          Update Available
+        </button>
+
+        <button 
+          *ngIf="!updateAvailable"
+          class="update-btn"
+          (click)="importProgress()">
+          📥Import
+        </button>
+
+        <button 
+          *ngIf="!updateAvailable"
+          class="update-btn"
+          (click)="exportProgress()">
+          📤Export
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

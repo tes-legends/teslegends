@@ -1,0 +1,7 @@
+/* Add application styles & imports to this file! */
+body
+{
+  overscroll-behavior-y: contain;
+}
+
+* {-webkit-font-smoothing: antialiased;}

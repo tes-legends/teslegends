@@ -1,0 +1,58 @@
+{
+  "files": [
+    "LG-audio-archmage_antonidas_attack.ogg",
+    "LG-audio-archmage_antonidas_enter_play.ogg",
+    "LG-audio-archmage_antonidas_last_gasp.ogg",
+    "LG-audio-archmage_antonidas_trigger.ogg",
+    "LG-audio-cenarius_attack.ogg",
+    "LG-audio-cenarius_enter_play.ogg",
+    "LG-audio-cenarius_last_gasp.ogg",
+    "LG-audio-edwin_vancleef_attack.ogg",
+    "LG-audio-edwin_vancleef_enter_play.ogg",
+    "LG-audio-edwin_vancleef_last_gasp.ogg",
+    "LG-audio-ragnaros_the_firelord_attack.ogg",
+    "LG-audio-ragnaros_the_firelord_enter_play.ogg",
+    "LG-audio-ragnaros_the_firelord_last_gasp.ogg",
+    "LG-audio-ragnaros_the_firelord_trigger.ogg",
+    "LG-audio-sylvanas_windrunner_attack.ogg",
+    "LG-audio-sylvanas_windrunner_enter_play.ogg",
+    "LG-audio-sylvanas_windrunner_last_gasp.ogg",
+    "LG-audio-treant_attack.ogg",
+    "LG-audio-treant_enter_play.ogg",
+    "LG-audio-treant_last_gasp.ogg"
+  ],
+  "cardToFiles": {
+    "cenarius": [
+      "LG-audio-cenarius_attack.ogg",
+      "LG-audio-cenarius_enter_play.ogg",
+      "LG-audio-cenarius_last_gasp.ogg"
+    ],
+    "treant": [
+      "LG-audio-treant_attack.ogg",
+      "LG-audio-treant_enter_play.ogg",
+      "LG-audio-treant_last_gasp.ogg"
+    ],
+    "edwin-vancleef": [
+      "LG-audio-edwin_vancleef_attack.ogg",
+      "LG-audio-edwin_vancleef_enter_play.ogg",
+      "LG-audio-edwin_vancleef_last_gasp.ogg"
+    ],
+    "archmage-antonidas": [
+      "LG-audio-archmage_antonidas_attack.ogg",
+      "LG-audio-archmage_antonidas_enter_play.ogg",
+      "LG-audio-archmage_antonidas_last_gasp.ogg",
+      "LG-audio-archmage_antonidas_trigger.ogg"
+    ],
+    "sylvanas-windrunner": [
+      "LG-audio-sylvanas_windrunner_attack.ogg",
+      "LG-audio-sylvanas_windrunner_enter_play.ogg",
+      "LG-audio-sylvanas_windrunner_last_gasp.ogg"
+    ],
+    "ragnaros-the-firelord": [
+      "LG-audio-ragnaros_the_firelord_attack.ogg",
+      "LG-audio-ragnaros_the_firelord_enter_play.ogg",
+      "LG-audio-ragnaros_the_firelord_last_gasp.ogg",
+      "LG-audio-ragnaros_the_firelord_trigger.ogg"
+    ]
+  }
+}

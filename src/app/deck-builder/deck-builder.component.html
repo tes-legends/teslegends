@@ -1,0 +1,87 @@
+<!--deck-builder.component.html-->
+<div class="deck-builder">
+    <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;"></button>
+  <!-- Left: Class Picker + Collection -->
+  <div class="left-panel">
+    <div class="class-picker" *ngIf="!selectedClass">
+    <h3>Select Class</h3>
+      <button 
+        *ngFor="let cls of classes"
+        class="deck-option"
+        [class.active]="selectedClass === cls"
+        (click)="selectClass(cls)">
+        <div class="deck-icons">
+          <img *ngFor="let attr of cls.attributes" 
+          class="deck-icon"
+          [src]="attributeIcons[attr]">
+        </div>
+        {{ cls.name }}
+      </button>
+    </div>
+
+    <!-- Reuse your existing collection filters + grid -->
+    <app-collection *ngIf="selectedClass"
+        [showFilters]="false"                  
+        [hideStorySet]="true" 
+        [enableOutput]="true"                 
+        [attributeWhitelist]="allowedAttributes"
+        [unlockedCardIds]="unlockedCardIds"
+        [unlockAll]="unlockAll"
+        (cardClick)="toggleCard($event)">
+    </app-collection>
+  </div>
+
+  <!-- Right: Current Deck List -->
+  <div class="right-panel">
+    <button class="close-btn" (click)="close()">X</button>
+    <!-- List of saved decks -->
+    <div class="saved-decks-list" *ngIf="!selectedClass">
+      <div 
+        *ngFor="let deck of savedDecks"
+        class="saved-deck-item"
+        [class.active]="deckName === deck.name"
+        (click)="loadSavedDeck(deck)">
+        <div class="deck-icons">
+          <img *ngFor="let attr of deck.attributes" [src]="attributeIcons[attr]">
+        </div>
+        <div class="deck-info">
+          <span class="deck-name">{{ deck.name }}</span>          
+        </div>
+      </div>
+      
+      <button class="save-deck-btn" (click)="importDeck()">Import</button>
+      <div class="saved-deck-empty" *ngIf="savedDecks.length === 0">
+        No saved decks yet
+      </div>
+    </div>
+    <div class="deck-panel" *ngIf="selectedClass">
+      <div class="deck-header">
+        <span class="deck-title"> Deck ({{ currentDeckTotal }} / 50)</span>
+        <input 
+          type="text" 
+          [(ngModel)]="deckName" 
+          placeholder="Deck Name"
+          class="deck-name-input"
+          maxlength="40" />
+      </div>
+      <div class="deck-list">
+        <div class="deck-entry" 
+        *ngFor="let entry of currentDeck"
+        [ngClass]="[
+        getAttributeClass(entry.card.attributes),
+        getRarityClass(entry.card.rarity)
+          ]">
+          <div class="info">
+            <span class="cost">{{ entry.card.cost }}</span>
+            <span class="name">{{ entry.card.name }}</span>
+            <span class="count">×{{ entry.count }}</span>
+          </div>
+        </div>
+      </div>
+      <button class="save-deck-btn" (click)="saveDeck()">Save</button>
+      <button class="save-deck-btn" (click)="exportDeck()">Export</button>
+      <button class="save-deck-btn" (click)="deleteDeck()">Delete</button>
+      <button class="save-deck-btn" (click)="closeDeck()">Cancel</button>
+    </div>
+  </div>
+</div>

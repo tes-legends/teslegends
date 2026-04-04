@@ -1,0 +1,304 @@
+[
+	{
+		"id": "altar-of-despair",
+		"name": "Altar of Despair",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [
+				"N"
+		],
+		"cost": 6,
+		"attack": null,
+		"health": null,
+		"rarity": "4Legendary",
+		"text": "Uses: 12 Activate: Sacrifice a creature to summon a creature from your deck that costs 1, then increase the cost of creatures this summons by 1.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"uses": 12,
+		"deckCodeId": "aw",
+    	"tier": "U",
+		"effects": [
+			{
+			"trigger": "Activation",
+			"type": "destroy",
+			"subtypes": [ "Action" ],
+			"target": "creatureFriendly"
+			},
+			{
+			"trigger": "Activation",
+			"type": "summonDeckCost",
+			"amount": 1,
+			"cost": 1,
+			"target": "creatureFriendly",
+			"increment": 1
+			}
+		]
+	},
+	{
+		"id": "close-call",
+		"name": "Close Call",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [
+				"N"
+		],
+		"cost": 0,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Unsummon a friendly creature.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "dq",
+    	"tier": "D",
+		"effects": [
+			{
+			"trigger": "Play",
+			"type": "unsummon",
+			"target": "creatureFriendly"
+			}
+		]
+	},
+	{
+		"id": "forsaken-champion",
+		"name": "Forsaken Champion",
+		"type": "Creature",
+		"subtypes": [
+			"Reachman"
+		],
+		"attributes": [
+				"N"
+		],
+		"cost": 5,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "Summon: Choose a friendly creature. Friendly creatures of the chosen type have +1/+1.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "gE",
+    	"tier": "U",
+		"effects": [
+			{
+			"trigger": "Summon",
+			"type": "buffSubtype",
+			"modAttack": 1,
+			"modHealth": 1,
+			"target": "creatureFriendly"
+			}
+		]
+	},
+	{
+		"id": "gardener-of-swords",
+		"name": "Gardener of Swords",
+		"type": "Creature",
+		"subtypes": [
+			"Redguard"
+		],
+		"attributes": [
+			"B"
+		],
+		"cost": 3,
+		"attack": 1,
+		"health": 1,
+		"rarity": "2Rare",
+		"text": "When you equip an item to another creature, equip a copy of it to Gardener of Swords.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "gP",
+    	"tier": "D",
+		"effects": [
+			{
+			"trigger": "EquipFriendly",
+			"type": "equipCopy",
+			"target": "self"
+			}
+		]
+	},
+	{
+		"id": "illusory-mimic",
+		"name": "Illusory Mimic",
+		"type": "Creature",
+		"subtypes": [
+			"Spirit"
+		],
+		"attributes": [
+			"N"
+		],
+		"cost": 6,
+		"attack": 5,
+		"health": 5,
+		"rarity": "3Epic",
+		"text": "Summon: Illusory Mimic gains all Keywords that the top three cards of your deck have.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "iE",
+    	"tier": "C",
+		"effects": [
+			{
+			"trigger": "Summon",
+			"type": "copyKeywordsDeck",
+			"amount": 3,
+			"target": "self"
+			}
+		]
+	},
+	{
+		"id": "merchants-camel",
+		"name": "Merchant's Camel",
+		"type": "Creature",
+		"subtypes": [
+			"Beast"
+		],
+		"attributes": [
+			"N"
+		],
+		"cost": 4,
+		"attack": 1,
+		"health": 4,
+		"rarity": "1Common",
+		"text": "Summon: Look at the top three cards of your deck. Draw one and discard the others.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "kv",
+    	"tier": "C",
+		"effects": [
+			{
+			"trigger": "Summon",
+			"type": "revealAndChooseDeck",
+			"amount": 3,
+			"target": "player"
+			}
+		]
+	},
+	{
+		"id": "ring-of-imaginary-might",
+		"name": "Ring of Imaginary Might",
+		"type": "Item",
+		"subtypes": [],
+		"attributes": [
+			"P"
+		],
+		"cost": 4,
+		"attack": 0,
+		"health": 2,
+		"rarity": "2Rare",
+		"text": "+0/+2 Summon: The wielder's power becomes equal to its health",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "nl",
+    	"tier": "D",
+		"effects": [
+			{
+			"trigger": "Summon",
+			"type": "setPowerToHealth",
+			"target": "wielder"
+			}
+		]
+	},
+	{
+		"id": "shivering-apothercary",
+		"name": "Shivering Apothecary",
+		"type": "Creature",
+		"subtypes": [
+			"Imperial"
+		],
+		"attributes": [
+			"Y"
+		],
+		"cost": 4,
+		"attack": 2,
+		"health": 2,
+		"rarity": "2Rare",
+		"text": "Summon: Summon a random elixir.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "ob",
+    	"tier": "C",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "playSupport",
+				"names": [ 
+					"elixir-of-conflict", 
+					"elixir-of-deflection", 
+					"elixir-of-light-feet", 
+					"elxiir-of-the-defender",
+					"elixir-of-vigor",
+					"elixir-of-vitality",
+					"skirmishers elixir" 
+				],
+				"target": "player"
+			}
+		]
+	},
+	{
+		"id": "stoneshard-orc",
+		"name": "Stoneshard Orc",
+		"type": "Creature",
+		"subtypes": [
+			"Orc"
+		],
+		"attributes": [
+			"R"
+		],
+		"cost": 3,
+		"attack": 2,
+		"health": 1,
+		"rarity": "2Rare",
+		"text": "Summon: Deal 1 damage to an enemy creature for each friendly Orc.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "py",
+    	"tier": "C",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "damage",
+				"amount": 1,
+				"target": "creatureEnemy",
+				"amountPer": "creatureFriendlyOrc"
+			}
+		]
+	},
+	{
+		"id": "swindlers-market",
+		"name": "Swindler's Market",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [
+				"G"
+		],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Ongoing When you play a 0-cost card, deal 1 damage to your opponent and gain 1 health.",
+		"keywords": [],
+		"set": "Madhouse Collection",
+		"deckCodeId": "pZ",
+    	"tier": "U",
+		"effects": [
+			{
+				"trigger": "PlayCard",
+				"type": "damage",
+				"amount": 1,
+				"target": "opponent",
+				"condition": {
+				"type": "lastPlayedCost",
+				"max": 0
+				}
+			},
+					{
+				"trigger": "PlayCard",
+				"type": "damage",
+				"amount": -1,
+				"target": "player",
+				"condition": {
+				"type": "lastPlayedCost",
+				"max": 0
+				}
+			}
+		]
+	}
+]

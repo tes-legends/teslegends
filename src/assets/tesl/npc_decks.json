@@ -1,0 +1,342 @@
+[
+    {
+      "source": "npc",
+      "name": "Archer #1", 
+      "attributes": ["R","G"],
+      "class": "Archer",
+      "deckCode": "SPADqcrgrrAEbKgEjylfANdhfvgsgukjkIlhmCmGnMoopZrn",
+      "description": "Swindlers Market",
+      "tier": 4,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Archer #2", 
+      "attributes": ["R","G"],
+      "class": "Archer",
+      "deckCode": "SPAEafgRmUqcACbKqRAOagcvdedhdQebfvhljykNkVmGoore",
+      "description": "Skyrim Cycle Archer (2x top 5 legend)",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Archer #3", 
+      "attributes": ["R","G"],
+      "class": "Archer",
+      "deckCode": "SPAFesmzqcqkrWAGccdhgujyoQrpALbUfVgsitlelhmGooqyqRrn",
+      "description": "Archer Legend Deck",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Assassin #1", 
+      "attributes": ["B","G"],
+      "class": "Assassin",
+      "deckCode": "SPADaAmxqcABqvAPbUcvdhdQdVhljyjHkVlfljnXoepSrC",
+      "description": "midrange assassin",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Assassin #2", 
+      "attributes": ["B","G"],
+      "class": "Assassin",
+      "deckCode": "SPADaAmxqcABqyAPbUcvdhdQdVgyhljyjHkVlfnXoepSrC",
+      "description": "midrange assassin",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Assassin #3", 
+      "attributes": ["B","G"],
+      "class": "Assassin",
+      "deckCode": "SPADaAmxqcABqvAPbUcvdhdQdVhljyjHkVlfljnXoepSrC",
+      "description": "Tempo Goblins at the market Deck",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Battlemage #1", 
+      "attributes": ["R","B"],
+      "class": "Battlemage",
+      "deckCode": "SPAHarbwccfLihkwotAChYklANcldIfkiPjHjXkjmgmCninjpwqF",
+      "description": "aggro weapon merric mage",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Battlemage #2", 
+      "attributes": ["R","B"],
+      "class": "Battlemage",
+      "deckCode": "SPACaAkwADmCnHooAObKcrdPdVfvgyjHkjkNljmGoepSrC",
+      "description": "merric battlmeage",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Battlemage #3", 
+      "attributes": ["R","B"],
+      "class": "Battlemage",
+      "deckCode": "SPACaAmUADfvnHreAOahcaljcIcPdegehrhwjHjSkNmtoe",
+      "description": "aggro prophecy",
+      "tier": 4,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Battlemage #4", 
+      "attributes": ["R","B"],
+      "class": "Battlemage",
+      "deckCode": "SPAAABqRAQahcPegfvgehehrhwjHkNmVnHnVoeoDrC",
+      "description": "aggro/prophecy battlemage",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Battlemage #5", 
+      "attributes": ["R","B"],
+      "class": "Battlemage",
+      "deckCode": "SPAGasccgRmUqcrgABreAObKcvdhdQfvhljykNkVlfmGooqyqR",
+      "description": "aggro timetofight battlemage",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Crusader #1", 
+      "attributes": ["R","Y"],
+      "class": "Crusader",
+      "deckCode": "SPAAABraAQcxdreleDfxgpimiKiNkjkklMmemYnBrW",
+      "description": "token crusader",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Crusader #2", 
+      "attributes": ["R","Y"],
+      "class": "Crusader",
+      "deckCode": "SPACejqYADelhLmpAOcxdrdLeDfxgpimiKkjkklMlYmCmY",
+      "description": "token crusader",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Crusader #3", 
+      "attributes": ["R","Y"],
+      "class": "Crusader",
+      "deckCode": "SPACabkCADbKmJrfAOcxdrdLfvhFimkhkNlYmtmGneoork",
+      "description": "control rage crusader",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #1", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPACbqmdAGdVfLhojPoOpSAMamcxeDfximixjHlYnBoeoDrC",
+      "description": "token mage",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #2", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPAEbqkClllHAAATcxdMeieDfLgwgygFhWiyiJiRjHkhlYmpnZocoB",
+      "description": "control mage",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #3", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPAHbqdreAkClHmXoBAIbndPdVfWiRkhnGrCAJawcydMimiyjHlYoeqe",
+      "description": "altar mage",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #4", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPADaAbqqnABdIAPdfdrdPdVelgyhLimjHljlYoepSqvrC",
+      "description": "midrange mage",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #5", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPAFbqeukClllHADeinGqeANcydMdPdVfLgyhWihimiyjHkhlY",
+      "description": "control mage",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #6", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPAAABefAQcJdfdrdVeefzgeimjqjHjPkhljlYmloe",
+      "description": "commander/echo mage",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Mage #7", 
+      "attributes": ["B","Y"],
+      "class": "Mage",
+      "deckCode": "SPAHbmbqcyeigwiRllAEcZiympnZAMdMdPfLgyhWihimjHkhlYnGqe",
+      "description": "Mage (anti-aggro/Midrange)",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Monk #1", 
+      "attributes": ["Y","G"],
+      "class": "Monk",
+      "deckCode": "SPAClHlRAAAQeSfAgsguhCimjjkhlhlYnXqxqyrfrZsa",
+      "description": "dragon shout control monk",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Monk #2", 
+      "attributes": ["Y","G"],
+      "class": "Monk",
+      "deckCode": "SPACqnqwAAAQcxdhdreleDfxgphlimiKiNkkmemYnBnI",
+      "description": "token monk",
+      "tier": 3,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Monk #3", 
+      "attributes": ["Y","G"],
+      "class": "Monk",
+      "deckCode": "SPACajqcADguhLmDAOaQbUeberfhgsimjyknlelhmznMqy",
+      "description": "monk pilfer deck ksedden",
+      "tier": 4,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Scout #1", 
+      "attributes": ["G","P"],
+      "class": "Scout",
+      "deckCode": "SPAIfhgunNoGqcqkrgrpAJdMdQesjykylwnMoQpVAIbQebgshUitkIrQsm",
+      "description": "ramp scout",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Scout #2", 
+      "attributes": ["G","P"],
+      "class": "Scout",
+      "deckCode": "SPAGlklHlRmOqcrgABjyAOedeSijlhmmnNnXoroPpaqyqBqNrZ",
+      "description": "ramp scout",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Scout #3", 
+      "attributes": ["G","P"],
+      "class": "Scout",
+      "deckCode": "SPAGlalklHmOqcrgABlwAOcdgshdijkekykImmnMnNqyqBqNrQ",
+      "description": "CVH Ramp Scout",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Sorcerer #1", 
+      "attributes": ["B","P"],
+      "class": "Sorcerer",
+      "deckCode": "SPAEaAiglklwAChUnrAOcmdIdPdVedgyjHljoeoMqvrCrQsm",
+      "description": "midrange sorcerer",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Sorcerer #2", 
+      "attributes": ["B","P"],
+      "class": "Sorcerer",
+      "deckCode": "SPAEaAigjQlkACcmpGAObQdAdVeQgyhUjHoepirCrIrQsdsm",
+      "description": "midrange sorcerer",
+      "tier": 2,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Sorcerer #3", 
+      "attributes": ["B","P"],
+      "class": "Sorcerer",
+      "deckCode": "SPACaAigAGcthUnrnNoMsdAMdIdPdVgyjHljoepSqvrCrQsm",
+      "description": "Bringer of Dreams Sorcerer",
+      "tier": 1,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Spellsword #1", 
+      "attributes": ["Y","P"],
+      "class": "Spellsword",
+      "deckCode": "SPAFbzejgVjBqnAAAPcxdreleDfxgphUimiKiNkkmemYnBrQ",
+      "description": "token spellsword",
+      "tier": 4,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Spellsword #2", 
+      "attributes": ["Y","P"],
+      "class": "Spellsword",
+      "deckCode": "SPAGejeEgVhLjQnNAEfBhoiKjrAMcxeDfxgpimiNlTmemYnBogsm",
+      "description": "token spellsword",
+      "tier": 4,      
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Warrior #1", 
+      "attributes": ["R","P"],
+      "class": "Warrior",
+      "deckCode": "SPAEddhqlalHACbKemAOaMcdeQfvijlwmmmymGooqNrkrrrQ",
+      "description": "ramp warrior",
+      "tier": 4,
+      "locked": true
+    },
+    {
+      "source": "npc",
+      "name": "Warrior #2", 
+      "attributes": ["R","P"],
+      "class": "Warrior",
+      "deckCode": "SPADgRhqlkABbQAPbybHbKeQfvgnhwkBkNlLmGpyrQrYsf",
+      "description": "orc warrior",
+      "tier": 2,
+      "locked": true
+    }
+  ]

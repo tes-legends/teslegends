@@ -1,0 +1,188 @@
+.ranked-draft {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0a1421;
+  color: white;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rank-header {
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(20,40,80,0.9);
+  border-bottom: 2px solid #4488ff;
+}
+
+.tier-emblem {
+  font-size: 2.8rem;
+  font-weight: 700;
+  padding: 12px 40px;
+  border-radius: 12px;
+  display: inline-block;
+  color: #000;
+  text-shadow: 0 0 15px rgba(255,255,255,0.8);
+}
+
+.stars {
+  font-size: 3rem;
+  margin-top: 15px;
+  .star { color: #555; }
+  .filled { color: #ffd700; }
+}
+
+.legendary-badge {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #ff00ff, #ffff00);
+  //-webkit-background-clip: text;
+  color: transparent;
+}
+
+.rank-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.draft-header {
+  padding-top: 10px;
+  background: rgba(20, 40, 80, 0.9);
+  border-bottom: 1px solid #3366aa;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.6rem;
+    color: #88ddff;
+  }
+}
+
+.reward-screen {
+  flex: 1;
+  padding: 0px; //30px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.reward-picks {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.reward-card-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.reward-card {
+  width: 175px;
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-user-drag: none;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(0,255,0,0.4);
+  }
+}
+
+.play-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.play-ranked-btn {
+  display: block;
+  margin: 20px auto 20px auto;
+  padding: 12px 12px;
+  font-size: 1.5rem;
+  max-width: 300px;
+  background: #00aaff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.deck-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+  margin: 12px auto;
+  width: 100%;
+}
+
+.deck-icon {
+  width: 32px;                // adjust size to taste
+  height: 32px;
+  object-fit: contain;
+}
+
+.deck-option {
+  background: rgba(30, 50, 90, 0.85);
+  border: 2px solid #4488ff;
+  border-radius: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 500;
+  justify-content: space-between;
+  align-items: center;
+
+  &:hover {
+    background: rgba(60, 100, 200, 0.9);
+    border-color: #00aaff;
+  }
+
+  &.selected {
+    background: #00aaff;
+    border-color: #ffffff;
+    color: black;
+  }
+}
+
+.no-decks {
+  color: #ff6666;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.play-ranked-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}

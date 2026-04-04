@@ -1,0 +1,342 @@
+//deck-builder.component.scss
+.deck-builder {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  gap: 0px;
+  padding: 0px !important;
+  background: #0d1b2a;
+}
+
+
+
+.deck-option {
+    display: flex;                   
+    align-items: center;            
+    gap: 12px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    &.active {
+        background: #00aaff;
+        border-color: #00ccff;
+        color: white;
+    }
+
+    &:hover:not(.active) {
+        background: #444;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .disabled-hint {
+        font-size: 0.8rem;
+        color: #ff9800;
+        margin-left: 8px;
+    }
+
+    &.locked {
+        background: rgba(80, 80, 80, 0.4);
+        border-color: #555;
+        color: #aaa;
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none;
+
+        &:hover {
+        background: rgba(80, 80, 80, 0.4);
+        transform: none;
+        }
+
+        .locked-label {
+        font-size: 0.8rem;
+        margin-left: auto;
+        color: #ff6666;
+        }
+    }
+    .deck-icons {
+        display: flex;
+        gap: 4px;                   // small gap between icons
+        .deck-icon {
+            width: 32px;                // adjust size to taste
+            height: 32px;
+            object-fit: contain;
+        }
+    }
+
+    
+}
+
+.left-panel {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.right-panel {
+  flex: 1;
+  background: rgba(20, 40, 80, 0.8);
+  border-radius: 12px;
+  padding: 0px;
+  overflow-y: auto;
+}
+
+.left-panel,
+.right-panel {
+  min-height: 0;
+}
+
+.left-panel app-collection,
+.left-panel .collection-viewer {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: visible !important;  // 🔥 key
+}
+
+@media (max-width: 600px) {
+  .deck-builder {
+    flex-direction: column;
+    height: auto; /* allow natural height */
+  }
+
+  .left-panel,
+  .right-panel {
+    flex: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .right-panel {
+    border-top: 1px solid #333; /* optional separator */
+  }
+
+  .left-panel {
+    height: 70vh;
+    overflow-y: auto;
+  }
+
+  .right-panel {
+    height: 30vh;
+    overflow-y: auto;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.deck-panel {
+  gap: 0;
+  padding: 0;
+}
+.deck-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;        /* centers the whole row */
+  gap: 0px;
+  flex-wrap: wrap;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0;
+  height: auto;
+  min-height: 40px;
+  align-content: flex-start;
+}
+
+.deck-title {
+  display: flex;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  align-items: center;
+  margin: 0 12px;
+  height: 40px;
+  line-height: 40px;
+  padding: 0;
+}
+
+.deck-name-input {
+  flex: 1;
+  min-width: 160px;
+  max-width: 320px;
+  align-items: center;
+  padding: 0;
+  margin: 0 !important;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid #88ddff;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  height: 40px; 
+  line-height: 40px;
+}
+
+.deck-name-input::placeholder {
+  color: #aaa;
+}
+.deck-list {
+  
+  .deck-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2px 0;
+    //background: rgba(30, 60, 120, 0.6);
+    background: black;
+    border-radius: 8px;
+    padding: 8px;
+    height: 32px !important;
+  }
+  .deck-entry .info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+    /* COST CIRCLE */
+    .cost {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1e90ff; /* blue */
+    border: 2px solid white;
+    color: black;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+  }
+
+    /* NAME CENTERED */
+    .name {
+    flex: 1;
+    text-align: center;
+    font-weight: 500;
+  }
+
+    /* COUNT RIGHT */
+    .count {
+    min-width: 40px;
+    color: white;
+    text-align: right;
+    font-size: 1.4em;
+    position: relative;
+    padding-left: 10px;
+  }
+
+    /* RARITY BAR */
+    .count::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+  }
+
+    /* ATTRIBUTE COLORS */
+    .attr-red .name { color: #ff4d4d; }
+    .attr-yellow .name { color: #ffd700; }
+    .attr-blue .name { color: #4da6ff; }
+    .attr-purple .name { color: #c266ff; }
+    .attr-green .name { color: #4dff88; }
+    .attr-neutral .name { color: #ffffff; }
+    .attr-multi .name { color: #ff66cc; } /* pink */
+
+    /* RARITY COLORS */
+    .rarity-common .count::before { background: white; }
+    .rarity-rare .count::before { background: #4da6ff; }
+    .rarity-epic .count::before { background: #c266ff; }
+    .rarity-legendary .count::before { background: gold; }
+}
+
+.saved-decks-list {
+  margin-bottom: 20px;
+
+  .saved-deck-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(30, 60, 120, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: rgba(0, 170, 255, 0.6);
+      border: 1px solid #00aaff;
+    }
+
+    &:hover {
+      background: rgba(50, 100, 200, 0.7);
+    }
+
+    .deck-icons {
+      display: flex;
+      gap: 4px;
+      img {
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .deck-info {
+      flex: 1;
+
+      .deck-name {
+        font-weight: bold;
+      }
+
+      .deck-size {
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+    }
+  }
+
+  .saved-deck-empty {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+  }
+}
+
+.deck-name-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid #555;
+  border-radius: 6px;
+  color: white;
+  font-size: 1.1rem;
+}

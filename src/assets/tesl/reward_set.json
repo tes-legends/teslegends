@@ -1,0 +1,911 @@
+[
+	{
+		"id": "adoring-fan",
+		"name": "Adoring Fan",
+		"type": "Creature",
+		"subtypes": [
+			"Wood Elf"
+		],
+		"attributes": [
+				"N"
+		],
+		"cost": 3,
+		"attack": 0,
+		"health": 1,
+		"rarity": "4Legendary",
+		"text": "Prophecy, Guard Immune to Silence. Last Gasp: Adoring Fan will return.",
+		"keywords": [
+			"Guard"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "pZ",
+		"immunity": [ "Silence" ],
+		"prophecy": true,
+		"unique": true,
+		"effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "rollForReturn",
+        "target": "player"
+      }
+		]
+	},
+	{
+		"id": "smugglers-haul",
+		"name": "Smuggler's Haul",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [
+				"G"
+		],
+		"cost": 6,
+		"attack": null,
+		"health": null,
+		"rarity": "3Epic",
+		"text": "Put four random 0-cost cards into your hand.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "oF",
+    	"tier": "C",
+		"effects": [
+      {
+        "trigger": "Play",
+        "type": "addToHand",
+        "cardId": "randomCost",
+        "amount": 1,
+        "cost": 0,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "addToHand",
+        "cardId": "randomCost",
+        "amount": 1,
+        "cost": 0,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "addToHand",
+        "cardId": "randomCost",
+        "amount": 1,
+        "cost": 0,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "addToHand",
+        "cardId": "randomCost",
+        "amount": 1,
+        "cost": 0,
+        "target": "player"
+      }
+		]
+	},
+	{
+		"id": "hist-grove",
+		"name": "Hist Grove",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [
+			"P"
+		],
+		"cost": 4,
+		"attack": null,
+		"health": null,
+		"rarity": "3Epic",
+		"text": "Ongoing Summon: +1 max magicka. At the start of your turn, if you have 15 or more max magicka, sacrifice this to summon an 8/8 Swamp Leviathan in each lane.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "ij",
+    	"tier": "D",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "maxMagicka",
+				"amount": 1,
+				"target": "player"
+			},
+			{
+				"trigger": "StartOfTurn",
+				"type": "summon",
+				"cardId": "swamp-leviathan",
+				"amount": 1,
+				"target": "leftLane",
+				"condition": {
+					"type": "maxMagicka",
+					"min": 15
+				}
+			},
+			{
+				"trigger": "StartOfTurn",
+				"type": "summon",
+				"cardId": "swamp-leviathan",
+				"amount": 1,
+				"target": "rightLane",
+						"condition": {
+				"type": "maxMagicka",
+				"min": 15
+				}
+			},
+			{
+				"trigger": "StartOfTurn",
+				"type": "destroy",
+				"target": "self",
+						"condition": {
+				"type": "maxMagicka",
+				"min": 15
+				}
+			}
+		]
+	},
+	{
+		"id": "mechanical-ally",
+		"name": "Mechanical Ally",
+		"type": "Creature",
+		"subtypes": [
+			"Dwemer"
+		],
+		"attributes": [
+			"N"
+		],
+		"cost": 3,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "Summon: Summon a Spider Worker if the top card of your deck is [N].",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "kp",
+    	"tier": "U",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "summon",
+						"cardId": "spider-worker",
+				"amount": 1,
+				"target": "thisLane",
+						"condition": {
+				"type": "topDeckAttribute",
+				"attribute": "N"
+				}
+			}
+		]
+	},
+	{
+		"id": "battlereeve-of-dusk",
+		"name": "Battlereeve of Dusk",
+		"type": "Creature",
+		"subtypes": [
+			"High Elf"
+		],
+		"attributes": [
+				"B"
+		],
+		"cost": 6,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "Summon: Give friendly creatures +1/+1 for each Keyword they have.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "bI",
+    	"tier": "D",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "buffTarget",
+				"modAttack": 1,
+				"modHealth": 1,
+				"amountPer": "numberKeywords",
+				"target": "creatureFriendlyAll"
+			}
+		]
+	},
+	{
+		"id": "elsweyr-lookout",
+		"name": "Elsweyr Lookout",
+		"type": "Creature",
+		"subtypes": [
+			"Khajiit"
+		],
+		"attributes": [
+			"Y"
+		],
+		"cost": 3,
+		"attack": 1,
+		"health": 1,
+		"rarity": "3Epic",
+		"text": "Pilfer: Double Elsweyr Lookout's power and health.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "fK",
+    	"tier": "D",
+		"effects": [
+			{
+				"trigger": "Pilfer",
+				"type": "doubleStats",
+				"target": "self"
+			}
+		]
+	},
+	{
+		"id": "stampede-sentinel",
+		"name": "Stampede Sentinel",
+		"type": "Creature",
+		"subtypes": [
+			"Giant"
+		],
+		"attributes": [
+			"R"
+		],
+		"cost": 6,
+		"attack": 7,
+		"health": 7,
+		"rarity": "3Epic",
+		"text": "Breakthrough You can't be damaged by actions or supports.",
+		"keywords": [
+			"Breakthrough"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "pj",
+    	"tier": "A",
+		"effects": [
+			{
+				"trigger": "Aura",
+				"type": "grantImmunity",
+				"immunity": "ActionDamage",
+				"target": "player"
+			},
+					{
+				"trigger": "Aura",
+				"type": "grantImmunity",
+				"immunity": "SupportDamage",
+				"target": "player"
+			}
+		]
+	},
+	{
+		"id": "heroic-rebirth",
+		"name": "Heroic Rebirth",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [
+			"N"
+		],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "3Epic",
+		"text": "Uses: 3 Activate: Transform a creature card in your hand into a random Legend.",
+		"keywords": [],
+		"uses": 3,
+		"set": "Monthly Reward",
+		"deckCodeId": "pj",
+    	"tier": "B",
+		"effects": [
+			{
+				"trigger": "Activation",
+				"type": "transform",
+				"cardId": "legendary",
+				"target": "creaturePlayerHand"
+			}
+		]
+	},
+	{
+		"id": "sower-of-revenge",
+		"name": "Sower of Revenge",
+		"type": "Creature",
+		"subtypes": [
+			"Daedra"
+		],
+		"attributes": [
+			"R", "P"
+		],
+		"cost": 5,
+		"attack": 5,
+		"health": 5,
+		"rarity": "3Epic",
+		"text": "Guard Last Gasp: Deals 5 damage to your opponent.",
+		"keywords": [
+			"Guard", "LastGasp"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "oR",
+    	"tier": "S",
+		"effects": [
+			{
+				"trigger": "LastGasp",
+				"type": "damage",
+				"amount": 5,
+				"target": "opponent"
+			}
+		]
+	},
+	{
+		"id": "chaurus-breeding-pit",
+		"name": "Chaurus Breeding Pit",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [
+			"G"
+		],
+		"cost": 10,
+		"attack": null,
+		"health": null,
+		"rarity": "3Epic",
+		"text": "Summon a Chaurus Reaper in each lane.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "cW",
+    	"tier": "C",
+		"effects": [
+			{
+				"trigger": "Play",
+				"type": "summon",
+				"cardId": "chaurus-reaper",
+				"amount": 1,
+				"target": "leftLane"
+			},
+			{
+				"trigger": "Play",
+				"type": "summon",
+				"cardId": "chaurus-reaper",
+				"amount": 1,
+				"target": "rightLane"
+			}
+		]
+	},
+	{
+		"id": "protector-of-the-mane",
+		"name": "Protector of the Mane",
+		"type": "Creature",
+		"subtypes": [
+			"Khajiit"
+		],
+		"attributes": [
+			"Y", "G"
+		],
+		"cost": 5,
+		"attack": 4,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Drain, Guard When you gain health, Protector of the Mane gains +1/+1.",
+		"keywords": [
+			"Drain", "Guard"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "mu",
+    	"tier": "B",
+		"effects": [
+			{
+				"trigger": "HealPlayer",
+				"type": "buffSelf",
+				"modAttack": 1,
+				"modHealth": 1
+			}
+		]
+	},
+	{
+		"id": "conjuration-tutor",
+		"name": "Conjuration Tutor",
+		"type": "Creature",
+		"subtypes": [
+			"Breton"
+		],
+		"attributes": [
+			"B"
+		],
+		"cost": 6,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "Summon: Shuffle three Lava Atronachs into your deck. When you summon an Atronach, summon a copy of it in the other lane.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "dw",
+    	"tier": "A",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "shuffleIntoDeck",
+				"cardId": "lava-atronach",
+				"target": "player",
+				"amount": 3
+			},
+			{
+				"trigger": "SummonCreature",
+				"type": "summonCopy",
+				"target": "otherLane",
+				"condition": {
+				"type": "hasSubtype",
+				"subtypes": [ "Atronach" ]
+				}
+			}
+		]
+	},
+	{
+		"id": "ulfrics-housecarl",
+		"name": "Ulfric's Housecarl",
+		"type": "Creature",
+		"subtypes": [
+			"Nord"
+		],
+		"attributes": [
+			"R", "Y"
+		],
+		"cost": 4,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "When an enemy rune is destroyed, draw a card.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "ra",
+    	"tier": "A",
+		"effects": [      
+			{
+				"trigger": "DestroyRune",
+				"type": "drawCards",
+				"amount": 1,
+				"target": "player"
+			}
+		]
+	},
+	{
+		"id": "pure-blood-elder",
+		"name": "Pure-Blood Elder",
+		"type": "Creature",
+		"subtypes": [
+			"Vampire"
+		],
+		"attributes": [
+			"P"
+		],
+		"cost": 7,
+		"attack": 8,
+		"health": 8,
+		"rarity": "3Epic",
+		"text": "When you gain max magicka, double the amount you gain. While you have 18 or more max magicka, Pure-Blood Elder has +8/+8 and Breakthrough.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "mv",
+    	"tier": "A",
+		"effects": [      
+			{
+				"trigger": "Aura",
+				"type": "buffTarget",
+				"addKeywords": [ "DoubleMagicka" ],
+				"target": "player"
+			}
+		],
+		"static": {
+			"condition": {
+				"type": "maxMagicka",
+				"min": 18
+			},
+			"modAttack": 8,
+			"modHealth": 8,
+			"addKeywords": ["Breakthrough"]
+		}
+	},
+	{
+		"id": "emperors-blade",
+		"name": "Emperor's Blade",
+		"type": "Creature",
+		"subtypes": [
+			"Imperial"
+		],
+		"attributes": [
+			"Y", "P"
+		],
+		"cost": 4,
+		"attack": 4,
+		"health": 5,
+		"rarity": "3Epic",
+		"text": "Guard Slay: You gain 3 health.",
+		"keywords": [
+			"Guard", "Slay"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "fP",
+    	"tier": "A",
+		"effects": [      
+			{
+				"trigger": "Slay",
+				"type": "damage",
+				"amount": -3,
+				"target": "player"
+			}
+		]
+	},
+	{
+		"id": "dushnikh-yal-archer",
+		"name": "Dushnikh Yal Archer",
+		"type": "Creature",
+		"subtypes": [
+			"Orc"
+		],
+		"attributes": [
+			"R"
+		],
+		"cost": 4,
+		"attack": 3,
+		"health": 3,
+		"rarity": "3Epic",
+		"text": "Guard Summon: Deal 1 damage or destroy an enemy support.",
+		"keywords": [
+			"Guard"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "fl",
+    	"tier": "B",
+		"effects": [
+			{
+				"trigger": "Summon",
+				"type": "choice",
+				"target": "player",
+				"choices": [
+					{
+						"text": "Deal 1 damage",
+						"effect": {
+							"type": "damage",
+							"amount": 1,
+							"target": "any"
+						}
+					},
+					{
+						"text": "Destroy an enemy support",
+						"effect" : {
+							"type": "destroy",
+							"target": "supportEnemy"
+						}
+					}
+				]
+			}
+		]
+	},
+  {
+		"id": "worm-kings-agent",
+		"name": "Worm King's Agent",
+		"type": "Creature",
+		"subtypes": [
+			"Breton"
+		],
+		"attributes": [
+			"B", "P"
+		],
+		"cost": 7,
+		"attack": 4,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Summon: Deal 2 damage to an enemy creature. Slay: Summon a 2/2 Worm Thrall with Guard.",
+		"keywords": [
+			"Slay"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "sc",
+    	"tier": "B",
+		"effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 2,
+        "target": "creatureEnemy"
+      }, 
+      {
+        "trigger": "Slay",
+        "type": "summon",
+        "cardId": "worm-thrall",
+        "amount": 1,
+        "target": "thisLane"
+      }
+    ]
+	},
+  {
+		"id": "black-hand-messenger",
+		"name": "Black Hand Messenger",
+		"type": "Creature",
+		"subtypes": [
+			"Dark Elf"
+		],
+		"attributes": [
+			"B", "G"
+		],
+		"cost": 3,
+		"attack": 0,
+		"health": 2,
+		"rarity": "3Epic",
+		"text": "Drain Summon: Deal 2 damage to a creature. Last Gasp: Deal 2 damage to your opponent.",
+		"keywords": [
+			"Drain", "LastGasp"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "bO",
+    	"tier": "C",
+		"effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 2,
+        "target": "creature"
+      }, 
+      {
+        "trigger": "LastGasp",
+        "type": "damage",
+        "amount": 2,
+        "target": "opponent"
+      }
+    ]
+	},
+  {
+		"id": "pack-leader",
+		"name": "Pack Leader",
+		"type": "Creature",
+		"subtypes": [
+			"Wolf"
+		],
+		"attributes": [
+			"Y"
+		],
+		"cost": 4,
+		"attack": 4,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Pilfer: Summon a 1/1 Young Wolf. Other friendly wolves have +1/+1.",
+		"keywords": [
+			"Pilfer"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "lS",
+    	"tier": "B",
+		"effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "summon",
+        "cardId": "young-wolf",
+        "amount": 1,
+        "target": "randomLane"
+      }, 
+      {
+        "trigger": "Aura",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureFriendlyOtherAll",
+        "targetCondition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Wolf" ]
+        }
+      }
+    ]
+	},
+  {
+		"id": "steam-constructor",
+		"name": "Steam Constructor",
+		"type": "Creature",
+		"subtypes": [
+			"Dwemer"
+		],
+		"attributes": [
+			"N"
+		],
+		"cost": 2,
+		"attack": 2,
+		"health": 2,
+		"rarity": "3Epic",
+		"text": "Summon: If you have a [N] card in hand, summon a 1/1 Reconstructed Spider.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "pq",
+    	"tier": "U",
+		"effects": [
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "reconstructed-spider",
+        "amount": 1,
+        "target": "thisLane",
+        "condition" : {
+          "type": "hasInHand",
+          "attribute": "N"
+        }
+      }
+    ]
+	},
+  {
+		"id": "frostscale-dragon",
+		"name": "Frostscale Dragon",
+		"type": "Creature",
+		"subtypes": [
+			"Dragon"
+		],
+		"attributes": [
+			"R", "B"
+		],
+		"cost": 9,
+		"attack": 6,
+		"health": 6,
+		"rarity": "3Epic",
+		"text": "Summon: Deal 4 damage to an enemy creature and 1 damage to all other enemy creatures.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "gN",
+    	"tier": "A",
+		"effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 3,
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 1,
+        "target": "creatureEnemyAll"
+      }
+    ]
+	},
+  {
+		"id": "blackwood-distiller",
+		"name": "Blackwood Distiller",
+		"type": "Creature",
+		"subtypes": [
+			"Argonian"
+		],
+		"attributes": [
+			"G", "P"
+		],
+		"cost": 4,
+		"attack": 3,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Pilfer: Gain three magicka this turn. Slay: Gain +1 max magicka.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "bW",
+    	"tier": "B",
+		"effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "magicka",
+        "amount": 3,
+        "target": "player"
+      },
+      {
+        "trigger": "Slay",
+        "type": "maxMagicka",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+	},
+  {
+		"id": "altmer-dragonknight",
+		"name": "Altmer Dragonknight",
+		"type": "Creature",
+		"subtypes": [
+			"High Elf"
+		],
+		"attributes": [
+			"B", "Y"
+		],
+		"cost": 3,
+		"attack": 3,
+		"health": 2,
+		"rarity": "3Epic",
+		"text": "At the end of your turn, if you played an action, Altmer Dragonknight gains +2/+2.",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": "ax",
+    	"tier": "C",
+		"effects": [
+			{
+				"trigger": "EndOfTurn",
+				"type": "buffSelf",
+				"modAttack": 2,
+				"modHealth": 2,
+				"condition": {
+				"type": "playedActions",
+				"min": 1
+				}
+			}
+		]
+	},
+  {
+		"id": "ashlander-punisher",
+		"name": "Ashlander Punisher",
+		"type": "Creature",
+		"subtypes": [
+			"Dark Elf"
+		],
+		"attributes": [
+			"R", "G"
+		],
+		"cost": 4,
+		"attack": 5,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Breakthrough Pilfer and Slay: +1/+0",
+		"keywords": [
+			"Breakthrough", "Pilfer", "Slay"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": "aZ",
+    	"tier": "C",
+		"effects": [
+			{
+				"trigger": "Pilfer",
+				"type": "buffSelf",
+				"modAttack": 1
+			},
+			{
+				"trigger": "Slay",
+				"type": "buffSelf",
+				"modAttack": 1
+			}
+    	]
+	},
+	{
+		"id": "lava-atronach",
+		"name": "Lava Atronach",
+		"type": "Creature",
+		"subtypes": [
+			"Daedra", "Atronach"
+		],
+		"attributes": [
+			"B"
+		],
+		"cost": 7,
+		"attack": 8,
+		"health": 8,
+		"rarity": "3Epic",
+		"text": "Breakthrough, Guard, Ward",
+		"keywords": [
+			"Breakthrough", "Guard", "Ward"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": null
+	},
+  {
+		"id": "worm-thrall",
+		"name": "Worm Thrall",
+		"type": "Creature",
+		"subtypes": [
+			"Skeleton"
+		],
+		"attributes": [
+			"P"
+		],
+		"cost": 2,
+		"attack": 2,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Guard",
+		"keywords": [
+			"Guard"
+		],
+		"set": "Monthly Reward",
+		"deckCodeId": null
+	},
+  {
+		"id": "reconstructed-spider",
+		"name": "Reconstructed Spider",
+		"type": "Creature",
+		"subtypes": [
+			"Dwemer"
+		],
+		"attributes": [
+			"N"
+		],
+		"cost": 1,
+		"attack": 1,
+		"health": 1,
+		"rarity": "1Common",
+		"text": "",
+		"keywords": [],
+		"set": "Monthly Reward",
+		"deckCodeId": null
+	}
+]

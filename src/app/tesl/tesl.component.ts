@@ -485,7 +485,7 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.0';
+  appVersion = '0.4.1';
 
   /*
   0.2.2
@@ -3087,6 +3087,7 @@ export class TeslComponent implements OnInit {
     this.updateBackgroundMusic();
     if (this.isArenaMode && !this.gameOverHandled) {
       this.gameOverHandled = true;
+      this.showSettingsOverlay = false;
       this.loadArenaState();            
       this.arenaState.losses = (this.arenaState.losses ?? 0) + 1;
       if (this.arenaState.losses === 3) {
@@ -3097,7 +3098,10 @@ export class TeslComponent implements OnInit {
       localStorage.setItem(this.ARENA_STATE_KEY, JSON.stringify(this.arenaState));
       this.openSoloArena();
     } else if (this.isRankedMode && !this.gameOverHandled) {
+      this.gameOverHandled = true;
+      this.showSettingsOverlay = false;
       localStorage.setItem('TESL_ranked_result', 'lose');
+      this.openRanked();
     }
   }
 

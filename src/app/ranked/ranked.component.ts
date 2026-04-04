@@ -142,7 +142,9 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
     const lastReset = localStorage.getItem(this.LAST_RESET_KEY);
+    console.log(`last reset: ${lastReset}, current month: ${currentMonth}`);
     if (!lastReset || lastReset !== currentMonth) {
+      console.log('Performing monthly reset of ranked progress');
       this.resetRank();
       localStorage.setItem(this.LAST_RESET_KEY, currentMonth);
     }
@@ -305,10 +307,17 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const usedIds = new Set<string>();
     let numSets = tierIndex >= 4 ? 2 : 1;   // Diamond+ gets 2 reward sets
     if (star === 1 && tierIndex > 0) numSets *= 3;
+    if (this.tripleRewards) numSets *= 3;
 
     for (let i = 0; i < numSets; i++) {
       const set = this.generateRankedRewardSet(allCards, usedIds);
       this.arenaRewardSets.push(set);
+    }
+
+    while (this.currentRewardIndex < this.arenaRewardSets.length && 
+      this.arenaRewardSets[this.currentRewardIndex].length === 0) {
+        console.log(`no available rewards for index ${this.currentRewardIndex}. go next`);
+        this.currentRewardIndex++;
     }
 
     this.saveRankedState();
@@ -318,6 +327,7 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const tierIndex = this.currentTierIndex;
     const set: Card[] = [];
     const rarityChances = this.getRarityChancesForTier(tierIndex);
+    const rarityOrder = ['1Common', '2Rare', '3Epic', '4Legendary'];
 
     for (let i = 0; i < 3; i++) {
       let roll = Math.random();
@@ -331,10 +341,29 @@ export class RankedComponent implements OnInit, AfterViewInit {
           break;
         }
       }
-      const candidates = allCards.filter(c => c.rarity === selectedRarity);
-      if (candidates.length === 0) continue;
+      let candidates: Card[] = [];
+      let rarityIndex = rarityOrder.indexOf(selectedRarity);
+      while (rarityIndex >= 0) {
+        candidates = allCards.filter(c => 
+          c.rarity === rarityOrder[rarityIndex] && 
+          !usedIds.has(c.id)
+        );
+
+        if (candidates.length > 0) {
+          break;
+        }
+
+        rarityIndex--;
+      }
+      if (rarityIndex >= 0) {
+        selectedRarity = rarityOrder[rarityIndex];
+      } else {
+        return []; // no cards available at all
+      }
+
       const chosen = this.utilityService.random(candidates);
       set.push(chosen);
+      usedIds.add(chosen.id);
     }
     return set;
   }
@@ -358,6 +387,11 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const usedIds = new Set<string>();
     this.arenaRewardSets = [this.generateRankedRewardSet(allCards, usedIds)];
     this.currentRewardIndex = 0;
+    if (this.arenaRewardSets[0].length === 0) {
+      console.log('no available rewards for legendary tier');
+      this.arenaRewardSets = [];
+      this.currentRewardIndex = -1;
+    }
     this.saveRankedState();
   }
 
@@ -369,6 +403,11 @@ export class RankedComponent implements OnInit, AfterViewInit {
     this.unlockedCards.push(card.deckCodeId!);
     this.saveUnlockedCards();
     this.currentRewardIndex++;
+    while (this.currentRewardIndex < this.arenaRewardSets.length && 
+      this.arenaRewardSets[this.currentRewardIndex].length === 0) {
+        console.log(`no available rewards for index ${this.currentRewardIndex}. go next`);
+        this.currentRewardIndex++;
+    }
     if (this.currentRewardIndex >= this.arenaRewardSets.length) {
       this.arenaRewardSets = [];
       this.currentRewardIndex = -1;

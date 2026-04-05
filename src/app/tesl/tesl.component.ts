@@ -4680,7 +4680,7 @@ export class TeslComponent implements OnInit {
       autoFocus: false,
       data: {
         currentDeck: this.selectedPlayerDeck,
-        starterDecks: this.starterDecks.filter(d => !d.locked) || [],   // your existing starter decks
+        starterDecks: this.starterDecks.filter(d => !d.locked || this.unlockedAll) || [],   // your existing starter decks
         customDecks: this.customDecks || [],      // your existing custom decks
         triple: this.tripleRewards
       }

@@ -1117,7 +1117,7 @@
         🔇
       </button>
     </div>
-    <div *ngIf="!showOpponent" class="mode-toggle-container">
+    <div *ngIf="!showOpponent && (isMainMenu || isExhibitionMode)" class="mode-toggle-container">
       <button 
         class="mode-btn cpu-btn" 
         [class.active]="cpuTogglePlaying"

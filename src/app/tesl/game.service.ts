@@ -4289,7 +4289,7 @@ export class GameService {
         case 'buffTarget':
         case 'buffSelf':
           if (this.isCard(target)) {
-            if ((target.currentHealth ?? 0) <= 0) {
+            if ((target.currentHealth ?? 0) <= 0 && effect.trigger !== 'LastGasp') {
               if (outputLogs) console.log(`${target.name} should already be dead. can't buff`);
               break;
             }
@@ -4684,6 +4684,7 @@ export class GameService {
           let oppBool = owner === game.opponent;
           if (this.isCard(target)) {
             if (effect.type === 'shuffleIntoDeck' && effect.target === 'self') {
+              this.removeAllAuraEffectsOnCard(game, target);
               target.currentHealth = target.maxHealth;
               owner.deck.push(target);
               owner.deck = this.utilityService.shuffle(owner.deck);
@@ -4980,6 +4981,7 @@ export class GameService {
                 }
               });
             }
+            this.updateAurasOnBoard(game);
           }
           break;
 
@@ -7083,6 +7085,42 @@ private checkCreatureDeath(game: GameState) {
         }
       });
     }
+
+    private updateAurasOnBoard(game: GameState) {
+      [...game.player.board[0], ...game.player.board[1], ...game.opponent.board[0], ...game.opponent.board[1]]
+        .forEach(card => this.updateAurasOnCard(game, card));
+    }
+
+    private updateAurasOnCard(game: GameState, card: Card) {
+      const allAuras = [...game.player.auras, ...game.opponent.auras];
+
+      allAuras.forEach(aura => {
+        const currentlyApplied = aura.appliedTo.has(card.instanceId!);
+        const shouldApply = !aura.isPlayerAura && !aura.isHandAura && aura.targetFilter(card);
+
+        if (currentlyApplied && !shouldApply) {
+          // Aura no longer valid → remove effect
+          this.removeAuraEffectFromTarget(aura, card, game);
+          aura.appliedTo.delete(card.instanceId!);
+        } 
+        else if (!currentlyApplied && shouldApply) {
+          // Aura now valid → apply effect
+          this.applyAuraEffectToTarget(aura, card, game);
+          aura.appliedTo.add(card.instanceId!);
+        }
+      });
+    }
+
+    private removeAllAuraEffectsOnCard(game: GameState, card: Card) {
+      const allAuras = [...game.player.auras, ...game.opponent.auras];
+      allAuras.forEach(aura => {
+        if (aura.appliedTo.has(card.instanceId!)) {
+          console.log(`Removing aura effect from ${aura.sourceCard} on ${card.name}`);
+          this.removeAuraEffectFromTarget(aura, card, game);
+          aura.appliedTo.delete(card.instanceId!);
+        }
+      });
+    }
   
     private applyAuraEffectToTarget(aura: AuraEffect, target: Card, game: GameState) {
       if (aura.type === 'buffTarget') {
@@ -7103,6 +7141,29 @@ private checkCreatureDeath(game: GameState) {
         console.log(`${target.name} gets extra attack per turn`);
         target.attacksPerTurn = (target.attacksPerTurn ?? 1) + 1;
         target.attacks = (target.attacks ?? 0) + 1;
+      }
+    }
+
+    private removeAuraEffectFromTarget(aura: AuraEffect, target: Card, game: GameState) {
+      if (aura.type === 'buffTarget') {
+        target.currentAttack = Math.max(0, (target.currentAttack ?? 0) - (aura.modAttack ?? 0));
+        target.currentHealth = Math.max(0, (target.currentHealth ?? 0) - (aura.modHealth ?? 0));
+        target.maxHealth = Math.max(target.maxHealth ?? 0, (target.maxHealth ?? 0) - (aura.modHealth ?? 0));
+        if (aura.keywordsToAdd?.length) {
+          target.currentKeywords = target.currentKeywords?.filter(k => {
+            // Keep "Pilfer" if the creature still has any Pilfer-triggered effect
+            if (k === 'Pilfer' && this.hasPilferEffect(target)) {
+              return true;  // protect Pilfer
+            }
+            // Remove any other keywords that were granted by this aura
+            return !aura.keywordsToAdd!.includes(k);
+          }) || [];
+        }
+      } else if (aura.type === 'grantImmunity') {
+        target.immunity = target.immunity?.filter(k => k !== aura.immunity);
+      } else if (aura.type === 'extraAttack') {
+        target.attacksPerTurn = Math.max(1,(target.attacksPerTurn ?? 1) - 1);
+        target.attacks = target.attacks! - 1;
       }
     }
   

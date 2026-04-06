@@ -485,7 +485,7 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.1';
+  appVersion = '0.4.2';
 
   /*
   0.2.2

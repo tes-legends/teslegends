@@ -329,38 +329,40 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const rarityChances = this.getRarityChancesForTier(tierIndex);
     const rarityOrder = ['1Common', '2Rare', '3Epic', '4Legendary'];
 
+    let roll = Math.random();
+    let selectedRarity = '1Common';
+
+    let cum = 0;
+    for (const [rarity, chance] of Object.entries(rarityChances)) {
+      cum += chance;
+      if (roll <= cum) {
+        selectedRarity = rarity;
+        break;
+      }
+    }
+    let candidates: Card[] = [];
+    let rarityIndex = rarityOrder.indexOf(selectedRarity);
+    while (rarityIndex >= 0) {
+      candidates = allCards.filter(c => 
+        c.rarity === rarityOrder[rarityIndex] && 
+        !usedIds.has(c.id)
+      );
+
+      if (candidates.length > 0) {
+        break;
+      }
+
+      rarityIndex--;
+    }
+    if (rarityIndex >= 0) {
+      selectedRarity = rarityOrder[rarityIndex];
+    } else {
+      return []; // no cards available at all
+    }
+
     for (let i = 0; i < 3; i++) {
-      let roll = Math.random();
-      let selectedRarity = '1Common';
-
-      let cum = 0;
-      for (const [rarity, chance] of Object.entries(rarityChances)) {
-        cum += chance;
-        if (roll <= cum) {
-          selectedRarity = rarity;
-          break;
-        }
-      }
-      let candidates: Card[] = [];
-      let rarityIndex = rarityOrder.indexOf(selectedRarity);
-      while (rarityIndex >= 0) {
-        candidates = allCards.filter(c => 
-          c.rarity === rarityOrder[rarityIndex] && 
-          !usedIds.has(c.id)
-        );
-
-        if (candidates.length > 0) {
-          break;
-        }
-
-        rarityIndex--;
-      }
-      if (rarityIndex >= 0) {
-        selectedRarity = rarityOrder[rarityIndex];
-      } else {
-        return []; // no cards available at all
-      }
-
+      candidates = candidates.filter(c => !usedIds.has(c.id));
+      if (candidates.length === 0) break;
       const chosen = this.utilityService.random(candidates);
       set.push(chosen);
       usedIds.add(chosen.id);
@@ -369,10 +371,12 @@ export class RankedComponent implements OnInit, AfterViewInit {
   }
 
   private getRarityChancesForTier(tier: number) {
-    if (tier === 5) return { '4Legendary': 0.4, '3Epic': 0.6 };           // Legendary
-    if (tier === 4) return { '4Legendary': 0.15, '3Epic': 0.55, '2Rare': 0.3 };
-    if (tier === 3) return { '3Epic': 0.35, '2Rare': 0.55, '1Common': 0.1 };
-    return { '2Rare': 0.4, '1Common': 0.6 };                              // lower tiers
+    if (tier === 5) return { '4Legendary': 0.25, '3Epic': 0.5, '2Rare': 0.25 };           // Legendary
+    if (tier === 4) return { '4Legendary': 0.15, '3Epic': 0.35, '2Rare': 0.4, '1Common': 0.05 }; // Diamond
+    if (tier === 3) return { '4Legendary': 0.05,'3Epic': 0.2, '2Rare': 0.4, '1Common': 0.35 }; // Platinum
+    if (tier === 2) return { '4Legendary': 0.025, '3Epic': 0.1, '2Rare': 0.4, '1Common': 0.475 }; // Gold
+    if (tier === 1) return { '4Legendary': 0.01, '3Epic': 0.05, '2Rare': 0.3, '1Common': 0.64 }; // Silver
+    return { '2Rare': 0.2, '1Common': 0.8 }; // lower tiers
   }
 
   private getEligibleCards(): Card[] {

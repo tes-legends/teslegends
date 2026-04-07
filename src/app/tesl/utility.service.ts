@@ -1,9 +1,21 @@
 //utility.service.ts
 import { Injectable } from '@angular/core';
+import { Card } from './deck.service';
 
 export interface HelpRule {
   title: string;
   content: string;
+}
+
+export interface RankedSaveState {
+  currentTier: number;
+  currentStars: number;
+  lastRewardStars: { [key: string]: number[] }; // tierName -> [stars already rewarded]
+  lastResetMonth: string; // YYYY-MM
+  totalWins: number;
+  totalLosses: number;
+  rewardSets: Card[][];
+  rewardIndex: number;
 }
 
 @Injectable({
@@ -133,17 +145,23 @@ export class UtilityService {
     }
 
     exportProgressToClipboard() {
+      const rankedJson = localStorage.getItem('tesl_ranked_state');
+      let rankedState: RankedSaveState = JSON.parse(rankedJson || '{}');
       const progressData = {
         lastCompletedChapterIndex: parseInt(localStorage.getItem(this.KEYS.CHAPTER_PROGRESS) || '-1', 10),
         arenaElo: parseInt(localStorage.getItem(this.KEYS.ARENA_ELO) || '1200', 10),
         unlockedCards: JSON.parse(localStorage.getItem(this.KEYS.UNLOCKED_CARDS) || '[]'),
+        cheatUsed: localStorage.getItem('TESL_cheats_ever') === 'true',
         arenaLastRewardDate: localStorage.getItem(this.KEYS.ARENA_LAST_REWARD_DATE) || '',
-        arenaLastEloReward: parseInt(localStorage.getItem(this.KEYS.ARENA_LAST_ELO_REWARD) || '0', 10)
+        arenaLastEloReward: parseInt(localStorage.getItem(this.KEYS.ARENA_LAST_ELO_REWARD) || '0', 10),
+        rankedTier: rankedState.currentTier || 0,
+        rankedStarRewards: rankedState.lastRewardStars || {},
+        rankedResetMonth: rankedState.lastResetMonth || ''
       };
 
       // Generate checksum to prevent tampering
       const exportObject = {
-        version: 2,
+        version: 3,
         exportedAt: new Date().toISOString(),
         data: progressData
       };
@@ -188,25 +206,67 @@ export class UtilityService {
         }
 
         // Restore data safely
+        let cheatCleared = true;
         if (data.lastCompletedChapterIndex !== undefined) {
+          if (data.lastCompletedChapterIndex.toString() !== -1) cheatCleared = false;
           localStorage.setItem(this.KEYS.CHAPTER_PROGRESS, data.lastCompletedChapterIndex.toString());
         }
 
         if (data.arenaElo !== undefined) {
+          if (data.arenaElo.toString() !== '1200') cheatCleared = false;
           localStorage.setItem(this.KEYS.ARENA_ELO, data.arenaElo.toString());
         }
 
         if (data.unlockedCards) {
+          if (Array.isArray(data.unlockedCards) && data.unlockedCards.length > 0) cheatCleared = false;
           localStorage.setItem(this.KEYS.UNLOCKED_CARDS, JSON.stringify(data.unlockedCards));
         }
 
         if (data.arenaLastRewardDate !== undefined) {
+          if (data.arenaLastRewardDate.toString() !== '') cheatCleared = false;
           localStorage.setItem(this.KEYS.ARENA_LAST_REWARD_DATE, data.arenaLastRewardDate);
         }
 
         if (data.arenaLastEloReward !== undefined) {
+          if (data.arenaLastEloReward.toString() !== '0') cheatCleared = false;
           localStorage.setItem(this.KEYS.ARENA_LAST_ELO_REWARD, data.arenaLastEloReward.toString());
         }
+
+        if (cheatCleared) {
+          console.log('⚠️ Imported progress is identical to default/reset state. Clear chat flags');
+          localStorage.removeItem('TESL_cheats_ever');
+          localStorage.removeItem('tesl_cheat');
+        } else {
+          if (data.cheatUsed) {
+            console.log('⚠️ Imported progress indicates cheats were used. Setting cheat flags');
+            localStorage.setItem('TESL_cheats_ever', 'true');
+          } else {            
+            localStorage.removeItem('TESL_cheats_ever');
+            localStorage.removeItem('tesl_cheat');
+          }
+        }
+
+        const rankedJson = localStorage.getItem('tesl_ranked_state');
+        let rankedState: RankedSaveState = JSON.parse(rankedJson || '{}');
+        if (data.rankedTier !== undefined) rankedState.currentTier = data.rankedTier;
+        if (data.rankedStarRewards !== undefined) rankedState.lastRewardStars = data.rankedStarRewards;
+        if (data.rankedResetMonth !== undefined) {
+          rankedState.lastResetMonth = data.rankedResetMonth;        
+          localStorage.setItem('tesl_ranked_last_reset', data.rankedResetMonth);
+        }
+        if (!rankedJson || !rankedState) {
+          rankedState = {
+            currentTier: data.rankedTier || 0,
+            currentStars: 0,
+            lastRewardStars: data.rankedStarRewards || {},
+            lastResetMonth: data.rankedResetMonth || '',
+            totalWins: 0,
+            totalLosses: 0,
+            rewardSets: [],
+            rewardIndex: -1
+          };
+        }
+        localStorage.setItem('tesl_ranked_state', JSON.stringify(rankedState));
 
         alert('✅ Progress successfully imported!\n\nPlease refresh the page to apply changes.');
 

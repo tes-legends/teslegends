@@ -63,6 +63,9 @@
     <p *ngIf="availableDecks.length === 0" class="no-decks">
         You have no unlocked decks. Unlock decks in Story to play Ranked.
     </p>
+    <p *ngIf="totalWins > 0">
+      Record: {{ totalWins }}W - {{ totalLosses }}L ({{ ((totalWins / (totalWins + totalLosses)) * 100) | number:'1.0-2' }}% win rate)
+    </p>
   </div>
 
   <!-- REWARD SCREEN -->

@@ -61,6 +61,7 @@ interface GameOverrides {
   mulligan?: boolean;
   playerMaxMagicka?: number;
   playerHand?: string[];
+  oppCards?: number;
 
 }
 
@@ -436,6 +437,7 @@ export class TeslComponent implements OnInit {
   cheatCodeInput: string = '';
   cheatsActive: boolean = false;
   cheatFailCount: number = 0;
+  cheatEver: boolean = false;
   activeCheat: string = 'None';
 
   unlockedCards: string[] = []; //unlocked deckcodes
@@ -485,7 +487,7 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.2';
+  appVersion = '0.4.3';
 
   /*
   0.2.2
@@ -552,6 +554,7 @@ export class TeslComponent implements OnInit {
 
         this.loadDeckSelection();
         this.unlockedStarterDecks(false);
+        this.unlockCustomDecks();
         this.loadArenaState();
       },
       error: (err) => {
@@ -631,7 +634,7 @@ export class TeslComponent implements OnInit {
   get collectionInfo(): string {
     if (this.unlockedAll) return '100%';
     const collectionPct = this.unlockedCards.length/this.collectibleCount*100;
-    return `${Math.round(collectionPct)}%`;
+    return `${Math.round(collectionPct)}%${this.cheatEver ? '*' : ''}`;
   }
 
   get storyInfo(): string {
@@ -757,6 +760,28 @@ export class TeslComponent implements OnInit {
       }
     });
     if (unlockCount > 0) this.saveUnlockedCards();
+  }
+
+  private unlockCustomDecks() {
+    this.customDecks.forEach(deck => {
+      const codes = deck.deckCode?.substring(2);
+      // Split every 2 characters
+      const codePairs = [];
+      if (codes) {
+        for (let i = 0; i < codes.length; i += 2) {
+          const dc = codes.slice(i,i+2);
+          if (!dc.startsWith('A') && !dc.startsWith('B')) {
+            codePairs.push(codes.slice(i, i + 2));
+          }
+        }
+      }
+      deck.locked = false;
+      codePairs.forEach(code => {
+        if (!this.unlockedCards.includes(code)) {
+          deck.locked = true;
+        }
+      });
+    });
   }
 
   saveUnlockedCards() {
@@ -1530,6 +1555,7 @@ export class TeslComponent implements OnInit {
     this.showSettingsOverlay = false;
     this.showGameBoard = true;
     this.isMainMenu = false;
+    
     if (!this.deckValid() || !this.selectedPlayerDeck) {
       this.selectedPlayerDeck = this.starterDecks[0];
       this.playerDeckMode = 'starter';
@@ -1560,16 +1586,27 @@ export class TeslComponent implements OnInit {
       }
       opponentDeckCode = this.deckService.generateRandomDeckCode(oppDeck.attributes);
     }
+    if (!this.isExhibitionMode) {
+      if (this.cheatsActive && !this.cheatEver) {
+        this.cheatEver = true;
+        localStorage.setItem('TESL_cheats_ever', 'true');
+      }
+      if (!this.cpuTogglePlaying) {
+        this.cpuTogglePlaying = true;
+        this.saveCPUtoggle();
+      }
+    }
     let magickaHandicap = this.oppHandicapMagicka;
     let cardHandicap = this.oppHandicapCards;
-    if (this.isStoryMode) {
-      this.cpuTogglePlaying = true;
+    if (this.isStoryMode) {      
       magickaHandicap = this.hardMode ? 2 : 0;
       cardHandicap = this.hardMode ? 2 : 0;
     } else if (this.isArenaMode) {
-      this.cpuTogglePlaying = true;
       magickaHandicap = 0;
       cardHandicap = 0;
+    } else if (this.isRankedMode) {
+      magickaHandicap = 0;
+      cardHandicap = overrides?.oppCards ?? 0;
     }
     if (this.magickaBoost) {
       overrides.playerMaxMagicka = (overrides.playerMaxMagicka ?? 0) + 3;
@@ -3124,6 +3161,11 @@ export class TeslComponent implements OnInit {
       if (this.activeCheat !== 'None') this.cheatsActive = true;
     }
 
+    const savedCheatEver = localStorage.getItem('TESL_cheats_ever');
+    if (savedCheatEver) {
+      this.cheatEver = savedCheatEver === 'true';
+    }
+
     const savedCustomDecks = localStorage.getItem('custom_decks');
     if (savedCustomDecks) {
       this.savedDecks = JSON.parse(savedCustomDecks);
@@ -4661,6 +4703,7 @@ export class TeslComponent implements OnInit {
         // Update local state if needed
         this.savedDecks = result.savedDecks;  // optional: mirror in parent
         this.customDecks = this.savedDecks.map(d => this.mapToDeckOption(d,'custom'));
+        this.unlockCustomDecks();
         console.log('Updated saved decks from dialog:', result.savedDecks.length);
         
         // Optional: refresh UI, show toast, etc.
@@ -4681,7 +4724,7 @@ export class TeslComponent implements OnInit {
       data: {
         currentDeck: this.selectedPlayerDeck,
         starterDecks: this.starterDecks.filter(d => !d.locked || this.unlockedAll) || [],   // your existing starter decks
-        customDecks: this.customDecks || [],      // your existing custom decks
+        customDecks: this.customDecks.filter(d => !d.locked || this.unlockedAll) || [],      // your existing custom decks
         triple: this.tripleRewards
       }
     });
@@ -4718,19 +4761,21 @@ startRankedMatch(tier: number, stars: number) {
   console.log(`Ranked opponent chosen: ${opponentDeck.name} (tier ${opponentDeck.tier})`);
 
   // Store for UI / game
-  if (!this.cpuTogglePlaying) {
-    this.cpuTogglePlaying = true;
-    this.saveCPUtoggle();
-  }
   this.selectedOpponentDeck = opponentDeck;
   this.opponentDeckMode = opponentDeck.source;
+  const serialized = JSON.stringify(opponentDeck);
+  localStorage.setItem('exhibition_opponent_deck', serialized);
   this.isRankedMode = true;
   // Start the actual game (same pattern as arena)
   let overrides: GameOverrides = {};
-  if (tier === 5) {
+  if (tier === 5) { //legendary
     overrides.maxMagicka = 2;
-  } else if (tier === 4) {
+    overrides.oppCards = 3;
+  } else if (tier === 4) { //diamond
     overrides.maxMagicka = 1;
+    overrides.oppCards = 2;
+  } else if (tier === 3) {  //platinum
+    overrides.oppCards = 1;
   }
   this.callStartGame(overrides);
 }

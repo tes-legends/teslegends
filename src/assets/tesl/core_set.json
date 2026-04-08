@@ -842,7 +842,6 @@
     ],
     "set": "Core Set",
     "deckCodeId": "kN",
-    "target": "creature",
     "tier": "S",
     "prophecy": true,
     "effects": [
@@ -1093,7 +1092,6 @@
     "set": "Core Set",
     "deckCodeId": "mG",
     "tier": "B",
-    "damage": 1,
     "effects": [
       {
         "trigger": "Play",
@@ -1274,7 +1272,6 @@
     "set": "Core Set",
     "deckCodeId": "nz",
     "tier": "S",
-    "target": "creature",
     "effects": [
       {
         "trigger": "Summon",
@@ -1303,8 +1300,6 @@
     "set": "Core Set",
     "deckCodeId": "nV",
     "tier": "B",
-    "target": "any",
-    "damage": 1,
     "prophecy": true,
     "effects": [
       {
@@ -1389,7 +1384,6 @@
     "keywords": [],
     "set": "Core Set",
     "uses": 3,
-    "target": "creature",
     "deckCodeId": "ow",
     "tier": "C",
     "effects": [
@@ -1582,7 +1576,6 @@
     "keywords": [],
     "set": "Core Set",
     "uses": 2,
-    "target": "creature",
     "deckCodeId": "rw",
     "tier": "B",
     "unique": true,
@@ -1776,8 +1769,6 @@
     "set": "Core Set",
     "deckCodeId": "aX",
     "tier": "B",
-    "target": "creature",
-    "damage": 2,
     "effects": [
       {
         "trigger": "Summon",
@@ -2428,7 +2419,6 @@
     "keywords": [],
     "set": "Core Set",
     "uses": 3,
-    "target": "creature",
     "deckCodeId": "fF",
     "tier": "C",
     "effects": [
@@ -2885,7 +2875,6 @@
     "set": "Core Set",
     "deckCodeId": "jH",
     "tier": "S",
-    "damage": 4,
     "prophecy": true,
     "effects": [
       {
@@ -3598,7 +3587,6 @@
     "set": "Core Set",
     "deckCodeId": "rU",
     "tier": "D",
-    "target": "creatureFriendlyAll",
     "prophecy": true,
     "effects": [
       {
@@ -5232,7 +5220,6 @@
     "set": "Core Set",
     "deckCodeId": "pc",
     "tier": "B",
-    "target": "creature",
     "effects": [
       {
         "trigger": "Summon",
@@ -5292,8 +5279,6 @@
     "set": "Core Set",
     "deckCodeId": "pQ",
     "tier": "D",
-    "target": "creature",
-    "modHealth": 2,
     "effects": [
       {
         "trigger": "Summon",
@@ -5455,7 +5440,6 @@
     "set": "Core Set",
     "deckCodeId": "aO",
     "tier": "D",
-    "target": "creatureEnemy",
     "effects": [
       {
         "trigger": "Summon",
@@ -7820,7 +7804,6 @@
     "keywords": [],
     "set": "Core Set",
     "uses": 3,
-    "target": "creature",
     "deckCodeId": "fI",
     "tier": "E",
     "effects": [
@@ -9487,7 +9470,6 @@
     "keywords": [],
     "set": "Core Set",
     "uses": 3,
-    "target": "creature",
     "deckCodeId": "hm",
     "tier": "B",
     "unique": true,

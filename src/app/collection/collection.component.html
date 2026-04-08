@@ -6,6 +6,7 @@
   <div class="collection-header">
     <!--<h2>Card Collection</h2>-->
     <button class="close-btn" *ngIf="!hideStorySet" (click)="close()">X</button>
+    <span *ngIf="!showUnlockedOnly && displayedCards.length > 0" class="collection-count">{{ unlockPct }}</span>
   </div>
   <!-- Filter Rows -->
   <div class="filter-rows">
@@ -55,6 +56,10 @@
       </button>
     </div>
     <div class="filter-row extra-filters" *ngIf="hideStorySet || (showFilters && showExtraFilters)">
+      <button class="extra-btn" (click)="toggleFilter('rarity')">
+        <img *ngIf="selectedRarity !== 'All'" [src]="rarityIcons[selectedRarity]" [alt]="selectedRarity" class="filter-icon">        
+        <span *ngIf="selectedRarity === 'All'">{{ selectedRarity }}</span>
+      </button>
       <button class="extra-btn" (click)="toggleFilter('type')">
         <span>{{ selectedType }}</span>
       </button>
@@ -97,6 +102,16 @@
           <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
           <span class="cost-overlay">{{ cost }}</span>
         </div>
+      </button>
+    </div>
+
+    <!-- Rarity Options -->
+    <div class="filter-options" *ngIf="filterExpanded.rarity && (showFilters || hideStorySet)">
+      <button *ngFor="let r of rarityOptions"
+              class="extra-btn" 
+              [class.active]="selectedRarity === r"
+              (click)="selectRarity(r)">
+        {{ r }}
       </button>
     </div>
 

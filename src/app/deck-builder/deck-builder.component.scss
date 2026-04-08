@@ -8,7 +8,16 @@
   background: #0d1b2a;
 }
 
-
+h3 {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    height: 48px;
+    line-height: 48px;
+    align-items: center;
+}
 
 .deck-option {
     display: flex;                   
@@ -22,6 +31,8 @@
     cursor: pointer;
     text-align: left;
     transition: all 0.2s;
+    font-size: 1.2rem;
+    font-weight: 500;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -48,31 +59,12 @@
         margin-left: 8px;
     }
 
-    &.locked {
-        background: rgba(80, 80, 80, 0.4);
-        border-color: #555;
-        color: #aaa;
-        cursor: not-allowed;
-        opacity: 0.6;
-        transform: none;
-
-        &:hover {
-        background: rgba(80, 80, 80, 0.4);
-        transform: none;
-        }
-
-        .locked-label {
-        font-size: 0.8rem;
-        margin-left: auto;
-        color: #ff6666;
-        }
-    }
     .deck-icons {
         display: flex;
-        gap: 4px;                   // small gap between icons
+        gap: 6px;                   // small gap between icons
         .deck-icon {
-            width: 32px;                // adjust size to taste
-            height: 32px;
+            width: 36px;                // adjust size to taste
+            height: 36px;
             object-fit: contain;
         }
     }
@@ -213,6 +205,12 @@
     padding: 8px;
     height: 32px !important;
   }
+
+  .deck-entry.locked {
+    background: #555;   // gray
+    opacity: 0.6;       // optional: makes it feel disabled
+  }
+
   .deck-entry .info {
     display: flex;
     align-items: center;
@@ -287,6 +285,7 @@
     padding: 12px;
     margin: 8px 0;
     background: rgba(30, 60, 120, 0.5);
+    color: white;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;

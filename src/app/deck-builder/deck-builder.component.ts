@@ -146,7 +146,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     const incomingCode = await navigator.clipboard.readText();
     const deckEntries = this.deckService.decodeDeckCode(incomingCode);
     if (deckEntries && deckEntries.length > 0) {
-      const codes = incomingCode.substring(2);
+      /*const codes = incomingCode.substring(2);
       // Split every 2 characters
       for (let i = 0; i < codes.length; i += 2) {
         const dc = codes.slice(i,i+2);
@@ -156,7 +156,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
             return;
           }
         }
-      }
+      }*/
       const deckAttr: string[] = [];
       deckEntries.forEach(e => {
         e.card.attributes.forEach(a => {
@@ -198,6 +198,11 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       alert('invalid code');
       return;
     }
+  }
+
+  isUnlocked(deckCodeId: string): boolean {
+    if (this.unlockAll) return true;
+    return this.unlockedCardIds.includes(deckCodeId);
   }
 
   exportDeck() {
@@ -243,6 +248,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     }
 
     localStorage.setItem('custom_decks', JSON.stringify(savedDecks));
+    this.savedDecks = savedDecks;  // update local list to reflect changes
   }
 
   loadSavedDecks() {

@@ -487,9 +487,13 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.3';
+  appVersion = '0.4.4';
 
   /*
+  0.4.0
+    - added ranked mode
+  0.3.0
+    - added solo arena and story mode
   0.2.2
     - added skyrim set, reward set, promo set, dark brotherhood
   0.1.1

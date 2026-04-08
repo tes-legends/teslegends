@@ -33,6 +33,8 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   typeOptions: string[] = ['All', 'Creature', 'Item', 'Support', 'Action'];
   subtypeOptions: string[] = [];
   keywordOptions: string[] = [];
+  selectedRarity: string = 'All';
+  rarityOptions: string[] = ['All', 'Common', 'Rare', 'Epic', 'Legendary', 'Unique'];
   showExtraFilters: boolean = false;
 
   private setFolders: Record<string, string> = {
@@ -70,6 +72,14 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     'All': '/assets/tesl/images/icons/LG-icon-Prophecy_black.png'
   };
 
+  rarityIcons: Record<string, string> = {
+    'Common': '/assets/tesl/images/icons/common-icon.png',
+    'Rare': '/assets/tesl/images/icons/rare-icon.png',
+    'Epic': '/assets/tesl/images/icons/epic-icon.png',
+    'Legendary': '/assets/tesl/images/icons/legendary-icon.png',
+    'Unique': '/assets/tesl/images/icons/unique-icon.png'
+  };
+
   attributeIcons: Record<string, string> = {
     'R': '/assets/tesl/images/icons/LG-icon-Strength.png',
     'B': '/assets/tesl/images/icons/LG-icon-Intelligence.png',
@@ -88,7 +98,8 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     magicka: false,
     type: false,
     subtype: false,
-    keyword: false
+    keyword: false,
+    rarity: false
   };
 
   ngOnInit() {
@@ -115,7 +126,7 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     return `/assets/tesl/images/icons/LG-icon-${fileName}.png`;
   }
 
-  toggleFilter(filter: 'set' | 'attribute' | 'magicka' | 'type' | 'subtype' | 'keyword') {
+  toggleFilter(filter: 'set' | 'attribute' | 'magicka' | 'type' | 'subtype' | 'keyword' | 'rarity') {
     // Close others, toggle this one
     this.filterExpanded = {
         set: false,
@@ -124,6 +135,7 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
         type: false,
         subtype: false,
         keyword: false,
+        rarity: false,
         [filter]: !this.filterExpanded[filter]
     };
   }
@@ -138,6 +150,10 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
 
   toggleKeywordFilter() {
     this.filterExpanded = { ...this.filterExpanded, keyword: !this.filterExpanded.keyword };
+  }
+
+  toggleRarityFilter() {
+    this.filterExpanded = { ...this.filterExpanded, rarity: !this.filterExpanded.rarity };
   }
 
   selectType(type: string) {
@@ -155,6 +171,12 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   selectKeyword(keyword: string) {
     this.selectedKeyword = keyword;
     this.filterExpanded.keyword = false;
+    this.applyFilters();
+  }
+
+  selectRarity(rarity: string) {
+    this.selectedRarity = rarity;
+    this.filterExpanded.rarity = false;
     this.applyFilters();
   }
 
@@ -216,6 +238,26 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
       );
     }
 
+    if (this.selectedRarity !== 'All') {
+      switch (this.selectedRarity) {
+        case 'Common':
+          filtered = filtered.filter(c => c.rarity === '1Common');
+          break;
+        case 'Rare':
+          filtered = filtered.filter(c => c.rarity === '2Rare');
+          break;
+        case 'Epic':
+          filtered = filtered.filter(c => c.rarity === '3Epic');
+          break;
+        case 'Legendary':
+          filtered = filtered.filter(c => c.rarity === '4Legendary');
+          break;
+        case 'Unique':
+          filtered = filtered.filter(c => c.rarity === '4Legendary' && c.unique === true);
+          break;
+      }
+    }
+
     // === NEW: Keyword Filter ===
     if (this.selectedKeyword !== 'All') {
       if (this.selectedKeyword === 'Prophecy') {
@@ -260,6 +302,12 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     }
 
     this.displayedCards = filtered;
+  }
+
+  get unlockPct(): string {
+    const total = this.displayedCards.filter(c => c.deckCodeId !== null).length;
+    const unlocked = this.displayedCards.filter(c => this.unlockedCardIds.includes(c.deckCodeId!)).length;
+    return `${Math.round((unlocked / total) * 100)}%`;
   }
 
   trackByInstanceId(index: number, card: Card): string {

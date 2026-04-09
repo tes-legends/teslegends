@@ -322,7 +322,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 
     const lastEloAward = localStorage.getItem(this.LAST_ELO_REWARD);
     let lastElo = 1200;
-    if (lastEloAward) lastElo = Math.min(1200,parseInt(lastEloAward,10));
+    if (lastEloAward) lastElo = Math.max(1200,parseInt(lastEloAward,10));
     if (this.arenaElo >= (lastElo+50)) {
       localStorage.setItem(this.LAST_ELO_REWARD,(lastElo+50).toString());
       const numAwards = this.tripleRewards ? 3 : 1;

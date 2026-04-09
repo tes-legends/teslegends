@@ -15,12 +15,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/tesl",
+            "outputPath": {
+              "base": "dist/tesl"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -35,7 +38,8 @@
             ],
             "scripts": [
               "node_modules/@fortawesome/fontawesome-free/js/all.js"
-            ]
+            ],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -51,8 +55,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -65,26 +67,25 @@
                   "maximumError": "50kb"
                 }
               ],
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "serviceWorker": "ngsw-config.json"
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tesl:build"
+            "buildTarget": "tesl:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tesl:build:production"
+              "buildTarget": "tesl:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tesl:build"
+            "buildTarget": "tesl:build"
           }
         },
         "test": {
@@ -138,5 +139,13 @@
   },
   "cli": {
     "analytics": "f023984a-aa18-4568-9044-8bb5c3267dcd"
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    }
   }
 }

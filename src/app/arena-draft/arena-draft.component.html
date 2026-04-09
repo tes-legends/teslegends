@@ -1,200 +1,207 @@
 <div class="arena-draft">
-    <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;"></button>
-    <button class="close-btn" (click)="close()">X</button>
+  <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;"></button>
+  <button class="close-btn" (click)="close()">X</button>
   <!-- Phase 1: Class Selection -->
-  <div class="class-selection" *ngIf="!selectedClass">
-    <h2>Choose a Class</h2>
-    <div class="class-grid">
-      <button *ngFor="let cls of classOptions" (click)="selectClass(cls)">
-        <div class="avatar-wrapper">
-        <img [src]="cls.avatar" class="avatar" alt="">
-        <div class="class-name">{{ cls.name }}</div>
-        <div class="class-icons">
-          <img *ngFor="let attr of cls.attributes" [src]="attributeIcons[attr]">
-        </div>
-        </div>
-      </button>
+  @if (!selectedClass) {
+    <div class="class-selection">
+      <h2>Choose a Class</h2>
+      <div class="class-grid">
+        @for (cls of classOptions; track cls) {
+          <button (click)="selectClass(cls)">
+            <div class="avatar-wrapper">
+              <img [src]="cls.avatar" class="avatar" alt="">
+              <div class="class-name">{{ cls.name }}</div>
+              <div class="class-icons">
+                @for (attr of cls.attributes; track attr) {
+                  <img [src]="attributeIcons[attr]">
+                }
+              </div>
+            </div>
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Phase 2: Drafting -->
-  <div class="draft-screen" *ngIf="selectedClass && picksRemaining > 0">
-    <div class="draft-header">
-      <h3>Picks Remaining: {{ picksRemaining }}</h3>
-    </div>
-
-    <div class="draft-picks">
-        <div class="draft-card-wrapper" *ngFor="let card of currentPicks">
+  @if (selectedClass && picksRemaining > 0) {
+    <div class="draft-screen">
+      <div class="draft-header">
+        <h3>Picks Remaining: {{ picksRemaining }}</h3>
+      </div>
+      <div class="draft-picks">
+        @for (card of currentPicks; track card) {
+          <div class="draft-card-wrapper">
             <div class="draft-card"
-                (click)="pickCard(card)">
-                <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
+              (click)="pickCard(card)">
+              <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
             </div>
-        </div>
-    </div>
-
-    <div class="draft-bottom">
-
-      <!-- LEFT SIDE -->
-      <div class="draft-main-panel">
-
-        <!-- DESKTOP: Curve + Stats -->
-        <div class="desktop-stats">
-
-          <!-- Mana Curve -->
-          <div class="stat-section">
-            <div class="mana-curve">
-              <div class="bar-container"
-                  *ngFor="let count of manaCurve; let i = index; trackBy: trackByIndex">
-
-                <div class="bar-area">
-                  <div class="bar" [style.height.%]="getBarHeight(count)">
-                    <span class="value-label" *ngIf="count > 0">{{ count }}</span>
+          </div>
+        }
+      </div>
+      <div class="draft-bottom">
+        <!-- LEFT SIDE -->
+        <div class="draft-main-panel">
+          <!-- DESKTOP: Curve + Stats -->
+          <div class="desktop-stats">
+            <!-- Mana Curve -->
+            <div class="stat-section">
+              <div class="mana-curve">
+                @for (count of manaCurve; track trackByIndex(i); let i = $index) {
+                  <div class="bar-container"
+                    >
+                    <div class="bar-area">
+                      <div class="bar" [style.height.%]="getBarHeight(count)">
+                        @if (count > 0) {
+                          <span class="value-label">{{ count }}</span>
+                        }
+                      </div>
+                    </div>
+                    <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
                   </div>
+                }
+              </div>
+            </div>
+            <!-- Stats -->
+            <div class="stats-panel">
+              <div class="stat-section">
+                <div class="type-counts">
+                  @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                    <div class="type"
+                      >
+                      <span class="type-name">{{ type }}</span>
+                      <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                    </div>
+                  }
                 </div>
-
-                <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
+              </div>
+              <div class="stat-section">
+                <div class="attribute-counts">
+                  @for (attr of getAttributeKeys(); track attr) {
+                    <div class="attr">
+                      <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                      <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- Stats -->
-          <div class="stats-panel">
-
-            <div class="stat-section">
-              <div class="type-counts">
-                <div class="type"
-                    *ngFor="let type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']">
-                  <span class="type-name">{{ type }}</span>
-                  <span class="type-count">{{ typeCounts[type] || 0 }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-section">
-              <div class="attribute-counts">
-                <div class="attr" *ngFor="let attr of getAttributeKeys()">
-                  <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-                  <span class="attr-count">{{ attributeCounts[attr] }}</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- MOBILE: Tabs -->
-        <div class="mobile-tabs">
-
-          <!--<div class="tab-buttons">
+          <!-- MOBILE: Tabs -->
+          <div class="mobile-tabs">
+            <!--<div class="tab-buttons">
             <button [class.active]="activeTab==='curve'" (click)="activeTab='curve'">Curve</button>
             <button [class.active]="activeTab==='stats'" (click)="activeTab='stats'">Stats</button>
             <button [class.active]="activeTab==='deck'" (click)="activeTab='deck'">Deck</button>
           </div>-->
-
           <div class="tab-content">
-
             <!-- Curve -->
-            <div *ngIf="activeTab==='curve'">
-              <div class="mana-curve" (click)="nextTab()">
-                <div class="bar-container"
-                    *ngFor="let count of manaCurve; let i = index; trackBy: trackByIndex">
-
-                  <div class="bar-area">
-                    <div class="bar" [style.height.%]="getBarHeight(count)">
-                      <span class="value-label" *ngIf="count > 0">{{ count }}</span>
+            @if (activeTab==='curve') {
+              <div>
+                <div class="mana-curve" (click)="nextTab()">
+                  @for (count of manaCurve; track trackByIndex(i); let i = $index) {
+                    <div class="bar-container"
+                      >
+                      <div class="bar-area">
+                        <div class="bar" [style.height.%]="getBarHeight(count)">
+                          @if (count > 0) {
+                            <span class="value-label">{{ count }}</span>
+                          }
+                        </div>
+                      </div>
+                      <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
                     </div>
-                  </div>
-
-                  <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
+                  }
                 </div>
               </div>
-            </div>
-
+            }
             <!-- Stats -->
-            <div *ngIf="activeTab==='stats'" (click)="nextTab()" class="stats-layout">
-
-              <div class="type-counts">
-                <div class="type"
-                    *ngFor="let type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']">
-                  <span class="type-name">{{ type }}</span>
-                  <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+            @if (activeTab==='stats') {
+              <div (click)="nextTab()" class="stats-layout">
+                <div class="type-counts">
+                  @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                    <div class="type"
+                      >
+                      <span class="type-name">{{ type }}</span>
+                      <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                    </div>
+                  }
+                </div>
+                <div class="attribute-counts">
+                  @for (attr of getAttributeKeys(); track attr) {
+                    <div class="attr">
+                      <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                      <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                    </div>
+                  }
                 </div>
               </div>
-
-              <div class="attribute-counts">
-                <div class="attr" *ngFor="let attr of getAttributeKeys()">
-                  <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-                  <span class="attr-count">{{ attributeCounts[attr] }}</span>
-                </div>
-              </div>
-
-            </div>
-
+            }
             <!-- Deck -->
-            <div *ngIf="activeTab==='deck'" (click)="nextTab()">
-              <div class="current-deck-panel">
-                <div class="deck-list">
-                  <div class="deck-entry" 
-                  *ngFor="let entry of draftDeckList"
+            @if (activeTab==='deck') {
+              <div (click)="nextTab()">
+                <div class="current-deck-panel">
+                  <div class="deck-list">
+                    @for (entry of draftDeckList; track entry) {
+                      <div class="deck-entry"
                   [ngClass]="[
                   getAttributeClass(entry.card.attributes),
                   getRarityClass(entry.card.rarity)
                     ]">
-                    <div class="info">
-                      <span class="cost">{{ entry.card.cost }}</span>
-                      <span class="name">{{ entry.card.name }}</span>
-                      <span class="count">×{{ entry.count }}</span>
-                    </div>
+                        <div class="info">
+                          <span class="cost">{{ entry.card.cost }}</span>
+                          <span class="name">{{ entry.card.name }}</span>
+                          <span class="count">×{{ entry.count }}</span>
+                        </div>
+                      </div>
+                    }
                   </div>
                 </div>
               </div>
-            </div>
-
+            }
           </div>
-
         </div>
-
       </div>
-
       <!-- RIGHT SIDE: Deck (Desktop only) -->
       <div class="current-deck-panel desktop-deck">
         <div class="deck-list">
-          <div class="deck-entry" 
-          *ngFor="let entry of draftDeckList"
+          @for (entry of draftDeckList; track entry) {
+            <div class="deck-entry"
           [ngClass]="[
           getAttributeClass(entry.card.attributes),
           getRarityClass(entry.card.rarity)
             ]">
-            <div class="info">
-              <span class="cost">{{ entry.card.cost }}</span>
-              <span class="name">{{ entry.card.name }}</span>
-              <span class="count">×{{ entry.count }}</span>
+              <div class="info">
+                <span class="cost">{{ entry.card.cost }}</span>
+                <span class="name">{{ entry.card.name }}</span>
+                <span class="count">×{{ entry.count }}</span>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </div>
-
     </div>
-    
   </div>
+}
 
-  <!-- Phase 3: Opponents -->
-  <div class="opponent-screen" *ngIf="selectedClass && picksRemaining === 0 && !showArenaRewards">
+<!-- Phase 3: Opponents -->
+@if (selectedClass && picksRemaining === 0 && !showArenaRewards) {
+  <div class="opponent-screen">
     <div class="draft-header">
       <h3>{{oppHeader}}</h3>
     </div>
     <div class="opponents-grid">
-      <div *ngFor="let opp of arenaOpponents" class="opponent-card" (click)="selectOpponent(opp)">
-        <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.png' : opp.avatar" class="avatar">
-        <!--<div class="name">{{ opp.name }}</div>
-        <div class="elo">Elo {{ opp.elo }}</div>-->
-      </div>
-
+      @for (opp of arenaOpponents; track opp) {
+        <div class="opponent-card" (click)="selectOpponent(opp)">
+          <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.png' : opp.avatar" class="avatar">
+          <!--<div class="name">{{ opp.name }}</div>
+          <div class="elo">Elo {{ opp.elo }}</div>-->
+        </div>
+      }
       <!-- Boss -->
-      <div class="opponent-card boss" 
-           [class.locked]="wins < 8"
-           (click)="wins >= 8 && selectOpponent(bossOpponent!)">
+      <div class="opponent-card boss"
+        [class.locked]="wins < 8"
+        (click)="wins >= 8 && selectOpponent(bossOpponent!)">
         <img [src]="bossOpponent!.beaten ? '/assets/tesl/images/icons/arena_coin.png' : bossOpponent!.avatar" class="avatar">
         <!--<div class="name">{{ bossOpponent.name }}</div>
         <div class="locked-text" *ngIf="wins < 8">Defeat 8 opponents</div>-->
@@ -215,91 +222,103 @@
           <span class="value elo">{{ arenaElo }}</span>
         </div>
       </div>
-
       <div class="arena-actions">
-        <button *ngIf="wins < 9 && losses < 3" (click)="retireRun()">Retire</button>
-        <button *ngIf="wins > 8 || losses > 2" (click)="startNewRun()">New Run</button>
+        @if (wins < 9 && losses < 3) {
+          <button (click)="retireRun()">Retire</button>
+        }
+        @if (wins > 8 || losses > 2) {
+          <button (click)="startNewRun()">New Run</button>
+        }
       </div>
     </div>
     <!-- MOBILE: Tabs -->
     <div class="arena-tabs">
-
       <div class="tab-content">
-
         <!-- Curve -->
-        <div *ngIf="activeTab==='curve'">
-          <div class="mana-curve" (click)="nextTab()">
-            <div class="bar-container"
-                *ngFor="let count of manaCurve; let i = index; trackBy: trackByIndex">
-
-              <div class="bar-area">
-                <div class="bar" [style.height.%]="getBarHeight(count)">
-                  <span class="value-label" *ngIf="count > 0">{{ count }}</span>
+        @if (activeTab==='curve') {
+          <div>
+            <div class="mana-curve" (click)="nextTab()">
+              @for (count of manaCurve; track trackByIndex(i); let i = $index) {
+                <div class="bar-container"
+                  >
+                  <div class="bar-area">
+                    <div class="bar" [style.height.%]="getBarHeight(count)">
+                      @if (count > 0) {
+                        <span class="value-label">{{ count }}</span>
+                      }
+                    </div>
+                  </div>
+                  <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
                 </div>
-              </div>
-
-              <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
+              }
             </div>
           </div>
-        </div>
-
+        }
         <!-- Stats -->
-        <div *ngIf="activeTab==='stats'" (click)="nextTab()" class="stats-layout">
-
-          <div class="type-counts">
-            <div class="type"
-                *ngFor="let type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']">
-              <span class="type-name">{{ type }}</span>
-              <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+        @if (activeTab==='stats') {
+          <div (click)="nextTab()" class="stats-layout">
+            <div class="type-counts">
+              @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                <div class="type"
+                  >
+                  <span class="type-name">{{ type }}</span>
+                  <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                </div>
+              }
+            </div>
+            <div class="attribute-counts">
+              @for (attr of getAttributeKeys(); track attr) {
+                <div class="attr">
+                  <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                  <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                </div>
+              }
             </div>
           </div>
-
-          <div class="attribute-counts">
-            <div class="attr" *ngFor="let attr of getAttributeKeys()">
-              <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-              <span class="attr-count">{{ attributeCounts[attr] }}</span>
-            </div>
-          </div>
-
-        </div>
-
+        }
         <!-- Deck -->
-        <div *ngIf="activeTab==='deck'" (click)="nextTab()">
-          <div class="current-deck-panel">
-            <div class="deck-list">
-              <div class="deck-entry" 
-              *ngFor="let entry of draftDeckList"
+        @if (activeTab==='deck') {
+          <div (click)="nextTab()">
+            <div class="current-deck-panel">
+              <div class="deck-list">
+                @for (entry of draftDeckList; track entry) {
+                  <div class="deck-entry"
               [ngClass]="[
               getAttributeClass(entry.card.attributes),
               getRarityClass(entry.card.rarity)
                 ]">
-                <div class="info">
-                  <span class="cost">{{ entry.card.cost }}</span>
-                  <span class="name">{{ entry.card.name }}</span>
-                  <span class="count">×{{ entry.count }}</span>
-                </div>
+                    <div class="info">
+                      <span class="cost">{{ entry.card.cost }}</span>
+                      <span class="name">{{ entry.card.name }}</span>
+                      <span class="count">×{{ entry.count }}</span>
+                    </div>
+                  </div>
+                }
               </div>
             </div>
           </div>
-        </div>
-
+        }
       </div>
-
     </div>
   </div>
+}
 
-  <!--Phase 4: Rewards-->
-  <div class="reward-screen" *ngIf="showArenaRewards">
+<!--Phase 4: Rewards-->
+@if (showArenaRewards) {
+  <div class="reward-screen">
     <div class="draft-header">
       <h3>Rewards {{rewardStatus}}</h3>
     </div>
     <div class="reward-picks">
-        <div class="reward-card-wrapper" *ngFor="let card of arenaRewardSets[currentRewardIndex]">
-            <div class="reward-card"
-                (click)="pickReward(card)">
-                <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
-            </div>
+      @for (card of arenaRewardSets[currentRewardIndex]; track card) {
+        <div class="reward-card-wrapper">
+          <div class="reward-card"
+            (click)="pickReward(card)">
+            <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
+          </div>
         </div>
+      }
     </div>
   </div>
+}
 </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, APP_BOOTSTRAP_LISTENER } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Card, DeckEntry, DeckOption, DeckService } from '../tesl/deck.service'; // adjust path
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UtilityService } from '../tesl/utility.service';
@@ -36,9 +37,10 @@ interface ArenaSaveState {
 }
 
 @Component({
-  selector: 'app-arena-draft',
-  templateUrl: './arena-draft.component.html',
-  styleUrls: ['./arena-draft.component.scss']
+    selector: 'app-arena-draft',
+    templateUrl: './arena-draft.component.html',
+    styleUrls: ['./arena-draft.component.scss'],
+    standalone: false
 })
 export class ArenaDraftComponent implements OnInit, AfterViewInit {
 	@ViewChild('firstFocusable') firstFocusable!: ElementRef;

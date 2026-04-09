@@ -8,7 +8,7 @@ import { UtilityService, HelpRule } from './utility.service';
 import { GameService } from './game.service';
 import { Card, TargetType } from './deck.service';
 import { AudioService } from './audio.service';
-import { SwUpdate } from '@angular/service-worker';
+import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
@@ -72,9 +72,10 @@ interface GameOverrides {
 
 
 @Component({
-  selector: 'app-tesl',
-  templateUrl: './tesl.component.html',
-  styleUrls: ['./tesl.component.scss']
+    selector: 'app-tesl',
+    templateUrl: './tesl.component.html',
+    styleUrls: ['./tesl.component.scss'],
+    standalone: false
 })
 export class TeslComponent implements OnInit {
 
@@ -487,7 +488,7 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.4';
+  appVersion = '0.4.5';
 
   /*
   0.4.0
@@ -518,12 +519,14 @@ export class TeslComponent implements OnInit {
     private swUpdate: SwUpdate, 
     private http: HttpClient,
     private dialog: MatDialog) { 
-      this.swUpdate.available.subscribe(event => {
-            this.updateAvailable = true;
-        });
-    this.helpRules = this.utilityService.helpRules;
-    gsap.registerPlugin(MotionPathPlugin);
-  }
+      this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
+      if (event.type === 'VERSION_READY') {
+        this.updateAvailable = true;
+      }
+    });
+      this.helpRules = this.utilityService.helpRules;
+      gsap.registerPlugin(MotionPathPlugin);
+    }
 
   ngOnInit(): void {
     document.addEventListener('contextmenu', event => {
@@ -592,10 +595,12 @@ export class TeslComponent implements OnInit {
 
     
     
-    this.swUpdate.available
+    this.swUpdate.versionUpdates
       .pipe(takeUntil(this.destroy$))
       .subscribe(event => {
-        this.updateAvailable = true;
+        if (event.type === 'VERSION_READY') {
+          this.updateAvailable = true;
+        }
       }
       );
   }
@@ -707,10 +712,10 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  get availableModes(): string[] {
+  get availableModes(): DeckSource[] {
     return this.isExhibitionMode
-      ? ['Starter', 'Random', 'NPC', 'Custom', 'Arena']
-      : ['Starter', 'Custom'];
+      ? ['starter', 'random', 'npc', 'custom', 'arena']
+      : ['starter', 'custom'];
   }
 
   get oppHeroImage(): string {

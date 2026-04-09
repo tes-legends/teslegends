@@ -3,9 +3,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Card } from '../tesl/deck.service';
 
 @Component({
-  selector: 'app-tesl-card',
-  templateUrl: './tesl-card.component.html',
-  styleUrls: ['./tesl-card.component.scss']
+    selector: 'app-tesl-card',
+    templateUrl: './tesl-card.component.html',
+    styleUrls: ['./tesl-card.component.scss'],
+    standalone: false
 })
 export class TeslCardComponent {
 

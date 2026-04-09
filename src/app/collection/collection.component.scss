@@ -1,10 +1,10 @@
 //collection.component.scss
 .collection-viewer {
   padding: 0px; //20px;
-  color: white;
-  background: rgba(0,0,0,0.6);
+  background: #0d1b2a;
   border-radius: 12px;
   max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   height: 100%;
   display: flex;
@@ -58,6 +58,8 @@
 }
 
 .filter-rows {
+  
+  background: #0d1b2a;
   margin-bottom: 0px;
 
   .extra-filters {
@@ -248,7 +250,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0; 
-  padding: 0px; //20px;
+  padding: 0px; //20px;  
+  background: #0d1b2a;
 
   app-tesl-card {
     width: 130px !important;

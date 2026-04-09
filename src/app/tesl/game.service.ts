@@ -6294,12 +6294,8 @@ export class GameService {
 resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBattle: boolean = false) {
   if (!attacker || (attacker.attacks ?? 0) <= 0 || attacker.currentAttack! <= 0) return;
   const outputLogs = game.simulating ? false : true;
-  const attackerKeywords = attacker.currentKeywords || [];
+  let attackerKeywords = attacker.currentKeywords || [];
   const isPilfer = attackerKeywords.includes('Pilfer');
-  const isDrain = attackerKeywords.includes('Drain');
-  const isBreakthrough = attackerKeywords.includes('Breakthrough');
-  const isWard = attackerKeywords.includes('Ward');
-  const isLethal = attackerKeywords.includes('Lethal');
   const isRally = attackerKeywords.includes('Rally');
   const isImmuneToDragons = attacker.immunity?.includes('Dragons');
   const isImmuneToLethal = attacker.immunity?.includes('Lethal');
@@ -6346,6 +6342,12 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
       });
     });
   }
+  //recheck keywords after running attack effects
+  attackerKeywords = attacker.currentKeywords || [];
+  const isDrain = attackerKeywords.includes('Drain');
+  const isBreakthrough = attackerKeywords.includes('Breakthrough');  
+  const isWard = attackerKeywords.includes('Ward');
+  const isLethal = attackerKeywords.includes('Lethal');
   let damageDealt = attacker.currentAttack ?? 0;
   let damageTaken = 0;
   // ────────────────────────────────────────────────────────────────

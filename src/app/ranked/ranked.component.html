@@ -3,82 +3,106 @@
   <button class="close-btn" (click)="close()">X</button>
 
   <!-- RANK DISPLAY -->
-  <div class="rank-header" *ngIf="!showRewards">
-    <div class="tier-emblem" [style.backgroundColor]="tiers[currentTierIndex].color">
-      <span>{{ currentTierName }}</span>
-    </div>
-    <div class="stars" *ngIf="!isLegendary">
-      <span *ngFor="let i of [1,2,3,4,5]" 
-            class="star" 
+  @if (!showRewards) {
+    <div class="rank-header">
+      <div class="tier-emblem" [style.backgroundColor]="tiers[currentTierIndex].color">
+        <span>{{ currentTierName }}</span>
+      </div>
+      @if (!isLegendary) {
+        <div class="stars">
+          @for (i of [1,2,3,4,5]; track i) {
+            <span
+              class="star"
             [class.filled]="i <= currentStars">★</span>
+          }
+        </div>
+      }
+      @if (isLegendary) {
+        <div class="legendary-badge">LEGENDARY</div>
+      }
     </div>
-    <div class="legendary-badge" *ngIf="isLegendary">LEGENDARY</div>
-  </div>
+  }
 
   <!-- DECK DISPLAY -->
-  <div class="play-section" *ngIf="!showRewards">
-    <h2>Choose Your Deck</h2>
-    <div class="deck-selection">
-        <div class="deck-option selected" 
-            [class.expanded]="expandedDeckList"
-            (click)="toggleDeckSelector()">
-            <div class="deck-icons">
-                <img *ngFor="let attr of selectedDeck?.attributes || []"
-                    [src]="attributeIcons[attr]"
-                    [alt]="attr"
-                    class="deck-icon"
-                    draggable="false">
-            </div>
-            <span class="deck-name">
-                {{ selectedDeck?.name || 'Select Deck' }}
-            </span>
-            <span class="expand-icon">
-                {{ expandedDeckList ? '▲' : '▼' }}
-            </span>
+  @if (!showRewards) {
+    <div class="play-section">
+      <h2>Choose Your Deck</h2>
+      <div class="deck-selection">
+        <div class="deck-option selected"
+          [class.expanded]="expandedDeckList"
+          (click)="toggleDeckSelector()">
+          <div class="deck-icons">
+            @for (attr of selectedDeck?.attributes || []; track attr) {
+              <img
+                [src]="attributeIcons[attr]"
+                [alt]="attr"
+                class="deck-icon"
+                draggable="false">
+            }
+          </div>
+          <span class="deck-name">
+            {{ selectedDeck?.name || 'Select Deck' }}
+          </span>
+          <span class="expand-icon">
+            {{ expandedDeckList ? '▲' : '▼' }}
+          </span>
         </div>
-
         <!-- Deck list based on mode -->
-        <div class="deck-list" *ngIf="expandedDeckList">
-            <div class="deck-option" 
-                *ngFor="let deck of availableDecks; let i = index"
+        @if (expandedDeckList) {
+          <div class="deck-list">
+            @for (deck of availableDecks; track deck; let i = $index) {
+              <div class="deck-option"
                 [class.selected]="selectedDeck === deck"
                 (click)="selectDeck(deck)">
                 <div class="deck-icons">
-                <img *ngFor="let attr of deck.attributes"
-                    [src]="attributeIcons[attr]"
-                    [alt]="attr"
-                    class="deck-icon"
-                    draggable="false">
+                  @for (attr of deck.attributes; track attr) {
+                    <img
+                      [src]="attributeIcons[attr]"
+                      [alt]="attr"
+                      class="deck-icon"
+                      draggable="false">
+                  }
                 </div>
-                {{ deck.name }} 
-            </div>
-        </div>
-    </div>
-    <button 
+                {{ deck.name }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <button
         class="play-ranked-btn"
         [disabled]="!selectedDeck"
         (click)="startRankedMatch()">
         Play Ranked Match
-    </button>
-    <p *ngIf="availableDecks.length === 0" class="no-decks">
-        You have no unlocked decks. Unlock decks in Story to play Ranked.
-    </p>
-    <p *ngIf="totalWins > 0">
-      Record: {{ totalWins }}W - {{ totalLosses }}L ({{ ((totalWins / (totalWins + totalLosses)) * 100) | number:'1.0-2' }}% win rate)
-    </p>
-  </div>
+      </button>
+      @if (availableDecks.length === 0) {
+        <p class="no-decks">
+          You have no unlocked decks. Unlock decks in Story to play Ranked.
+        </p>
+      }
+      @if (totalWins > 0) {
+        <p>
+          Record: {{ totalWins }}W - {{ totalLosses }}L ({{ ((totalWins / (totalWins + totalLosses)) * 100) | number:'1.0-2' }}% win rate)
+        </p>
+      }
+    </div>
+  }
 
   <!-- REWARD SCREEN -->
-  <div class="reward-screen" *ngIf="showRewards">
-    <div class="draft-header">
-      <h3>Rewards {{rewardStatus}}</h3>
-    </div>
-    <div class="reward-picks">
-      <div class="reward-card-wrapper" *ngFor="let card of arenaRewardSets[currentRewardIndex]">
-        <div class="reward-card" (click)="pickReward(card)">
-          <img [src]="getCardImage(card)" alt="{{card.name}}">
-        </div>
+  @if (showRewards) {
+    <div class="reward-screen">
+      <div class="draft-header">
+        <h3>Rewards {{rewardStatus}}</h3>
+      </div>
+      <div class="reward-picks">
+        @for (card of arenaRewardSets[currentRewardIndex]; track card) {
+          <div class="reward-card-wrapper">
+            <div class="reward-card" (click)="pickReward(card)">
+              <img [src]="getCardImage(card)" alt="{{card.name}}">
+            </div>
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 </div>

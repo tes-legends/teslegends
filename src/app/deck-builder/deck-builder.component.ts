@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Card, DeckService, DeckEntry, SavedDeck } from '../tesl/deck.service';
 
 @Component({
-  selector: 'app-deck-builder',
-  templateUrl: './deck-builder.component.html',
-  styleUrls: ['./deck-builder.component.scss']
+    selector: 'app-deck-builder',
+    templateUrl: './deck-builder.component.html',
+    styleUrls: ['./deck-builder.component.scss'],
+    standalone: false
 })
 export class DeckBuilderComponent implements OnInit, AfterViewInit {
      @ViewChild('firstFocusable') firstFocusable!: ElementRef;

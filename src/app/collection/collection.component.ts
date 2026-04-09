@@ -4,9 +4,10 @@ import { Card, DeckService } from '../tesl/deck.service';
 import { UtilityService } from '../tesl/utility.service';
 
 @Component({
-  selector: 'app-collection',
-  templateUrl: './collection.component.html',
-  styleUrls: ['./collection.component.scss']
+    selector: 'app-collection',
+    templateUrl: './collection.component.html',
+    styleUrls: ['./collection.component.scss'],
+    standalone: false
 })
 export class CollectionViewerComponent implements OnInit, AfterViewInit {
     @ViewChild('firstFocusable') firstFocusable!: ElementRef;
@@ -90,7 +91,7 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     'Dual': '/assets/tesl/images/icons/LG-icon-Dual_Attribute-small.png'
   };
 
-  magickaIcons = [0, 1, 2, 3, 4, 5, 6, '7+','X'];
+  magickaIcons: (number | '7+' | 'X')[] = [0, 1, 2, 3, 4, 5, 6, '7+','X'];
 
   filterExpanded = {
     set: false,

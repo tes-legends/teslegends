@@ -134,7 +134,7 @@
   
 }
 
-::ng-deep .deck-dialog .mat-dialog-container {
+::ng-deep .deck-dialog .mat-mdc-dialog-container {
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden;
@@ -144,7 +144,7 @@
   -webkit-user-select: none;
 }
 
-::ng-deep .collection-dialog .mat-dialog-container {
+::ng-deep .collection-dialog .mat-mdc-dialog-container {
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden;
@@ -154,7 +154,7 @@
   -webkit-user-select: none;
 }
 
-::ng-deep .arena-dialog .mat-dialog-container {
+::ng-deep .arena-dialog .mat-mdc-dialog-container {
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden;
@@ -164,7 +164,7 @@
   -webkit-user-select: none;
 }
 
-::ng-deep .ranked-dialog .mat-dialog-container {
+::ng-deep .ranked-dialog .mat-mdc-dialog-container {
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden;
@@ -442,7 +442,7 @@
   flex-direction: column;
   gap: 0px;               // space between opponent's and player's cards in the same lane
   width: 100%;
-  max-width: min(95vw,540px);
+  max-width: min(95vw,640px);
   position: relative;
 
   border: 1px solid white;
@@ -508,7 +508,7 @@
   .lane-group {
     flex-direction: column;    // keep column inside each group
     width: auto;
-    max-width: 540px;          // prevent lanes from becoming too wide
+    max-width: 640px;          // prevent lanes from becoming too wide
     min-height: 380px;         // more vertical space
     flex: 1 1 48%;             // roughly equal width, two lanes side-by-side
     margin: 0 8px;

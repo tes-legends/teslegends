@@ -1,16 +1,18 @@
+import { NgModule, provideAppInitializer, inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { APP_INITIALIZER,NgModule } from '@angular/core';
-import { Router } from '@angular/router'; // optional but recommended
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { HttpClientModule } from '@angular/common/http';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDialogModule } from '@angular/material/dialog';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 import { TeslComponent } from './tesl/tesl.component';
 import { TeslCardComponent } from './tesl-card/tesl-card.component';
 import { CollectionViewerComponent } from './collection/collection.component';
@@ -23,11 +25,7 @@ export function restoreRedirect(router: Router) {
     const redirect = sessionStorage.getItem('redirect');
     if (redirect) {
       sessionStorage.removeItem('redirect');
-      // Option A: Use plain history (fast, no router events)
       history.replaceState(null, '', redirect);
-
-      // Option B: Use Angular Router (triggers navigation events, guards, etc.)
-      // router.navigateByUrl(redirect);
     }
   };
 }
@@ -43,23 +41,25 @@ export function restoreRedirect(router: Router) {
     RankedComponent
   ],
   imports: [
-    BrowserModule,
-    MatGridListModule,
-    AppRoutingModule,
+    BrowserModule,                          // ← MUST BE HERE (root module only)
     BrowserAnimationsModule,
+    AppRoutingModule,
+    MatGridListModule,
     MatDialogModule,
-    FormsModule,
     DragDropModule,
-    HttpClientModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    FormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { 
+      enabled: environment.production 
+    }),
+    // CommonModule is not needed when BrowserModule is present (it re-exports it)
+    // FormsModule,   // uncomment if you use ngModel, forms, etc.
   ],
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: restoreRedirect,
-      deps: [Router],           // ← remove Router dep if using plain history
-      multi: true
-    }
+    provideAppInitializer(() => {
+      const initializerFn = restoreRedirect(inject(Router));  // Note: inject() should work here in Angular 21
+      return initializerFn();
+    }),
+    provideHttpClient(withInterceptorsFromDi())
   ],
   bootstrap: [AppComponent]
 })

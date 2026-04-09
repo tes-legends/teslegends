@@ -22,9 +22,10 @@ export interface RankedSaveState {
 }
 
 @Component({
-  selector: 'app-ranked',
-  templateUrl: './ranked.component.html',
-  styleUrls: ['./ranked.component.scss']
+    selector: 'app-ranked',
+    templateUrl: './ranked.component.html',
+    styleUrls: ['./ranked.component.scss'],
+    standalone: false
 })
 export class RankedComponent implements OnInit, AfterViewInit {
 

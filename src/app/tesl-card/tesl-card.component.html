@@ -1,39 +1,42 @@
 <!--tesl-card.component.html-->
-<div class="card" 
-     [class.playable]="canPlay"
-     [class.selected]="isSelected"
-     [class.targetable]="isTargetable"
-     [class.attackable]="isAttackable"
-     [class.activatable]="isActivatable"
-     (click)="onCardClick($event)">
-  
+<div class="card"
+  [class.playable]="canPlay"
+  [class.selected]="isSelected"
+  [class.targetable]="isTargetable"
+  [class.attackable]="isAttackable"
+  [class.activatable]="isActivatable"
+  (click)="onCardClick($event)">
+
   <!-- The actual card image -->
-  <img 
-    [src]="cardImageUrl" 
+  <img
+    [src]="cardImageUrl"
     alt="{{ card.name }}"
     class="card-image small"
     draggable="false"
     loading="lazy"
-  >
+    >
 
   <!-- Future dynamic power/health overlay -->
-   <div class="ward-shield" *ngIf="card.currentKeywords?.includes('Ward')">
-    <div class="shield-inner"></div>
-  </div>
-  <div class="overlay stats" *ngIf="(card.type === 'Creature' || card.type === 'Item') &&
-  ((card.currentAttack !== undefined && card.currentAttack !== card.attack) || 
-  (card.currentHealth !== undefined && card.currentHealth !== card.health))">
-    <div class="power"
+  @if (card.currentKeywords?.includes('Ward')) {
+    <div class="ward-shield">
+      <div class="shield-inner"></div>
+    </div>
+  }
+  @if ((card.type === 'Creature' || card.type === 'Item') &&
+    ((card.currentAttack !== undefined && card.currentAttack !== card.attack) ||
+    (card.currentHealth !== undefined && card.currentHealth !== card.health))) {
+    <div class="overlay stats">
+      <div class="power"
       [ngClass]="{
          'buffed': (card.currentAttack ?? card.attack ?? 0) > (card.attack ?? 0),
          'nerfed': (card.currentAttack ?? card.attack ?? 0) < (card.attack ?? 0)
        }">
-      {{ (card.currentAttack ?? card.attack ?? 0) < 0 ? 0 :
-      (card.currentAttack ?? card.attack ?? 0) > 99 ? 99 :
-      (card.currentAttack ?? card.attack ?? 0) }}
-    </div>
-    <div class="health" 
-      [class.damaged]="(card.currentHealth ?? card.health ?? 0) < (card.maxHealth ?? card.health ?? 0)"
+        {{ (card.currentAttack ?? card.attack ?? 0) < 0 ? 0 :
+        (card.currentAttack ?? card.attack ?? 0) > 99 ? 99 :
+        (card.currentAttack ?? card.attack ?? 0) }}
+      </div>
+      <div class="health"
+        [class.damaged]="(card.currentHealth ?? card.health ?? 0) < (card.maxHealth ?? card.health ?? 0)"
       [ngClass]="{
          'buffed': (card.currentHealth ?? card.health ?? 0) > (card.health ?? 0),
          'nerfed': (card.currentHealth ?? card.health ?? 0) < (card.health ?? 0)
@@ -41,71 +44,99 @@
         {{ (card.currentHealth ?? card.health ?? 0) < 0 ? 0 :
         (card.currentHealth ?? card.health ?? 0) > 99 ? 99 :
         (card.currentHealth ?? card.health ?? 0) }}
+      </div>
     </div>
-  </div>
-  <div class="overlay cost" *ngIf="card.currentCost !== undefined && card.currentCost !== card.cost">
-    <div class="cost-value">{{ card.currentCost < 0 ? 0 : card.currentCost }}</div>
-  </div>
+  }
+  @if (card.currentCost !== undefined && card.currentCost !== card.cost) {
+    <div class="overlay cost">
+      <div class="cost-value">{{ card.currentCost < 0 ? 0 : card.currentCost }}</div>
+    </div>
+  }
   <!-- Show attached items (small icons or count) -->
-    <div class="attached-items" *ngIf="card.attachedItems?.length">
-    <span class="item-count">{{ card.attachedItems?.length ?? 0 }}</span>
-    <!-- Or show small icons if you want -->
+  @if (card.attachedItems?.length) {
+    <div class="attached-items">
+      <span class="item-count">{{ card.attachedItems?.length ?? 0 }}</span>
+      <!-- Or show small icons if you want -->
     </div>
+  }
 
-    <div class="attached-items" *ngIf="card.uses">
-    <span class="item-count">{{ card.uses }}</span>
-    <!-- Or show small icons if you want -->
+  @if (card.uses) {
+    <div class="attached-items">
+      <span class="item-count">{{ card.uses }}</span>
+      <!-- Or show small icons if you want -->
     </div>
+  }
 
-    <div class="attached-counter" *ngIf="(card.counter ?? 0) > 0">
-    <span class="item-count">{{ card.counter }}</span>
-    <!-- Or show small icons if you want -->
+  @if ((card.counter ?? 0) > 0) {
+    <div class="attached-counter">
+      <span class="item-count">{{ card.counter }}</span>
+      <!-- Or show small icons if you want -->
     </div>
+  }
 
   <!-- Clickable area to open full-size modal -->
-  <!--<div class="enlarge-trigger" 
-    *ngIf="!isTargetable"
-    (click)="openLargeView($event)"
-    ></div>-->
+  <!--<div class="enlarge-trigger"
+  *ngIf="!isTargetable"
+  (click)="openLargeView($event)"
+></div>-->
 
-  <!-- Add a play button when enlarged -->
-    <div class="card-actions" *ngIf="canPlayFromModal && !isGraveyard">
+<!-- Add a play button when enlarged -->
+@if (canPlayFromModal && !isGraveyard) {
+  <div class="card-actions">
     <button (click)="playFromEnlarged()">Play</button>
-    </div>
-
-  <!-- Floating action buttons when selected -->
-  <div class="floating-actions" *ngIf="isSelected">
-    <button *ngIf="canPlay" class="action-btn play" (click)="playCard.emit(card); $event.stopPropagation()">
-      Play
-    </button>
-    <button *ngIf="isAttackable" class="action-btn attack" (click)="attack.emit(card); $event.stopPropagation()">
-      Attack
-    </button>
-    <button *ngIf="isActivatable" class="action-btn activate" (click)="activateSupport.emit(card); $event.stopPropagation()">
-      Activate
-    </button>
   </div>
+}
 
-  <div class="covered-overlay" *ngIf="card.covered">
+<!-- Floating action buttons when selected -->
+@if (isSelected) {
+  <div class="floating-actions">
+    @if (canPlay) {
+      <button class="action-btn play" (click)="playCard.emit(card); $event.stopPropagation()">
+        Play
+      </button>
+    }
+    @if (isAttackable) {
+      <button class="action-btn attack" (click)="attack.emit(card); $event.stopPropagation()">
+        Attack
+      </button>
+    }
+    @if (isActivatable) {
+      <button class="action-btn activate" (click)="activateSupport.emit(card); $event.stopPropagation()">
+        Activate
+      </button>
+    }
+  </div>
+}
+
+@if (card.covered) {
+  <div class="covered-overlay">
     <img src="/assets/tesl/images/icons/LG-lane-Shadow.png" draggable="false" alt="Covered" class="cover-icon">
   </div>
-  <div class="shackled-overlay" *ngIf="card.shackled">
+}
+@if (card.shackled) {
+  <div class="shackled-overlay">
     <img src="/assets/tesl/images/icons/LG-icon-Shackle.png" draggable="false" alt="Shackled" class="shackled-icon">
   </div>
-  <div class="silenced-overlay" *ngIf="card.silenced">
+}
+@if (card.silenced) {
+  <div class="silenced-overlay">
     <img src="/assets/tesl/images/icons/LG-icon-Silence.png" draggable="false" alt="Silenced" class="silenced-icon">
   </div>
-  <!-- Keyword icons row (bottom center) -->
-  <div class="keyword-icons" *ngIf="(card.type === 'Creature' || card.type === 'Item') && card.currentKeywords?.length">
-    <img 
-      *ngFor="let kw of getVisibleKeywords(card.currentKeywords ?? [])"
-      [src]="'/assets/tesl/images/icons/LG-icon-' + getIconFileName(kw) + '.png'"
-      [title]="kw"
-      [alt]="kw"
-      class="keyword-icon"
-      draggable="false"
-      loading="lazy"
-      (error)="handleIconError($event)"
-    >
+}
+<!-- Keyword icons row (bottom center) -->
+@if ((card.type === 'Creature' || card.type === 'Item') && card.currentKeywords?.length) {
+  <div class="keyword-icons">
+    @for (kw of getVisibleKeywords(card.currentKeywords ?? []); track kw) {
+      <img
+        [src]="'/assets/tesl/images/icons/LG-icon-' + getIconFileName(kw) + '.png'"
+        [title]="kw"
+        [alt]="kw"
+        class="keyword-icon"
+        draggable="false"
+        loading="lazy"
+        (error)="handleIconError($event)"
+        >
+    }
   </div>
+}
 </div>

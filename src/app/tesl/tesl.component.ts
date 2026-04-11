@@ -488,7 +488,7 @@ export class TeslComponent implements OnInit {
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.4.5';
+  appVersion = '0.4.6';
 
   /*
   0.4.0
@@ -500,10 +500,6 @@ export class TeslComponent implements OnInit {
   0.1.1
     - added out-of-cards message
     - removes 20px padding in opponent-info if media height < 770px
-      (consider other options)
-    to-do this release: 
-      skyrim set
-      random decks enforcing minimum # of prophecy cards
   */
   private destroy$ = new Subject<void>();
 

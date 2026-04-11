@@ -344,7 +344,8 @@
 
   .deck-list {
     //max-height: 320px;
-    max-height: calc(100vh - 338.42px);
+    max-height: calc(100vh - 370px);
+    max-height: calc(100dvh - 370px);
     overflow-y: auto;
     background: rgba(0,0,0,0.4);
     border-radius: 8px;
@@ -456,6 +457,7 @@
   .draft-bottom .deck-list {
     //max-height: 200px;
     max-height: calc(100vh - 585px);
+    max-height: calc(100dvh - 585px);
     overflow-y: auto;           /* Makes it scrollable when it exceeds 200px */
     overflow-x: hidden;
     padding-right: 8px;         /* Optional: space for scrollbar */
@@ -464,6 +466,7 @@
   .opponent-screen .deck-list {
     //max-height: 200px;
     max-height: calc(100vh - 453px);
+    max-height: calc(100dvh - 453px);
     overflow-y: auto;           /* Makes it scrollable when it exceeds 200px */
     overflow-x: hidden;
     padding-right: 8px;         /* Optional: space for scrollbar */

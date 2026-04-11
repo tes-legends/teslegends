@@ -6573,6 +6573,7 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
 
 breakRunesIfNeeded(game: GameState, player: PlayerState) {
   if (game.simulating) return;
+  if (player.health <= 0) return; // game over, no need to break runes
   const thresholds = [25, 20, 15, 10, 5];
   const runesLeft = player.runes.filter(r => r).length; // how many were already broken
   const triggerHealth = runesLeft*5;

@@ -734,7 +734,7 @@
     "rarity": "3Epic",
     "text": "Lumbering Ogrim can't gain Cover .",
     "keywords": [],
-    "immunity": ["Cover"],
+    "immunity": ["GainCover"],
     "set": "Core Set",
     "tier": "B",
     "deckCodeId": "jR"
@@ -2649,11 +2649,6 @@
         "cardId": "heirloom-greatsword",
         "amount": 1,
         "target": "player"
-      },
-      {
-        "trigger": "LastGasp",
-        "type": "banish",
-        "target": "self"
       }
     ]
   },
@@ -4607,9 +4602,9 @@
         "type": "destroy",
         "target": "creature",
         "condition": {
-          "type": "attributeCount",
-          "attribute": "Y",
-          "min": 4
+          "type": "numCreatures",
+          "min": 4,
+          "attribute": "Y"
         }
       }
     ]
@@ -11494,9 +11489,7 @@
     "name": "Ring of Magicka",
     "type": "Support",
     "subtypes": [],
-    "attributes": [
-      "N"
-    ],
+    "attributes": [],
     "cost": 0,
     "attack": null,
     "health": null,

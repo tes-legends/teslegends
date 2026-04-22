@@ -1,0 +1,1857 @@
+[
+	{
+		"id": "firepot-spider",
+		"name": "Firepot Spider",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "R" ],
+		"cost": 1,
+		"attack": 1,
+		"health": 1,
+		"rarity": "1Common",
+		"text": "Last Gasp: Deal 1 damage to all creatures in this lane.",
+		"keywords": ["LastGasp"],
+		"set": "Clockwork City",
+    "tier": "D",
+		"deckCodeId": "gz",
+		"effects": [
+			{
+        "trigger": "LastGasp",
+        "type": "damage",
+        "amount": 1,
+        "target": "creatureOtherThisLaneAll"
+			}
+		]
+	},
+  {
+		"id": "grappling-hook",
+		"name": "Grappling Hook",
+		"type": "Item",
+		"subtypes": [],
+		"attributes": [ "R" ],
+		"cost": 4,
+		"attack": 3,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "+3/+2 Summon: Move an enemy creature into this lane. It loses Cover.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "S",
+		"deckCodeId": "hu",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "move",
+        "target": "creatureEnemyOtherLane"
+			},
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "removeKeywords": ["Cover"],
+        "target": "creatureEnemyOtherLane"
+      }
+		]
+	},
+  {
+		"id": "trial-of-flame",
+		"name": "Trial of Flame",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "R" ],
+		"cost": 5,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Choose a lane. Destroy all creatures except for the most powerful creature on both sides of that lane.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "B",
+		"deckCodeId": "qP",
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creatureThisLaneAll",
+        "targetCondition": {
+          "type": "notMostPowerful"
+        }
+			}
+		]
+	},
+  {
+		"id": "verminous-fabricant",
+		"name": "Verminous Fabricant",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "R" ],
+		"cost": 2,
+		"attack": 2,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Summon: If you have a [N] card in play, Silence another creature.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "ro",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "silence",
+        "target": "creatureOther",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "N"
+        }
+			}
+		]
+	},
+  {
+		"id": "hunter-killers",
+		"name": "Hunter-Killers",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "R" ],
+		"cost": 6,
+		"attack": 3,
+		"health": 4,
+		"rarity": "3Epic",
+		"text": "Summon: Battle an enemy creature, then Battle another enemy creature.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "C",
+		"deckCodeId": "iw",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "battle",
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Summon",
+        "type": "battle",
+        "target": "creatureEnemyRandom"
+      }
+		]
+	},
+  {
+		"id": "arcanaeum-librarian",
+		"name": "Arcanaeum Librarian",
+		"type": "Creature",
+		"subtypes": [ "Orc"],
+		"attributes": [ "B" ],
+		"cost": 2,
+		"attack": 0,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Gains +1/+0 when you draw a card during your turn.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "D",
+		"deckCodeId": "aI",
+		"effects": [
+			{
+        "trigger": "DrawCard",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "condition": {
+          "type": "isPlayerTurn"
+        }
+      }
+		]
+	},
+  {
+		"id": "excavate",
+		"name": "Excavate",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "B" ],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Draw an item or support from your discard pile.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "E",
+		"deckCodeId": "fV",
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "drawDiscard",
+        "subtypes": [ "Item", "Support" ],
+        "amount": 1,
+        "target": "player"
+			}
+		]
+	},
+  {
+		"id": "laaneth",
+		"name": "Laaneth",
+		"type": "Creature",
+		"subtypes": [ "Dark Elf"],
+		"attributes": [ "B" ],
+		"cost": 9,
+		"attack": 6,
+		"health": 6,
+		"rarity": "4Legendary",
+		"text": "Summon: Draw a card of your choice from your deck.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "A",
+		"deckCodeId": "jt",
+    "unique": true,
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "revealAndChoose",
+        "amount": 20,
+        "target": "player"
+      }
+		]
+	},
+  {
+		"id": "memory-wraith",
+		"name": "Memory Wraith",
+		"type": "Creature",
+		"subtypes": [ "Spirit"],
+		"attributes": [ "B" ],
+		"cost": 5,
+		"attack": 5,
+		"health": 5,
+		"rarity": "3Epic",
+		"text": "Summon: Banish your opponent's discard pile.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "C",
+		"deckCodeId": "ks",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "banishDiscard",
+        "target": "opponent"
+      }
+		]
+	},
+  {
+		"id": "reverberating-strike",
+		"name": "Reverberating Strike",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "B" ],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "1Common",
+		"text": "Deal 3 damage to a creature and all enemy creatures with the same name.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "B",
+		"deckCodeId": "nc",
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "damageName",
+        "amount": 3,
+        "target": "creatureEnemy"
+      }
+		]
+	},
+  {
+		"id": "shalk-fabricant",
+		"name": "Shalk Fabricant",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "B" ],
+		"cost": 3,
+		"attack": 2,
+		"health": 4,
+		"rarity": "1Common",
+		"text": "Guard Summon: If you have a [N] card in play, put a random action into your hand.",
+		"keywords": ["Guard"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "nT",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "addToHand",
+        "amount": 1,
+        "subtypes": [ "Action" ],
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "N"
+        }
+			}
+		]
+	},
+  {
+		"id": "throne-aligned",
+		"name": "Throne Aligned",
+		"type": "Item",
+		"subtypes": [],
+		"attributes": [ "B" ],
+		"cost": 2,
+		"attack": 3,
+		"health": 3,
+		"rarity": "2Rare",
+		"text": "Guard +3/+3 Summon: Shackle the wielder.",
+		"keywords": ["Guard"],
+		"set": "Clockwork City",
+    "tier": "B",
+		"deckCodeId": "qD",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "wielder"
+			}
+		]
+	},
+  {
+		"id": "clockwork-apostle",
+		"name": "Clockwork Apostle",
+		"type": "Creature",
+		"subtypes": [ "High Elf"],
+		"attributes": [ "Y" ],
+		"cost": 7,
+		"attack": 3,
+		"health": 3,
+		"rarity": "1Common",
+		"text": "Summon: Give another friendly creature +4/+4. It becomes [N]",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "A",
+		"deckCodeId": "dm",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modAttack": 4,
+        "modHealth": 4,
+        "target": "creatureFriendlyOther"
+			},
+      {
+        "trigger": "Summon",
+        "type": "setNeutral",
+        "target": "creatureFriendlyOther"
+			}
+		]
+	},
+  {
+		"id": "kagouti-fabricant",
+		"name": "Kagouti Fabricant",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "Y" ],
+		"cost": 4,
+		"attack": 3,
+		"health": 3,
+		"rarity": "1Common",
+		"text": "Summon: If you have a [N] card in play, summon a Kagouti Fabricant in the other lane.",
+		"keywords": ["Guard"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "ji",
+		"effects": [
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "N"
+        },
+        "cardId": "kagouti-fabricant",
+        "target": "otherLane"
+      }
+		]
+	},
+  {
+		"id": "mecinars-will",
+		"name": "Mecinar's Will",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "Y" ],
+		"cost": 5,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Steal an enemy creature with 3 power or less until the end of the turn. It gains Charge.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "B",
+		"deckCodeId": "kr",
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "beckon",
+        "target": "creatureEnemy",
+        "targetCondition": {
+          "type": "hasAttack",
+          "max": 3
+        }
+      }
+		]
+	},
+  {
+		"id": "phalanx-exemplar",
+		"name": "Phalanx Exemplar",
+		"type": "Creature",
+		"subtypes": [ "Imperial"],
+		"attributes": [ "Y" ],
+		"cost": 5,
+		"attack": 5,
+		"health": 6,
+		"rarity": "2Rare",
+		"text": "Guard When your opponent draws a Prophecy from a rune being destroyed, put a 1/2 Septim Guardsman with Guard into your hand.",
+		"keywords": ["Guard"],
+		"set": "Clockwork City",
+    "tier": "S",
+		"deckCodeId": "ma",
+		"effects": [
+			{
+        "trigger": "OppProphecy",
+        "type": "addToHand",
+        "cardId": "septim-guardsman",
+        "amount": 1,
+        "target": "player"
+      }
+		]
+	},
+  {
+		"id": "reconstruction-engine",
+		"name": "Reconstruction Engine",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [ "Y" ],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "3Epic",
+		"text": "Uses: 5 Activate: Give a friendly creature -1/-1 and summon a 1/1 Reconstructed Spider.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "E",
+		"deckCodeId": "mN",
+    "uses": 5,
+		"effects": [
+			{
+        "trigger": "Activation",
+        "type": "buffTarget",
+        "modAttack": -1,
+        "modHealth": -1,
+        "target": "creatureFriendly"
+      },
+      {
+        "trigger": "Activation",
+        "type": "summon",
+        "cardId": "reconstructed-spider",
+        "target": "randomLane"
+      }
+		]
+	},
+  {
+    "id": "reconstructed-spider",
+		"name": "Reconstructed Spider",
+		"type": "Creature",
+		"subtypes": [ "Dwemer"],
+		"attributes": [ "N" ],
+		"cost": 1,
+		"attack": 1,
+		"health": 1,
+		"rarity": "1Common",
+		"text": "",
+		"keywords": [],
+		"set": "Clockwork City",
+		"deckCodeId": null
+  },
+  {
+    "id": "riften-lawkeeper",
+		"name": "Riften Lawkeeper",
+		"type": "Creature",
+		"subtypes": [ "Nord"],
+		"attributes": [ "Y" ],
+		"cost": 4,
+		"attack": 4,
+		"health": 4,
+		"rarity": "1Common",
+		"text": "Breakthrough Summon: you gain 4 health.",
+		"keywords": ["Breakthrough"],
+		"set": "Clockwork City",
+    "tier": "B",
+		"deckCodeId": "nf",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": -4,
+        "target": "player"
+      }
+    ]
+  },
+  {
+		"id": "the-mechanical-heart",
+		"name": "The Mechanical Heart",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [ "Y" ],
+		"cost": 6,
+		"attack": null,
+		"health": null,
+		"rarity": "4Legendary",
+		"text": "Ongoing: When you have 0 or less health, sacrifice The Mechanical Heart, set your health to 10, and restore a rune.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "E",
+		"deckCodeId": "qp",
+    "unique": true,
+		"effects": [
+			{
+        "trigger": "PlayerDead",
+        "type": "damage",
+        "amount": -10,
+        "target": "player"
+      },
+      {
+        "trigger": "PlayerDead",
+        "type": "restoreRune",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "PlayerDead",
+        "type": "destroy",
+        "target": "self"
+      }
+		]
+	},
+  {
+    "id": "back-alley-rogue",
+		"name": "Back-Alley Rogue",
+		"type": "Creature",
+		"subtypes": [ "Dark Elf"],
+		"attributes": [ "G" ],
+		"cost": 4,
+		"attack": 5,
+		"health": 3,
+		"rarity": "2Rare",
+		"text": "Summon: Steal Cover from another creature.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "C",
+		"deckCodeId": "bs",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "removeKeywords": ["Cover"],
+        "target": "creatureOther"
+      },
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "addKeywords": ["Cover"]
+      }
+    ]
+  },
+  {
+    "id": "clockwork-scorpion",
+		"name": "Clockwork Scorpion",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "G" ],
+		"cost": 6,
+		"attack": 3,
+		"health": 7,
+		"rarity": "1Common",
+		"text": "Drain, Lethal",
+		"keywords": ["Drain", "Lethal"],
+		"set": "Clockwork City",
+    "tier": "S",
+		"deckCodeId": "dp"
+  },
+  {
+    "id": "cog-collector",
+		"name": "Cog Collector",
+		"type": "Creature",
+		"subtypes": [ "Khajiit"],
+		"attributes": [ "G" ],
+		"cost": 2,
+		"attack": 1,
+		"health": 2,
+		"rarity": "3Epic",
+		"text": "Pilfer: Add a gear to Cog Collector. Last Gasp: Summon a random [N] creature with cost equal to the number of gears on Cog Collector.",
+		"keywords": ["Pilfer", "LastGasp"],
+		"set": "Clockwork City",
+    "tier": "D",
+		"deckCodeId": "ds",
+    "effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "addCounter",
+        "target": "self"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "summonRandomCounter",
+        "target": "thisLane"
+      }
+    ]
+  },
+  {
+		"id": "daring-heist",
+		"name": "Daring Heist",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "G" ],
+		"cost": 3,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Draw two cards. Daring Heist can't be played unless a creature in each lane damaged your opponent this turn.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "E",
+		"deckCodeId": "ec",
+    "playCondition": {
+      "type": "damageEachLane"
+    },
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 2,
+        "target": "player"
+      }
+		]
+	},
+  {
+		"id": "nix-hound-fabricant",
+		"name": "Nix-Hound Fabricant",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "G" ],
+		"cost": 4,
+		"attack": 3,
+		"health": 3,
+		"rarity": "1Common",
+		"text": "Drain Summon: If you have a Neutral card in play, Shackle an enemy creature.",
+		"keywords": ["Drain"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "lB",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "creatureEnemy",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "N"
+        }
+			}
+		]
+	},
+  {
+		"id": "sails-through-storms",
+		"name": "Sails-Through-Storms",
+		"type": "Creature",
+		"subtypes": [ "Argonian"],
+		"attributes": [ "G" ],
+		"cost": 6,
+		"attack": 5,
+		"health": 5,
+		"rarity": "4Legendary",
+		"text": "Pilfer: Summon the top creature of your deck.",
+		"keywords": ["Pilfer"],
+		"set": "Clockwork City",
+    "tier": "A",
+		"deckCodeId": "nv",
+    "unique": true,
+		"effects": [
+			{
+        "trigger": "Pilfer",
+        "type": "summonTopDeck",
+        "target": "randomLane"
+			}
+		]
+	},
+  {
+		"id": "barrow-stalker",
+		"name": "Barrow Stalker",
+		"type": "Creature",
+		"subtypes": [ "Vampire"],
+		"attributes": [ "P" ],
+		"cost": 2,
+		"attack": 2,
+		"health": 3,
+		"rarity": "2Rare",
+		"text": "Drain, Guard",
+		"keywords": ["Drain", "Guard"],
+		"set": "Clockwork City",
+    "tier": "A",
+		"deckCodeId": "bD"
+	},
+  {
+		"id": "brassilisk",
+		"name": "Brassilisk",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "P" ],
+		"cost": 3,
+		"attack": 2,
+		"health": 2,
+		"rarity": "2Rare",
+		"text": "When Brassilisk takes damage and survives, summon a Brassilisk in the other lane.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "cp",
+    "effects": [
+      {
+        "trigger": "DamageTaken",
+        "type": "summon",
+        "amount": 1,
+        "cardId": "brassilisk",
+        "target": "otherLane",
+        "condition": {
+          "type": "isAlive"
+        }
+      }
+    ]
+	},
+  {
+		"id": "galyn-the-shelterer",
+		"name": "Galyn the Shelterer",
+		"type": "Creature",
+		"subtypes": [ "Dark Elf"],
+		"attributes": [ "P" ],
+		"cost": 3,
+		"attack": 3,
+		"health": 3,
+		"rarity": "4Legendary",
+		"text": "Summon: Choose a creature or item in your hand. Shuffle three copies of it with +3/+3 into your deck.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "S",
+		"deckCodeId": "gO",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "shuffleIntoDeck",
+        "modAttack": 3,
+        "modHealth": 3,
+        "amount": 3,
+        "target": "cardPlayerHand",
+        "subtypes": [ "Creature", "Item" ]
+      }
+    ]
+	},
+  {
+		"id": "hallowed-deathpriest",
+		"name": "Hallowed Deathpriest",
+		"type": "Creature",
+		"subtypes": [ "Skeleton"],
+		"attributes": [ "P" ],
+		"cost": 5,
+		"attack": 3,
+		"health": 5,
+		"rarity": "3Epic",
+		"text": "Summon: Transform the highest cost creature in your opponent's hand into a Shriveled Mummy.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "A",
+		"deckCodeId": "hN",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "transform",
+        "cardId": "shriveled-mummy",
+        "target": "maxCostOppHand"
+      }
+    ]
+	},
+  {
+		"id": "hulking-fabricant",
+		"name": "Hulking Fabricant",
+		"type": "Creature",
+		"subtypes": [ "Fabricant"],
+		"attributes": [ "P" ],
+		"cost": 5,
+		"attack": 5,
+		"health": 5,
+		"rarity": "1Common",
+		"text": "Summon: If you have a [N] card in play, +3/+3.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "iu",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 3,
+        "modHealth": 3,
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "N"
+        }
+			}
+		]
+	},
+  {
+    "id": "thornwell-terror",
+    "name": "Thornwell Terror",
+    "type": "Creature",
+    "subtypes": ["Nord"],
+    "attributes": ["P"],
+    "cost": 1,
+    "attack": 1,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Beast Form : +1/+1",
+    "keywords": [
+      "BeastForm"
+    ],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "qC",
+    "effects": [
+      {
+        "trigger": "DestroyRune",
+        "type": "change",
+        "cardId": "thornwell-terror-wolf",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "thornwell-terror-wolf",
+    "name": "Thornwell Terror (Werewolf)",
+    "type": "Creature",
+    "subtypes": ["Werewolf"],
+    "attributes": ["P"],
+    "cost": 1,
+    "attack": 2,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [
+      "BeastForm"
+    ],
+    "set": "Clockwork City",
+    "deckCodeId": null
+  },
+  {
+		"id": "weakness",
+		"name": "Weakness",
+		"type": "Action",
+		"subtypes": [],
+		"attributes": [ "P" ],
+		"cost": 2,
+		"attack": null,
+		"health": null,
+		"rarity": "1Common",
+		"text": "Set a creature's health to 1.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "rG",
+		"effects": [
+			{
+        "trigger": "Play",
+        "type": "setStats",
+        "target": "creature",
+        "modHealth": 1
+			}
+		]
+	},
+  {
+    "id": "assembled-conduit",
+    "name": "Assembled Conduit",
+    "type": "Creature",
+    "subtypes": ["Factotum"],
+    "attributes": ["N"],
+    "cost": 5,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Assemble: +1/+0 and Breakthrough or +0/+1 and Regenerate.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "bg",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Assemble: +1/+0 Breakthrough",
+            "effect": {
+              "type": "buffTarget",
+              "modAttack": 1,
+              "addKeywords": ["Breakthrough"],
+              "target": "factotum"
+            }
+          },
+          {
+            "text": "Assemble: +0/+1 Regenerate",
+            "effect" : {
+              "type": "buffTarget",
+              "modHealth": 1,
+              "addKeywords": ["Regenerate"],
+              "target": "factotum"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "assembled-sanitizer",
+    "name": "Assembled Sanitizer",
+    "type": "Creature",
+    "subtypes": ["Factotum"],
+    "attributes": ["N"],
+    "cost": 3,
+    "attack": 1,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Assemble: +2/+0 or Lethal.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "bh",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Assemble: +2/+0",
+            "effect": {
+              "type": "buffTarget",
+              "modAttack": 2,
+              "target": "factotum"
+            }
+          },
+          {
+            "text": "Assemble: Lethal",
+            "effect" : {
+              "type": "buffTarget",
+              "addKeywords": ["Lethal"],
+              "target": "factotum"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "assembled-sentry",
+    "name": "Assembled Sentry",
+    "type": "Creature",
+    "subtypes": ["Factotum"],
+    "attributes": ["N"],
+    "cost": 2,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Assemble: +0/+2 or Guard.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "bi",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Assemble: +0/+2",
+            "effect": {
+              "type": "buffTarget",
+              "modHealth": 2,
+              "target": "factotum"
+            }
+          },
+          {
+            "text": "Assemble: Guard",
+            "effect" : {
+              "type": "buffTarget",
+              "addKeywords": ["Guard"],
+              "target": "factotum"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "assembled-titan",
+    "name": "Assembled Titan",
+    "type": "Creature",
+    "subtypes": ["Factotum"],
+    "attributes": ["N"],
+    "cost": 6,
+    "attack": 4,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Assemble: +2/+0 or +0/+2. Deal 2 damage to your opponent and gain 2 health.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "bj",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Assemble: +2/+0",
+            "effect": {
+              "type": "buffTarget",
+              "modAttack": 2,
+              "target": "factotum"
+            }
+          },
+          {
+            "text": "Assemble: +0/+2",
+            "effect" : {
+              "type": "buffTarget",
+              "modHealth": 2,
+              "target": "factotum"
+            }
+          }
+        ]
+      },
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 2,
+        "target": "opponent"
+      },
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "awakened-imperfect",
+    "name": "Awakened Imperfect",
+    "type": "Creature",
+    "subtypes": ["Automaton"],
+    "attributes": ["N"],
+    "cost": 8,
+    "attack": 8,
+    "health": 8,
+    "rarity": "2Rare",
+    "text": "Breakthrough, Guard",
+    "keywords": ["Breakthrough", "Guard"],
+    "set": "Clockwork City",
+    "tier": "C",
+    "deckCodeId": "bp"
+  },
+  {
+    "id": "brass-arquebus",
+    "name": "Brass Arquebus",
+    "type": "Creature",
+    "subtypes": ["Dwemer"],
+    "attributes": ["N"],
+    "cost": 6,
+    "attack": 3,
+    "health": 3,
+    "rarity": "3Epic",
+    "text": "Last Gasp: Draw three different random 1-cost creatures from your deck.",
+    "keywords": ["LastGasp"],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "co",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "drawFiltered",
+        "subtypes": [ "Creature" ],
+        "target": "player",
+        "cost": 1,
+        "amount": 1
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "drawFiltered",
+        "subtypes": [ "Creature" ],
+        "target": "player",
+        "cost": 1,
+        "amount": 1
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "drawFiltered",
+        "subtypes": [ "Creature" ],
+        "target": "player",
+        "cost": 1,
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "clockwork-dragon",
+    "name": "Clockwork Dragon",
+    "type": "Creature",
+    "subtypes": ["Dragon"],
+    "attributes": ["N"],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Summon: If Clockwork Dragon is in the left lane, +2/+0 and Drain. Otherwise, +0/+2 and Guard.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "B",
+    "deckCodeId": "do",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "addKeywords": ["Drain"],
+        "condition": {
+          "type": "inLane",
+          "max": 0
+        }
+      },
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modHealth": 2,
+        "addKeywords": ["Guard"],
+        "condition": {
+          "type": "inLane",
+          "min": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "dormant-centurion",
+    "name": "Dormant Centurion",
+    "type": "Creature",
+    "subtypes": ["Dwemer"],
+    "attributes": ["N"],
+    "cost": 3,
+    "attack": 3,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Dormant Centurion can't attack unless you've played an action this turn.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "D",
+    "deckCodeId": "eH",
+    "attackCondition": {
+      "type": "playedAction"
+    }
+  },
+  {
+    "id": "dragon-aspect-level-1",
+    "name": "Dragon Aspect",
+    "type": "Action",
+    "subtypes": [ "Shout" ],
+    "attributes": [ "N" ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Shout Level 1: You gain 3 health and Battle an enemy creature as if you had 3 power.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "eJ",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -3,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "playerBattle",
+        "modAttack": 3,
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Play",
+        "type": "upgrade",
+        "cardId": "dragon-aspect-level-2",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "dragon-aspect-level-2",
+    "name": "Dragon Aspect Level 2",
+    "type": "Action",
+    "subtypes": [ "Shout" ],
+    "attributes": [ "N" ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Shout Level 2: You gain 5 health and Battle an enemy creature as if you had 5 power.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -5,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "playerBattle",
+        "modAttack": 5,
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Play",
+        "type": "upgrade",
+        "cardId": "dragon-aspect-level-3",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "dragon-aspect-level-3",
+    "name": "Dragon Aspect Level 3",
+    "type": "Action",
+    "subtypes": [ "Shout" ],
+    "attributes": [ "N" ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Shout Level 3: You gain 7 health and Battle an enemy creature as if you had 7 power.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -7,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "playerBattle",
+        "modAttack": 7,
+        "target": "creatureEnemy"
+      }
+    ]
+  },
+  {
+    "id": "dwarven-colossus",
+    "name": "Dwarven Colossus",
+    "type": "Creature",
+    "subtypes": ["Dwemer"],
+    "attributes": ["N"],
+    "cost": 11,
+    "attack": 11,
+    "health": 11,
+    "rarity": "3Epic",
+    "text": "Summon: Summon a Power Sphere in each lane.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "B",
+    "deckCodeId": "fp",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "power-sphere",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "power-sphere",
+        "amount": 1,
+        "target": "rightLane"
+      }
+    ]
+  },
+  {
+    "id": "power-sphere",
+    "name": "Power Sphere",
+    "type": "Creature",
+    "subtypes": ["Defense"],
+    "attributes": ["N"],
+    "cost": 0,
+    "attack": 0,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Guard At the start of your turn, give Dwarven Colossus a random Keyword.",
+    "keywords": ["Guard"],
+    "set": "Clockwork City",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "grantRandomKeyword",
+        "target": "creatureFriendlyAll",
+        "targetCondition": {
+          "type": "hasName",
+          "names": ["dwarven-colossus"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "fabricate",
+    "name": "Fabricate",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [ "N" ],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Build a custom creature and put it into your hand.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "B",
+    "deckCodeId": "fY",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "fabricate",
+        "cardId": "custom-fabricant",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "custom-fabricant",
+    "name": "Custom Fabricant",
+    "type": "Creature",
+    "subtypes": ["Fabricant"],
+    "attributes": ["N"],
+    "cost": 0,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Clockwork City",
+    "deckCodeId": null
+  },
+  {
+    "id": "gearwork-spider",
+    "name": "Gearwork Spider",
+    "type": "Creature",
+    "subtypes": ["Dwemer"],
+    "attributes": ["N"],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Prophecy, Guard Summon: Summon all Gearwork Spiders in your discard pile.",
+    "keywords": ["Guard"],
+    "set": "Clockwork City",
+    "tier": "U",
+    "prophecy": true,
+    "deckCodeId": "gU",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonDiscard",
+        "cardId": "gearwork-spider",
+        "amount": 1,
+        "target": "randomLane"
+       }
+    ]
+  },
+  {
+    "id": "mecinar",
+    "name": "Mecinar",
+    "type": "Creature",
+    "subtypes": ["Dark Elf"],
+    "attributes": ["N"],
+    "cost": 8,
+    "attack": 4,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Summon: Stitch together the top creature from both decks to create an Abomination and put it into your hand.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "B",
+    "deckCodeId": "kq",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "stitch",
+        "cardId": "abomination",
+        "target": "player"
+       }
+    ]
+  },
+  {
+    "id": "abomination",
+    "name": "Abomination",
+    "type": "Creature",
+    "subtypes": ["Abomination"],
+    "attributes": ["N"],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "4Legendary",
+    "text": "",
+    "keywords": [],
+    "set": "Clockwork City",
+    "deckCodeId": null
+  },
+  {
+    "id": "reflective-automaton",
+    "name": "Reflective Automaton",
+    "type": "Creature",
+    "subtypes": ["Factotum", "All"],
+    "attributes": ["N"],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Reflective Automaton has all creature types.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "B",
+    "deckCodeId": "mT"
+  },
+  {
+    "id": "skeevaton",
+    "name": "Skeevaton",
+    "type": "Creature",
+    "subtypes": ["Automaton", "Skeever"],
+    "attributes": ["N"],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Summon: +1/+1 for each other Skeever you've summoned this game.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "op",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "player",
+        "amountPer": "skeeversSummoned"       
+      }
+    ]
+  },
+  {
+    "id": "star-sung-bard",
+    "name": "Star-Sung Bard",
+    "type": "Creature",
+    "subtypes": ["Nord"],
+    "attributes": ["N"],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "3Epic",
+    "text": "Immune to Silence. Your Unique cards cost 1 less.",
+    "keywords": [],
+    "set": "Clockwork City",
+    "tier": "U",
+    "deckCodeId": "pm",
+    "immunity": [ "Silence" ],
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "modCost",
+        "target": "playerHand",
+        "amount": -1,
+        "targetCondition": {
+          "type": "isUnique"
+        }
+      }
+    ]
+  },
+  {
+		"id": "treasure-map",
+		"name": "Treasure Map",
+		"type": "Item",
+		"subtypes": [],
+		"attributes": [ "N" ],
+		"cost": 3,
+		"attack": 1,
+		"health": 1,
+		"rarity": "2Rare",
+		"text": "+1/+1 Summon: Draw a card. If the wielder has Treasure Hunt, draw something they are hunting for instead.",
+		"keywords": [],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "qL",
+		"effects": [
+			{
+        "trigger": "Summon",
+        "type": "drawTreasure",
+        "amount": 1,
+        "target": "player"
+			}
+		]
+	},
+  {
+		"id": "aldora-the-daring",
+		"name": "Aldora the Daring",
+		"type": "Creature",
+		"subtypes": ["Nord"],
+		"attributes": [ "R" ],
+		"cost": 3,
+		"attack": 3,
+		"health": 3,
+		"rarity": "4Legendary",
+		"text": "Treasure Hunt – Action, Creature, Item, Support: +6/+6 When a friendly treasure hunter finds something, summon Skywag or give Skywag +1/+1.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "an",
+    "unique": true,
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Action", "required": 1, "found": 0 },
+        { "type": "Creature", "required": 1, "found": 0 },
+        { "type": "Item", "required": 1, "found": 0 },
+        { "type": "Support", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+			{
+        "trigger": "FriendlyTreasure",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureFriendlyAll",
+        "targetCondition": {
+          "type": "hasName",
+          "names": ["skywag"]
+        }
+			},
+      {
+        "trigger": "FriendlyTreasure",
+        "type": "summonUnique",
+        "cardId": "skywag",
+        "amount": 1,
+        "target": "randomLane"
+			},
+      {
+        "trigger": "TreasureHunt",
+        "type": "buffSelf",
+        "modAttack": 6,
+        "modHealth": 6
+      }
+		]
+	},
+  {
+		"id": "skywag",
+		"name": "Skywag",
+		"type": "Creature",
+		"subtypes": ["Beast"],
+		"attributes": [ "R" ],
+		"cost": 1,
+		"attack": 1,
+		"health": 1,
+		"rarity": "4Legendary",
+		"text": "",
+		"keywords": [],
+    "unique": true,
+		"set": "Clockwork City",
+		"deckCodeId": null
+  },
+  {
+		"id": "ratway-prospector",
+		"name": "Ratway Prospector",
+		"type": "Creature",
+		"subtypes": ["Wood Elf"],
+		"attributes": [ "R" ],
+		"cost": 1,
+		"attack": 1,
+		"health": 2,
+		"rarity": "2Rare",
+		"text": "Treasure Hunt – Support, Item, Action: +5/+5 After Ratway Prospector attacks, give her Cover.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "mH",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Action", "required": 1, "found": 0 },
+        { "type": "Item", "required": 1, "found": 0 },
+        { "type": "Support", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+			{
+        "trigger": "Attack",
+        "type": "buffSelf",
+        "tempKeywords": [ "Cover" ]
+      },
+      {
+        "trigger": "TreasureHunt",
+        "type": "buffSelf",
+        "modAttack": 5,
+        "modHealth": 5
+      }
+		]
+	},
+  {
+		"id": "relic-hunter",
+		"name": "Relic Hunter",
+		"type": "Creature",
+		"subtypes": ["Redguard"],
+		"attributes": [ "R" ],
+		"cost": 2,
+		"attack": 3,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Treasure Hunt – Item: Give the item +1/+1.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "mW",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Item", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "drawnCard"        
+      }
+		]
+	},
+  {
+		"id": "scroll-seeker",
+		"name": "Scroll Seeker",
+		"type": "Creature",
+		"subtypes": ["Breton"],
+		"attributes": [ "B" ],
+		"cost": 1,
+		"attack": 1,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Ward Treasure Hunt – Two actions: +1/+0",
+		"keywords": ["Ward","TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "nC",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Action", "required": 2, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "buffSelf",
+        "modAttack": 1       
+      }
+		]
+	},
+  {
+		"id": "ruin-archaeologist",
+		"name": "Ruin Archaeologist",
+		"type": "Creature",
+		"subtypes": ["High Elf"],
+		"attributes": [ "Y" ],
+		"cost": 3,
+		"attack": 2,
+		"health": 5,
+		"rarity": "1Common",
+		"text": "Treasure Hunt – Support: Draw a card.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "ns",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Support", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+		]
+	},
+  {
+		"id": "murkwater-guide",
+		"name": "Murkwater Guide",
+		"type": "Creature",
+		"subtypes": ["Goblin"],
+		"attributes": [ "G" ],
+		"cost": 3,
+		"attack": 4,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Treasure Hunt - 0-cost card: Put a copy of the treasure into your hand.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "ld",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Cost:0", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "addToHand",
+        "amount": 1,
+        "target": "drawnCard"
+      }
+		]
+	},
+  {
+		"id": "ruthless-freebooter",
+		"name": "Ruthless Freebooter",
+		"type": "Creature",
+		"subtypes": ["Khajiit"],
+		"attributes": [ "G" ],
+		"cost": 2,
+		"attack": 2,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Treasure Hunt – Drain: +1/+1 and Drain. Treasure Hunt – Lethal: +1/+1 and Lethal.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "nt",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Drain", "required": 1, "found": 0 },
+        { "type": "Lethal", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureDrain",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "addKeywords": ["Drain"]
+      },
+      {
+        "trigger": "TreasureLethal",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "addKeywords": ["Lethal"]
+      }
+		]
+	},
+  {
+		"id": "mistveil-warden",
+		"name": "Mistveil Warden",
+		"type": "Creature",
+		"subtypes": ["Imperial"],
+		"attributes": [ "G" ],
+		"cost": 2,
+		"attack": 2,
+		"health": 2,
+		"rarity": "1Common",
+		"text": "Treasure Hunt – Guard: Give the Guard +1/+2.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "kE",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "Guard", "required": 1, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 2,
+        "target": "drawnCard"
+      }
+		]
+	},
+  {
+		"id": "abandoned-imperfect",
+		"name": "Abandoned Imperfect",
+		"type": "Support",
+		"subtypes": [],
+		"attributes": [ "N" ],
+		"cost": 5,
+		"attack": null,
+		"health": null,
+		"rarity": "2Rare",
+		"text": "Ongoing Treasure Hunt – Three Neutral cards: Sacrifice Abandoned Imperfect to summon an 8/8 Awakened Imperfect with Breakthrough and Guard to the lane of your choice.",
+		"keywords": ["TreasureHunt"],
+		"set": "Clockwork City",
+    "tier": "U",
+		"deckCodeId": "ac",
+    "treasureHunt": {
+      "requirements": [
+        { "type": "N", "required": 3, "found": 0 }
+      ],
+      "completed": false
+    },
+		"effects": [
+      {
+        "trigger": "TreasureHunt",
+        "type": "summon",
+        "amount": 1,
+        "cardId": "awakened-imperfect",
+        "target": "weakerLane"
+      },
+      {
+        "trigger": "TreasureHunt",
+        "type": "destroy",
+        "target": "self"
+      }
+		]
+	}
+]

@@ -52,7 +52,21 @@ export type PendingActionType =
   | 'history'
   | 'audio'
   | 'revealAndGuess'
+  | 'fabricate'
+  | 'stitch'
   | 'none';
+
+export interface TreasureHuntData {
+  requirements: TreasureRequirement[];
+  completed: boolean;
+}
+
+export interface TreasureRequirement {
+  type: string;
+  subtype?: string;           // e.g. "Redguard", "Dragon", etc.
+  required: number;           // How many are needed
+  found: number;              // How many have been found so far (starts at 0)
+}
 
 export interface GameState {
   player: PlayerState;
@@ -79,6 +93,7 @@ export interface GameState {
   creatureSlayer: Card | null;
   creatureShackled: Card | null;
   thief: Card | null;
+  rallyist: Card | null;
   creatureMoved: Card | null;
   creatureRevealed: Card | null;
   lastCardPlayed: Card | null;
@@ -91,9 +106,12 @@ export interface GameState {
   lastCardEquipped: Card | null;
   lastDamageTaken: number; //damage taken to a card
   lastHealingTaken: number; //healing taken to a card
+  cardsDiscarded?: number;
   healthJustGained: number;
   isProcessingDeath: boolean;
+  isProcessingPlayerDead: boolean;
   waitingOnScry: boolean;
+  betrayAvailable: boolean;
   waitingOnAnimation: boolean;
   useAnimation: boolean;
   isProcessingEndOfTurn: boolean;
@@ -185,7 +203,6 @@ export interface Card {
   currentHealth?: number;     // starts as health
   maxHealth?: number;
   currentKeywords?: string[]; // merged from base + items
-  currentMechanics?: string[]; // if needed
   //these modifications are removed at end of current turn
   tempAttack?: number;      
   tempHealth?: number;
@@ -197,9 +214,13 @@ export interface Card {
   totalDamageDealt?: number;
   counter?: number;
   endOfTurn?: string;
+  exalted?: boolean;
+  exaltCost?: number;
 
   // Attachments (only relevant for Creatures)
   attachedItems?: Card[];     // list of equipped Item cards
+
+  treasureHunt?: TreasureHuntData; // for treasure hunt cards
 
   // NEW: Structured effects (replaces most text parsing)
   effects?: CardEffect[];
@@ -208,10 +229,11 @@ export interface Card {
   staticBuffApplied?: number;
 
   playCondition?: {
-    type: 'friendlyCreatureInEachLane';
+    type: 'friendlyCreatureInEachLane' | 'damageEachLane' | 
+    'creatureFiveAttack';
   }
   attackCondition?: {
-    type: 'thisLaneFull';
+    type: 'thisLaneFull' | 'playedAction' | 'twoCreatureFiveAttack';
   }
 
 }
@@ -222,6 +244,7 @@ export interface StaticEffect {
     'isYourTurn' | 'noEnemyCreaturesThisLane' | 'creatureFriendlyOtherBreakthrough' |
     'hasHealth';
     min?: number;
+    max?: number;
   };
   cannotGainKeyword?: string;
   immunity?: "actionDamage";
@@ -246,7 +269,9 @@ export interface CardEffect {
   'CreatureFriendlyDeath' | 'FriendlyPilfer' | 'EnemyShackle' | 'SummonFirst' |
   'AddToHand' | 'PlayCard' | 'DrawCard' | 'Move' | 'HealCreature' | 'FriendlyDrain' | 
   'GainCover' | 'FriendlyLethalSlay' | 'CreatureEnemyDeath' | 'EquipFriendly' |
-  'OppProphecy';
+  'OppProphecy' | 'PlayerDead' | 'FailRally' | 'Rally' | 'FriendlyRally' | 'Exalt' |
+  'Plot' | 'FriendlyDamageTaken' | 'Sacrifice' | 'SummonSecond' | 'DamagedByCreature';
+
   type: 'damage' | 'heal' | 'buffSelf' | 'buffTarget' | 'drawCards' | 
   'addToHand' | 'silence' | 'unsummon' | 'destroy' | 
   'choice' | 'choiceRandom' | 'shackle' | 'steal' | 'transform' |
@@ -271,7 +296,15 @@ export interface CardEffect {
   'markForDeath' | 'triggerSlay' | 'discardDeck' | 'pilferSlay' | 'addCounter' | 'drawFull' |
   'summonHighTemp' | 'moveAll' | 'addTempCost' | 'summonDeckCost' | 'buffSubtype' |
   'equipCopy' | 'revealAndChooseDeck' | 'playSupport' | 'rollForReturn' |
-  'copyKeywordsDeck';
+  'copyKeywordsDeck' | 'summonTopDeck' | 'banishDiscard' | 'damageName' |
+  'setNeutral' | 'beckon' | 'restoreRune' | 
+  'summonRandomCounter' | 'playerBattle' | 'fabricate' | 'stitch' |
+  'drawTreasure' | 'summonUnique' | 'oneOfEach' | 'playRandomDeck' | 'drawFromDeck' |
+  'thaw' | 'grantWard' | 'revealAndChooseName' | 'drawMultiAttr' | 'allExalt' |
+  'removeEffects' | 'takeCard' | 'battleAttack' | 'summonMaxAttack' |
+  'summonRandomMagicka' | 'summonDeckCostMax' | 'secretDeath' | 'summonDiscardAttack' |
+  'drawMagicka' | 'revealAndChooseGive' | 'revealAndGuessBuff' | 'removeProphecy' |
+  'invertStats';
   amount?: number; //number cards, amount of damage
   target?: TargetType;
   // Conditions
@@ -286,7 +319,10 @@ export interface CardEffect {
     'summonAttribute' | 'targetNotOnBoard' | 'hasLessHealth' | 'topDeckType' |
     'totalDmgByCard' | 'summonType' | 'creatureFriendlyDied' | 'numCreatures' |
     'lanesFull' | 'lastSummonAttack' | 'lastSummonHealth' | 'lastPlayedCost' | 
-    'discardHasSubtype' | 'numActivations' | 'isAlive' | 'counter';
+    'discardHasSubtype' | 'numActivations' | 'isAlive' | 'counter' | 'inLane' |
+    'hasInPlay' | 'isPlayerTurn' | 'playedCards' | 'deckUnique' | 
+    'playedActionItemSupport' | 'hasCreatureAttack' | 'hasExaltedCreature' |
+    'noEnemyCreaturesThisLane' | 'notExalted' | 'haveAllAttributes';
     subtypes?: string[];
     keyword?: string;
     attribute?: string;
@@ -295,7 +331,8 @@ export interface CardEffect {
   };
   targetCondition?: {
     type: 'hasSubtype' | 'hasKeyword' | 'hasAttribute' | 'hasType' | 'hasName' |
-    'sameLaneAsSource' | 'isWounded' | 'hasAttack';
+    'sameLaneAsSource' | 'isWounded' | 'hasAttack' | 'isUnique' | 'notMostPowerful' |
+    'hasLessAttack' | 'isExalted' | 'hasNoKeywords';
     subtypes?: string[];
     keyword?: string;
     attribute?: string;
@@ -304,21 +341,13 @@ export interface CardEffect {
     max?: number;
   }
   choices?: ChoiceOption[];  
-  addKeywords: string[];
-  removeKeywords: string[];
+  addKeywords?: string[];
+  removeKeywords?: string[];
   source?: 'deck' | 'enemyDeck';
-  //timing?: 'Immediate' | 'EndOfTurn' | 'StartOfNextTurn';
-  // For summonRandom: which subtypes to choose from
   subtypes?: string[];   // e.g. ["Beast", "Fish", "Reptile", ...]
   names?: string[];
   cardId?: string;  // for addToHand effects
   amountPer?: string;
-  /*'destroyedEnemyRune' | 'friendlyDeathsInThisLane' |
-  'creatureFriendlyOtherAll' | 'creatureFriendlyAll' |
-  'creatureEnemyThisLaneAll' | 'creatureFriendlyOtherBreakthrough' |
-  'creaturePlayerDiscardAll' | 'healthGained' | 'creatureFriendlyWardAll' |
-  'creatureSummoned'*/
-  /*etc*/
   modAttack?: number;
   modHealth?: number;
   modCost?: number;
@@ -336,7 +365,7 @@ export interface PlayerState {
   currentMagicka: number;
   maxMagicka: number;
   hand: Card[];
-  board: Card[][]; // 2 lanes: [0] = left/shadow, [1] = right/field
+  board: Card[][]; // 2 lanes: [0] = left/field, [1] = right/shadow
   support: Card[];
   deck: Card[];
   discard: Card[];  
@@ -345,14 +374,18 @@ export interface PlayerState {
   auras: AuraEffect[];
   cardUpgrades: Record<string, string>;
   playCounts: Record<string, number>;
+  summonCounts: Record<string, number>;
   turn: boolean;
   diedLane: number[];
+  damageLane: number[];
   damageTaken: number; //damage to player
   numSummon: number;
   actionsPlayed: number;
   cardsPlayed: number;
   cardsDrawn: number;
   tempCost: number;
+  hasWard: boolean;
+  deckUnique: boolean;
 }
 
 export interface AuraEffect {
@@ -384,7 +417,10 @@ export type TargetType =
   | 'creatureEnemyWounded' 
   | 'creatureEnemyAll'              //auto
   | 'creatureEnemyRandom'           //auto
+  | 'creatureEnemyRandomLeftLane'
+  | 'creatureEnemyRandomRightLane'
   | 'creatureEnemyThisLane'
+  | 'creatureEnemyOtherLane'
   | 'creatureEnemyThisLaneAll'      //auto
   | 'creatureFriendly'
   | 'creatureFriendlyAll'           //auto
@@ -395,6 +431,7 @@ export type TargetType =
   | 'creatureFriendlyThisLaneAll'   //auto
   | 'creatureFriendlyThisLane'   //auto
   | 'creatureFriendlyOtherRandom'
+  | 'creatureFriendlyOtherLane'
   | 'creatureFriendlyRandom'
   | 'creatureFriendlyRandomLeftLane'
   | 'creatureFriendlyRandomRightLane'
@@ -423,20 +460,29 @@ export type TargetType =
   | 'slain'                        //used to target creature slain
   | 'slayer'
   | 'thief'
+  | 'cardRallied'
   | 'creatureShackled'
   | 'lastCardUsed'
   | 'creatureDamaged'
   | 'drawnCard'                   //targets last card drawn
+  | 'playedCard'
   | 'deck'
+  | 'topDeck'
+  | 'oppTopDeck'
   | 'wielder'
+  | 'namedCard'
+  | 'instanceId'
   | 'creatureTopDeck'
+  | 'creaturesTopDeck'
   | 'supportFriendlyAll'
   | 'creatureDiscardAll'
   | 'cardPlayerHandRandom'
   | 'cardPlayerHand'
-  | 'creaturePlayerHand'
+  | 'maxCostOppHand'
+  | 'factotum'
   | 'leftLane'
   | 'rightLane'  
+  | 'weakerLane'
   | 'thisLane'
   | 'randomLane'
   | 'otherLane';                    //auto
@@ -471,14 +517,18 @@ export interface SavedPlayerState {
   auras: SavedAura[];               // serialized auras
   upgrades: Record<string,string>;
   counts: Record<string,number>;
+  summonCounts: Record<string,number>;
   turn: boolean;
   diedLane: number[];
+  damageLane: number[];
   damageTaken: number;
   numSummon: number;
   actionsPlayed: number;
   cardsPlayed: number;
   cardsDrawn: number;
   tempCost: number;
+  hasWard: boolean;
+  deckUnique: boolean;
 }
 
 export interface SavedCard {
@@ -542,6 +592,8 @@ export class DeckService {
   private cardsSubject = new BehaviorSubject<Card[]>([]);
   cards$ = this.cardsSubject.asObservable();
 
+  keywordList = ['Breakthrough', 'Charge', 'Drain', 'Guard', 'Lethal', 'Rally', 'Regenerate', 'Ward' ];
+
   constructor(private http: HttpClient, private utilityService: UtilityService) {
     this.loadCards();
   }
@@ -552,12 +604,15 @@ export class DeckService {
       brotherhood: this.http.get<Card[]>('/assets/tesl/brotherhood_set.json'),
       skyrim: this.http.get<Card[]>('/assets/tesl/skyrim_set.json'),
       madhouse: this.http.get<Card[]>('/assets/tesl/madhouse_set.json'),
+      forgotten: this.http.get<Card[]>('/assets/tesl/forgotten_set.json'),
       reward: this.http.get<Card[]>('/assets/tesl/reward_set.json'),
       story: this.http.get<Card[]>('/assets/tesl/story_set.json'),
+      clockwork: this.http.get<Card[]>('/assets/tesl/clockwork_set.json'),
+      morrowind: this.http.get<Card[]>('/assets/tesl/morrowind_set.json'),
       custom: this.http.get<Card[]>('/assets/tesl/custom_set.json')
     }).subscribe({
-        next: ({ core, brotherhood, skyrim, madhouse, reward, story, custom }) => {
-        const cards = [...core, ...brotherhood, ...skyrim, ...madhouse, ...reward, ...story, ...custom];
+        next: ({ core, brotherhood, skyrim, madhouse, forgotten, reward, story, clockwork, morrowind, custom }) => {
+        const cards = [...core, ...brotherhood, ...skyrim, ...madhouse, ...forgotten, ...reward, ...story, ...clockwork, ...morrowind, ...custom];
         let collectibleCards = 0;
         this.cards = cards;
         cards.forEach(card => {
@@ -591,6 +646,23 @@ export class DeckService {
 
   getAllCards(): Card[] {
     return [...this.cards];
+  }
+
+  getMostCards(): Card[] {
+    const allCards = [...this.cards];
+    const matching = allCards.filter(card => { 
+      if (card.deckCodeId === null || 
+        card.deckCodeId === undefined || 
+        card.set === 'Story Set') {
+        return false; // skip cards without deckCodeId (e.g. generated tokens)
+      }
+      if (!this.customSetsAllowed && card.set === 'Custom Set') return false;
+      if (!this.morrowindSetsAllowed && ['Houses of Morrowind','Clockwork City',
+          'Forgotten Hero Collection'].includes(card.set)) return false;
+      // If we got here → card matches
+      return true;
+    });
+    return matching;
   }
 
   getCardsByAttribute(attr: string): Card[] {
@@ -828,7 +900,13 @@ export class DeckService {
   get customSetsAllowed(): boolean {
     const customSaved = localStorage.getItem('TESL_CustomSets');
     if (customSaved) return customSaved === 'true';
-    return true;
+    return false;
+  }
+
+  get morrowindSetsAllowed(): boolean {
+    const customSaved = localStorage.getItem('TESL_Morrowind');
+    if (customSaved) return customSaved === 'true';
+    return false;
   }
 
   getRandomCardByCost(cost: number, comparison: string): Card | undefined {
@@ -840,6 +918,8 @@ export class DeckService {
         return false; // skip cards without deckCodeId (e.g. generated tokens)
       }
       if (!this.customSetsAllowed && card.set === 'Custom Set') return false;
+      if (!this.morrowindSetsAllowed && ['Houses of Morrowind','Clockwork City',
+          'Forgotten Hero Collection'].includes(card.set)) return false;
       if (comparison === 'equal') {
         if (!(card.cost === cost)) {
           return false;
@@ -862,7 +942,7 @@ export class DeckService {
     return this.random(matching);
   }
 
-  getRandomCreatureByCost(cost: number, comparison: string, rarity?: string): Card | undefined {
+  getRandomCreatureByCost(cost: number, comparison: string, rarity?: string, attribute?: string): Card | undefined {
     const allCards = Array.from(this.cards.values());
     const matching = allCards.filter(card => { 
       if (card.deckCodeId === null || card.deckCodeId === undefined|| 
@@ -870,6 +950,8 @@ export class DeckService {
         return false; // skip cards without deckCodeId (e.g. generated tokens)
       }
       if (!this.customSetsAllowed && card.set === 'Custom Set') return false;
+      if (!this.morrowindSetsAllowed && ['Houses of Morrowind','Clockwork City',
+          'Forgotten Hero Collection'].includes(card.set)) return false;
       if (card.type !== 'Creature') {
         return false;
       }
@@ -883,6 +965,9 @@ export class DeckService {
         }
       }
       if (rarity && card.rarity !== rarity) {
+        return false;
+      }
+      if (attribute && !card.attributes.includes(attribute)) {
         return false;
       }
       // If we got here → card matches
@@ -907,17 +992,17 @@ export class DeckService {
     // Normalize subtypes (optional, but helps with consistency)
     const normalizedSubtypes = subtypes.map(s => s.trim());
 
-    // Check if any of the requested "subtypes" are actually card types
-    /*const requestedNames = normalizedSubtypes.filter(t =>
-      ["fyr"].includes(t)
-    );*/
-
     const requestedTypes = normalizedSubtypes.filter(t =>
       ["Creature", "Item", "Support", "Action"].includes(t)
     );
 
+    const requestedKeywords = normalizedSubtypes.filter(t =>
+      ["Guard", "Rally", "Lethal", "Charge"].includes(t)
+    );
+
     const requestedSubtypes = normalizedSubtypes.filter(t =>
-      !["Creature", "Item", "Support", "Action"].includes(t)
+      !["Creature", "Item", "Support", "Action", 
+        "Guard", "Rally", "Lethal", "Charge"].includes(t)
     );
 
     // Get all cards
@@ -930,6 +1015,8 @@ export class DeckService {
         return false; // skip cards without deckCodeId (e.g. generated tokens)
       }
       if (!this.customSetsAllowed && card.set === 'Custom Set') return false;
+      if (!this.morrowindSetsAllowed && ['Houses of Morrowind','Clockwork City',
+          'Forgotten Hero Collection'].includes(card.set)) return false;
       // 1. Match on card.type if any type was requested
       if (requestedTypes.length > 0) {
         if (!requestedTypes.includes(card.type)) {
@@ -944,22 +1031,11 @@ export class DeckService {
         }
       }
 
-      /*if (requestedNames.length > 0) {
-        const cardNameLower = card.name.toLowerCase();
-
-        const matchesRequestedName = requestedNames.some(name =>
-          cardNameLower.includes(name.toLowerCase())
-        );
-
-        if (!matchesRequestedName) {
+      if (requestedKeywords.length > 0) {
+        if (!card.keywords?.some(sub => requestedKeywords.includes(sub))) {
           return false;
         }
-
-        // Explicitly exclude Divayth Fyr
-        if (card.name === "Divayth Fyr") {
-          return false;
-        }
-      }*/
+      }
 
       if (cost) {
         if (!(card.cost === cost)) {
@@ -982,11 +1058,11 @@ export class DeckService {
 
   getRandomCardByNames(names: string[], cost?: number): Card | undefined {
     if (!names || names.length === 0) {
-      console.warn("getRandomCardBySubtypes called with empty subtypes");
+      console.warn("getRandomCardByNames called with empty names");
       return undefined;
     }
 
-    // Normalize subtypes (optional, but helps with consistency)
+    // Normalize names (optional, but helps with consistency)
     const normalizedNames = names.map(s => s.trim());
 
     // Get all cards
@@ -994,9 +1070,6 @@ export class DeckService {
 
     // Filter cards
     const matching = allCards.filter(card => {
-        /*if (card.deckCodeId === null || card.deckCodeId === undefined) {
-          return false; // skip cards without deckCodeId (e.g. generated tokens)
-        }*/
         const cardNameLower = card.id.toLowerCase();
 
         const matchesRequestedName = normalizedNames.some(name =>
@@ -1083,6 +1156,8 @@ export class DeckService {
       instanceId: crypto.randomUUID(),
       prophecy: original.prophecy ?? false,
       isOpponent: opponent,
+      subtypes: [...(original.subtypes || [])],
+      attributes: [...(original.attributes || [])],
       currentAttack: original.attack ?? 0,
       currentHealth: original.health ?? 0,
       maxHealth: original.health ?? 0,
@@ -1090,6 +1165,15 @@ export class DeckService {
       currentKeywords: [...(original.keywords || [])],
       attachedItems: [],
       effects: [...(original.effects || [])],
+      // TREASURE HUNT - Proper deep clone
+      treasureHunt: original.treasureHunt 
+        ? {
+            requirements: original.treasureHunt.requirements.map(req => ({
+              ...req
+            })),
+            completed: false
+          }
+        : undefined,
       immunity: [...(original.immunity || [])],
       attacks: original.attacksPerTurn ?? 1,
       covered: false,
@@ -1128,6 +1212,8 @@ export class DeckService {
         restored.shackled = sCard.shackled;
         restored.silenced = sCard.silenced;
         restored.currentKeywords = [...sCard.currentKeywords];
+        if (sCard.attributes) restored.attributes = [...sCard.attributes];
+        if (sCard.subtypes) restored.subtypes = [...sCard.subtypes];
         restored.tempAttack = sCard.tempAttack;
         restored.tempHealth = sCard.tempHealth;
         restored.tempKeywords = [...sCard.tempKeywords];
@@ -1139,6 +1225,19 @@ export class DeckService {
         restored.scaleDamage = sCard.scaleDamage;
         restored.immunity = [...(sCard.immunity || [])];
         restored.attachedItems = sCard.attachedItems?.map((item: any) => this.deserializeCard(item, isOpponent)) || [];
+
+        // === TREASURE HUNT DESERIALIZATION ===
+        if (sCard.treasureHunt) {
+          restored.treasureHunt = {
+            requirements: sCard.treasureHunt.requirements.map((req: any) => ({
+              type: req.type,
+              subtype: req.subtype,
+              required: req.required,
+              found: req.found
+            })),
+            completed: sCard.treasureHunt.completed
+          };          
+        }
   
         cards.push(restored);
       }
@@ -1209,15 +1308,19 @@ export class DeckService {
 
     player.cardUpgrades = saved.upgrades ? {...saved.upgrades} : {};
     player.playCounts = saved.counts ? { ...saved.counts}: {};
+    player.summonCounts = saved.summonCounts ? { ...saved.summonCounts}: {};
 
     player.turn =  saved.turn;
     player.diedLane = [...saved.diedLane];
+    player.damageLane = saved.damageLane ? [...saved.damageLane] : [0, 0];
     player.damageTaken = saved.damageTaken;
     player.numSummon = saved.numSummon;
     player.actionsPlayed = saved.actionsPlayed;
     player.cardsPlayed = saved.cardsPlayed;
     player.cardsDrawn = saved.cardsDrawn;
     player.tempCost = saved.tempCost;
+    player.hasWard = saved.hasWard ?? false;
+    player.deckUnique = saved.deckUnique ?? false;
   }
 
   serializePlayer(player: PlayerState): SavedPlayerState {
@@ -1249,14 +1352,18 @@ export class DeckService {
       })) || [],
       upgrades: { ...player.cardUpgrades},
       counts: { ...player.playCounts},
+      summonCounts: { ...player.summonCounts},
       turn: player.turn,
       diedLane: [...player.diedLane],
+      damageLane: [...player.damageLane],
       damageTaken: player.damageTaken,
       numSummon: player.numSummon,
       actionsPlayed: player.actionsPlayed,
       cardsPlayed: player.cardsPlayed,
       cardsDrawn: player.cardsDrawn,
-      tempCost: player.tempCost
+      tempCost: player.tempCost,
+      hasWard: player.hasWard,
+      deckUnique: player.deckUnique
     };
   }
 
@@ -1270,6 +1377,8 @@ export class DeckService {
       currentHealth: card.currentHealth,
       maxHealth: card.maxHealth,
       currentKeywords: [...(card.currentKeywords || [])],
+      attributes: [...(card.attributes || [])],
+      subtypes: [...(card.subtypes || [])],
       tempAttack: card.tempAttack ?? 0,
       tempHealth: card.tempHealth ?? 0,
       tempKeywords: [...(card.tempKeywords || [])],
@@ -1287,7 +1396,18 @@ export class DeckService {
       counter: card.counter ?? 0,
       activations: card.activations,
       staticBuffApplied: card.staticBuffApplied ?? 0,
-      scaleDamage: card.scaleDamage ?? 0
+      scaleDamage: card.scaleDamage ?? 0,
+
+      // === TREASURE HUNT SERIALIZATION ===
+      treasureHunt: card.treasureHunt ? {
+        requirements: card.treasureHunt.requirements.map(req => ({
+          type: req.type,
+          subtype: req.subtype,
+          required: req.required,
+          found: req.found
+        })),
+        completed: card.treasureHunt.completed
+      } : undefined
       //,tempCostAdjustment: card.tempCostAdjustment,
     };
   }
@@ -1345,20 +1465,41 @@ export class DeckService {
       if (effect.targetCondition) {
         return this.isTargetConditionMet(targetCard, effect.targetCondition);
       }
-      console.log('using fallback hand aura target filter');
-      return targetCard.type === 'Item';
+      return true;
     };
   }
 
-  isTargetConditionMet(target: Card, condition?: CardEffect['targetCondition'], sourceCard?: Card): boolean {
+  isTargetConditionMet(target: Card, condition?: CardEffect['targetCondition'], sourceCard?: Card, ignoreOtherEffects?: boolean): boolean {
     if (!condition) {
       return true; // no condition = always allowed
     }
 
     switch (condition.type) {
+      case 'notMostPowerful': 
+        return true; //handled in executeEffect
+      case 'isUnique':
+        return target.unique === true;
+      case 'isExalted':
+        return target.exalted === true;
       case 'sameLaneAsSource':
-        if (!sourceCard?.laneIndex || !target.laneIndex) return false;
+        if (sourceCard === undefined || sourceCard.laneIndex === undefined || 
+          target.laneIndex === undefined) return false;
         return sourceCard.laneIndex === target.laneIndex;
+
+      case 'hasLessAttack': {
+        if (sourceCard) {
+          let refAttack = sourceCard.currentAttack ?? sourceCard.attack ?? 0;
+          if (sourceCard.exalted && ignoreOtherEffects === undefined) {
+            sourceCard.effects?.forEach(effect => {
+              if (effect.trigger === 'Exalt' && effect.type === 'buffSelf') {
+                refAttack += (effect.modAttack ?? 0);
+              }
+            });
+          }
+          return (target.currentAttack ?? target.attack ?? 0) < refAttack;
+        }
+        return false;
+      }
 
       case 'hasType':
         if (!condition.subtypes?.length) return false;
@@ -1366,7 +1507,14 @@ export class DeckService {
 
       case 'hasSubtype':
         if (!condition.subtypes?.length) return false;
-        return target.subtypes?.some(sub => condition.subtypes!.includes(sub)) ?? false;
+        return (target.subtypes?.some(sub => condition.subtypes!.includes(sub)) || 
+          target.subtypes.includes('All')) ?? false;
+      
+      case 'hasNoKeywords': {
+        if ((target.currentKeywords || []).length === 0) return true;
+        return !(target.currentKeywords!.some(kw => 
+          [...this.keywordList,'LastGasp','Pilfer','Slay','TreasureHunt','BeastForm'].includes(kw)));
+      }
 
       case 'hasKeyword':
         if (!condition.keyword) return false;

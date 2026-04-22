@@ -1,0 +1,566 @@
+{
+  "files": [
+    "LG-audio-Barilzar's_tinkering.ogg",
+    "LG-audio-Crassius'_favor.ogg",
+    "LG-audio-ald_ruhn_arms_master_attack.ogg",
+    "LG-audio-ald_ruhn_arms_master_enter_play.ogg",
+    "LG-audio-ald_velothi_assassin_attack.ogg",
+    "LG-audio-ald_velothi_assassin_enter_play.ogg",
+    "LG-audio-almalexia's_disciple_exalt.ogg",
+    "LG-audio-almalexia_attack.ogg",
+    "LG-audio-almalexia_enter_play.ogg",
+    "LG-audio-almalexia_exalt.ogg",
+    "LG-audio-almalexia_s_disciple_attack.ogg",
+    "LG-audio-almalexia_s_disciple_enter_play.ogg",
+    "LG-audio-ambitious_hireling_attack.ogg",
+    "LG-audio-ambitious_hireling_enter_play.ogg",
+    "LG-audio-archcanon_saryoni_attack.ogg",
+    "LG-audio-archcanon_saryoni_enter_play.ogg",
+    "LG-audio-archcanon_saryoni_exalt.ogg",
+    "LG-audio-ascended_sleeper_attack.ogg",
+    "LG-audio-ascended_sleeper_enter_play.ogg",
+    "LG-audio-ashlander_zealot_attack.ogg",
+    "LG-audio-ashlander_zealot_enter_play.ogg",
+    "LG-audio-aundae_clan_sorcerer_attack.ogg",
+    "LG-audio-aundae_clan_sorcerer_enter_play.ogg",
+    "LG-audio-awakened_dreamer_attack.ogg",
+    "LG-audio-awakened_dreamer_enter_play.ogg",
+    "LG-audio-balmora_captain_attack.ogg",
+    "LG-audio-balmora_captain_enter_play.ogg",
+    "LG-audio-balmora_puppeteer_attack.ogg",
+    "LG-audio-balmora_puppeteer_enter_play.ogg",
+    "LG-audio-berne_clan_nightstalker_attack.ogg",
+    "LG-audio-berne_clan_nightstalker_enter_play.ogg",
+    "LG-audio-bloodline_outcast_attack.ogg",
+    "LG-audio-bloodline_outcast_enter_play.ogg",
+    "LG-audio-bolvyn_venim_attack.ogg",
+    "LG-audio-bolvyn_venim_enter_play.ogg",
+    "LG-audio-caius_cosades_attack.ogg",
+    "LG-audio-caius_cosades_enter_play.ogg",
+    "LG-audio-camonna_tong_heavy_attack.ogg",
+    "LG-audio-camonna_tong_heavy_enter_play.ogg",
+    "LG-audio-clockwork_city_pilgrim_attack.ogg",
+    "LG-audio-clockwork_city_pilgrim_enter_play.ogg",
+    "LG-audio-clockwork_city_pilgrim_exalt.ogg",
+    "LG-audio-cornerclub_gambler_attack.ogg",
+    "LG-audio-cornerclub_gambler_enter_play.ogg",
+    "LG-audio-dagoth_oathman_attack.ogg",
+    "LG-audio-dagoth_oathman_enter_play.ogg",
+    "LG-audio-dagoth_ur_attack.ogg",
+    "LG-audio-dagoth_ur_enter_play.ogg",
+    "LG-audio-deranged_corprus_attack.ogg",
+    "LG-audio-deranged_corprus_enter_play.ogg",
+    "LG-audio-dren_bodyguard_attack.ogg",
+    "LG-audio-dren_bodyguard_enter_play.ogg",
+    "LG-audio-dres_spy_attack.ogg",
+    "LG-audio-dres_spy_enter_play.ogg",
+    "LG-audio-duke_vedam_dren_attack.ogg",
+    "LG-audio-duke_vedam_dren_enter_play.ogg",
+    "LG-audio-ebonheart_oracle_attack.ogg",
+    "LG-audio-ebonheart_oracle_enter_play.ogg",
+    "LG-audio-enamor_s_keeper_attack.ogg",
+    "LG-audio-enamor_s_keeper_enter_play.ogg",
+    "LG-audio-enamor_s_keeper_exalt.ogg",
+    "LG-audio-falling_wizard_attack.ogg",
+    "LG-audio-falling_wizard_enter_play.ogg",
+    "LG-audio-false_incarnate_attack.ogg",
+    "LG-audio-false_incarnate_enter_play.ogg",
+    "LG-audio-fighters_guild_steward_attack.ogg",
+    "LG-audio-fighters_guild_steward_enter_play.ogg",
+    "LG-audio-genius_pathmage_attack.ogg",
+    "LG-audio-genius_pathmage_enter_play.ogg",
+    "LG-audio-gentleman_jim_stacey_attack.ogg",
+    "LG-audio-gentleman_jim_stacey_enter_play.ogg",
+    "LG-audio-ghostgate_defender_attack.ogg",
+    "LG-audio-ghostgate_defender_enter_play.ogg",
+    "LG-audio-ghostgate_defender_exalt.ogg",
+    "LG-audio-grand_inquisitor_attack.ogg",
+    "LG-audio-grand_inquisitor_enter_play.ogg",
+    "LG-audio-grand_inquisitor_exalt.ogg",
+    "LG-audio-guar_stablemaster_attack.ogg",
+    "LG-audio-guar_stablemaster_enter_play.ogg",
+    "LG-audio-hand_of_dagoth_enter_play.ogg",
+    "LG-audio-hatchery_meddler_attack.ogg",
+    "LG-audio-hatchery_meddler_enter_play.ogg",
+    "LG-audio-hlaalu_oathman_attack.ogg",
+    "LG-audio-hlaalu_oathman_enter_play.ogg",
+    "LG-audio-hlaalu_sharpshooter_attack.ogg",
+    "LG-audio-hlaalu_sharpshooter_enter_play.ogg",
+    "LG-audio-imposter_attack.ogg",
+    "LG-audio-imposter_enter_play.ogg",
+    "LG-audio-indomitable_ordinator_attack.ogg",
+    "LG-audio-indomitable_ordinator_enter_play.ogg",
+    "LG-audio-indomitable_ordinator_exalt.ogg",
+    "LG-audio-indoril_mastermind_attack.ogg",
+    "LG-audio-indoril_mastermind_enter_play.ogg",
+    "LG-audio-inspiring_kinsman_attack.ogg",
+    "LG-audio-inspiring_kinsman_enter_play.ogg",
+    "LG-audio-jiub_attack.ogg",
+    "LG-audio-jiub_enter_play.ogg",
+    "LG-audio-khuul_lawkeeper_attack.ogg",
+    "LG-audio-khuul_lawkeeper_enter_play.ogg",
+    "LG-audio-knight_of_gnisis_attack.ogg",
+    "LG-audio-knight_of_gnisis_enter_play.ogg",
+    "LG-audio-light_of_the_three_attack.ogg",
+    "LG-audio-light_of_the_three_enter_play.ogg",
+    "LG-audio-light_of_the_three_exalt.ogg",
+    "LG-audio-lower_canton_smith_attack.ogg",
+    "LG-audio-lower_canton_smith_enter_play.ogg",
+    "LG-audio-mages_guild_recruit_attack.ogg",
+    "LG-audio-mages_guild_recruit_enter_play.ogg",
+    "LG-audio-moon_sugar_smuggler_attack.ogg",
+    "LG-audio-moon_sugar_smuggler_enter_play.ogg",
+    "LG-audio-moonmoth_castellan_attack.ogg",
+    "LG-audio-moonmoth_castellan_enter_play_no.ogg",
+    "LG-audio-moonmoth_castellan_enter_play_yes.ogg",
+    "LG-audio-morag_tong_aspirant_attack.ogg",
+    "LG-audio-morag_tong_aspirant_enter_play.ogg",
+    "LG-audio-morag_tong_assassin_attack.ogg",
+    "LG-audio-morag_tong_assassin_enter_play.ogg",
+    "LG-audio-morag_tong_nightblade_attack.ogg",
+    "LG-audio-morag_tong_nightblade_enter_play.ogg",
+    "LG-audio-mournhold_pilgrim_attack.ogg",
+    "LG-audio-mournhold_pilgrim_enter_play.ogg",
+    "LG-audio-mournhold_pilgrim_exalt.ogg",
+    "LG-audio-mudcrab_merchant_attack.ogg",
+    "LG-audio-mudcrab_merchant_enter_play.ogg",
+    "LG-audio-naryu_varian_attack.ogg",
+    "LG-audio-naryu_varian_enter_play.ogg",
+    "LG-audio-odirniran_necromancer_attack.ogg",
+    "LG-audio-odirniran_necromancer_enter_play.ogg",
+    "LG-audio-poetic_armiger_attack.ogg",
+    "LG-audio-poetic_armiger_enter_play.ogg",
+    "LG-audio-poetic_armiger_exalt.ogg",
+    "LG-audio-quarra_clan_bloodkin_attack.ogg",
+    "LG-audio-quarra_clan_bloodkin_enter_play.ogg",
+    "LG-audio-redoran_forerunner_attack.ogg",
+    "LG-audio-redoran_forerunner_enter_play.ogg",
+    "LG-audio-redoran_oathman_attack.ogg",
+    "LG-audio-redoran_oathman_enter_play.ogg",
+    "LG-audio-saint_jiub_attack.ogg",
+    "LG-audio-saint_jiub_enter_play.ogg",
+    "LG-audio-sarethi_scion_attack.ogg",
+    "LG-audio-sarethi_scion_enter_play.ogg",
+    "LG-audio-seyda_neen_courier_attack.ogg",
+    "LG-audio-seyda_neen_courier_enter_play.ogg",
+    "LG-audio-sharp-eyed_ashkhan_attack.ogg",
+    "LG-audio-sharp-eyed_ashkhan_enter_play.ogg",
+    "LG-audio-sheepish_dunmer_attack.ogg",
+    "LG-audio-sheepish_dunmer_enter_play.ogg",
+    "LG-audio-shrine_guardian_attack.ogg",
+    "LG-audio-shrine_guardian_enter_play.ogg",
+    "LG-audio-silent_pilgrim_attack.ogg",
+    "LG-audio-silent_pilgrim_enter_play.ogg",
+    "LG-audio-skar_drillmaster_attack.ogg",
+    "LG-audio-skar_drillmaster_enter_play.ogg",
+    "LG-audio-sotha_sil_attack.ogg",
+    "LG-audio-sotha_sil_enter_play.ogg",
+    "LG-audio-sotha_sil_exalt.ogg",
+    "LG-audio-sun-in-shadow_attack.ogg",
+    "LG-audio-sun-in-shadow_enter_play.ogg",
+    "LG-audio-suran_pawnbroker_attack.ogg",
+    "LG-audio-suran_pawnbroker_enter_play.ogg",
+    "LG-audio-tel_vos_magister_attack.ogg",
+    "LG-audio-tel_vos_magister_enter_play.ogg",
+    "LG-audio-telvanni_catspaw_attack.ogg",
+    "LG-audio-telvanni_catspaw_enter_play.ogg",
+    "LG-audio-telvanni_oathman_attack.ogg",
+    "LG-audio-telvanni_oathman_enter_play.ogg",
+    "LG-audio-temple_conjurer_attack.ogg",
+    "LG-audio-temple_conjurer_enter_play.ogg",
+    "LG-audio-temple_conjurer_exalt.ogg",
+    "LG-audio-temple_patriarch_attack.ogg",
+    "LG-audio-temple_patriarch_enter_play.ogg",
+    "LG-audio-temple_patriarch_exalt.ogg",
+    "LG-audio-therana_attack.ogg",
+    "LG-audio-therana_enter_play.ogg",
+    "LG-audio-therana_s_lawman_attack.ogg",
+    "LG-audio-therana_s_lawman_enter_play.ogg",
+    "LG-audio-tribunal_oathman_attack.ogg",
+    "LG-audio-tribunal_oathman_enter_play.ogg",
+    "LG-audio-twin_lamps_consul_attack.ogg",
+    "LG-audio-twin_lamps_consul_enter_play.ogg",
+    "LG-audio-umbra.ogg",
+    "LG-audio-vivec_attack.ogg",
+    "LG-audio-vivec_city_pilgrim_attack.ogg",
+    "LG-audio-vivec_city_pilgrim_enter_play.ogg",
+    "LG-audio-vivec_city_pilgrim_exalt.ogg",
+    "LG-audio-vivec_enter_play.ogg",
+    "LG-audio-vivec_exalt.ogg",
+    "LG-audio-warclaw_mercenary_attack.ogg",
+    "LG-audio-warclaw_mercenary_enter_play.ogg",
+    "LG-audio-yagrum_bagarn_attack.ogg",
+    "LG-audio-yagrum_bagarn_enter_play.ogg"
+  ],
+  "cardToFiles": {
+    "redoran-oathman": [
+      "LG-audio-redoran_oathman_attack.ogg",
+      "LG-audio-redoran_oathman_enter_play.ogg"
+    ],
+    "bolvyn-venim": [
+      "LG-audio-bolvyn_venim_attack.ogg",
+      "LG-audio-bolvyn_venim_enter_play.ogg"
+    ],
+    "clockwork-city-pilgrim": [
+      "LG-audio-clockwork_city_pilgrim_attack.ogg",
+      "LG-audio-clockwork_city_pilgrim_enter_play.ogg",
+      "LG-audio-clockwork_city_pilgrim_exalt.ogg"
+    ],
+    "indomitable-ordinator": [
+      "LG-audio-indomitable_ordinator_attack.ogg",
+      "LG-audio-indomitable_ordinator_enter_play.ogg",
+      "LG-audio-indomitable_ordinator_exalt.ogg"
+    ],
+    "twin-lamps-consul": [
+      "LG-audio-twin_lamps_consul_attack.ogg",
+      "LG-audio-twin_lamps_consul_enter_play.ogg"
+    ],
+    "inspiring-kinsman": [
+      "LG-audio-inspiring_kinsman_attack.ogg",
+      "LG-audio-inspiring_kinsman_enter_play.ogg"
+    ],
+    "theranas-lawman": [
+      "LG-audio-therana_s_lawman_attack.ogg",
+      "LG-audio-therana_s_lawman_enter_play.ogg"
+    ],
+    "odirniran-necromancer": [
+      "LG-audio-odirniran_necromancer_attack.ogg",
+      "LG-audio-odirniran_necromancer_enter_play.ogg"
+    ],
+    "hlaalu-oathman": [
+      "LG-audio-hlaalu_oathman_attack.ogg",
+      "LG-audio-hlaalu_oathman_enter_play.ogg"
+    ],
+    "enamors-keeper": [
+      "LG-audio-enamor_s_keeper_attack.ogg",
+      "LG-audio-enamor_s_keeper_enter_play.ogg",
+      "LG-audio-enamor_s_keeper_exalt.ogg"
+    ],
+    "khuul-lawkeeper": [
+      "LG-audio-khuul_lawkeeper_attack.ogg",
+      "LG-audio-khuul_lawkeeper_enter_play.ogg"
+    ],
+    "ebonheart-oracle": [
+      "LG-audio-ebonheart_oracle_attack.ogg",
+      "LG-audio-ebonheart_oracle_enter_play.ogg"
+    ],
+    "therana": [
+      "LG-audio-therana_attack.ogg",
+      "LG-audio-therana_enter_play.ogg"
+    ],
+    "false-incarnate": [
+      "LG-audio-false_incarnate_attack.ogg",
+      "LG-audio-false_incarnate_enter_play.ogg"
+    ],
+    "poetic-armiger": [
+      "LG-audio-poetic_armiger_attack.ogg",
+      "LG-audio-poetic_armiger_enter_play.ogg",
+      "LG-audio-poetic_armiger_exalt.ogg"
+    ],
+    "ald-velothi-assassin": [
+      "LG-audio-ald_velothi_assassin_attack.ogg",
+      "LG-audio-ald_velothi_assassin_enter_play.ogg"
+    ],
+    "hatchery-meddler": [
+      "LG-audio-hatchery_meddler_attack.ogg",
+      "LG-audio-hatchery_meddler_enter_play.ogg"
+    ],
+    "sharp-eyed-ashkhan": [
+      "LG-audio-sharp-eyed_ashkhan_attack.ogg",
+      "LG-audio-sharp-eyed_ashkhan_enter_play.ogg"
+    ],
+    "mages-guild-recruit": [
+      "LG-audio-mages_guild_recruit_attack.ogg",
+      "LG-audio-mages_guild_recruit_enter_play.ogg"
+    ],
+    "bloodline-outcast": [
+      "LG-audio-bloodline_outcast_attack.ogg",
+      "LG-audio-bloodline_outcast_enter_play.ogg"
+    ],
+    "sotha-sil": [
+      "LG-audio-sotha_sil_attack.ogg",
+      "LG-audio-sotha_sil_enter_play.ogg",
+      "LG-audio-sotha_sil_exalt.ogg"
+    ],
+    "balmora-puppeteer": [
+      "LG-audio-balmora_puppeteer_attack.ogg",
+      "LG-audio-balmora_puppeteer_enter_play.ogg"
+    ],
+    "tribunal-oathman": [
+      "LG-audio-tribunal_oathman_attack.ogg",
+      "LG-audio-tribunal_oathman_enter_play.ogg"
+    ],
+    "gentleman-jim-stacey": [
+      "LG-audio-gentleman_jim_stacey_attack.ogg",
+      "LG-audio-gentleman_jim_stacey_enter_play.ogg"
+    ],
+    "ashlander-zealot": [
+      "LG-audio-ashlander_zealot_attack.ogg",
+      "LG-audio-ashlander_zealot_enter_play.ogg"
+    ],
+    "cornerclub-gambler": [
+      "LG-audio-cornerclub_gambler_attack.ogg",
+      "LG-audio-cornerclub_gambler_enter_play.ogg"
+    ],
+    "dres-spy": [
+      "LG-audio-dres_spy_attack.ogg",
+      "LG-audio-dres_spy_enter_play.ogg"
+    ],
+    "balmora-captain": [
+      "LG-audio-balmora_captain_attack.ogg",
+      "LG-audio-balmora_captain_enter_play.ogg"
+    ],
+    "tel-vos-magister": [
+      "LG-audio-tel_vos_magister_attack.ogg",
+      "LG-audio-tel_vos_magister_enter_play.ogg"
+    ],
+    "morag-tong-nightblade": [
+      "LG-audio-morag_tong_nightblade_attack.ogg",
+      "LG-audio-morag_tong_nightblade_enter_play.ogg"
+    ],
+    "quarra-clan-bloodkin": [
+      "LG-audio-quarra_clan_bloodkin_attack.ogg",
+      "LG-audio-quarra_clan_bloodkin_enter_play.ogg"
+    ],
+    "aldruhn-arms-master": [
+      "LG-audio-ald_ruhn_arms_master_attack.ogg",
+      "LG-audio-ald_ruhn_arms_master_enter_play.ogg"
+    ],
+    "lower-canton-smith": [
+      "LG-audio-lower_canton_smith_attack.ogg",
+      "LG-audio-lower_canton_smith_enter_play.ogg"
+    ],
+    "fighters-guild-steward": [
+      "LG-audio-fighters_guild_steward_attack.ogg",
+      "LG-audio-fighters_guild_steward_enter_play.ogg"
+    ],
+    "vivec": [
+      "LG-audio-vivec_attack.ogg",
+      "LG-audio-vivec_enter_play.ogg",
+      "LG-audio-vivec_exalt.ogg"
+    ],
+    "jiub": [
+      "LG-audio-jiub_attack.ogg",
+      "LG-audio-jiub_enter_play.ogg"
+    ],
+    "genius-pathmage": [
+      "LG-audio-genius_pathmage_attack.ogg",
+      "LG-audio-genius_pathmage_enter_play.ogg"
+    ],
+    "warclaw-mercenary": [
+      "LG-audio-warclaw_mercenary_attack.ogg",
+      "LG-audio-warclaw_mercenary_enter_play.ogg"
+    ],
+    "redoran-forerunner": [
+      "LG-audio-redoran_forerunner_attack.ogg",
+      "LG-audio-redoran_forerunner_enter_play.ogg"
+    ],
+    "ambitious-hireling": [
+      "LG-audio-ambitious_hireling_attack.ogg",
+      "LG-audio-ambitious_hireling_enter_play.ogg"
+    ],
+    "silent-pilgrim": [
+      "LG-audio-silent_pilgrim_attack.ogg",
+      "LG-audio-silent_pilgrim_enter_play.ogg"
+    ],
+    "naryu-varian": [
+      "LG-audio-naryu_varian_attack.ogg",
+      "LG-audio-naryu_varian_enter_play.ogg"
+    ],
+    "camonna-tong-heavy": [
+      "LG-audio-camonna_tong_heavy_attack.ogg",
+      "LG-audio-camonna_tong_heavy_enter_play.ogg"
+    ],
+    "dagoth-oathman": [
+      "LG-audio-dagoth_oathman_attack.ogg",
+      "LG-audio-dagoth_oathman_enter_play.ogg"
+    ],
+    "aundae-clan-sorcerer": [
+      "LG-audio-aundae_clan_sorcerer_attack.ogg",
+      "LG-audio-aundae_clan_sorcerer_enter_play.ogg"
+    ],
+    "ghostgate-defender": [
+      "LG-audio-ghostgate_defender_attack.ogg",
+      "LG-audio-ghostgate_defender_enter_play.ogg",
+      "LG-audio-ghostgate_defender_exalt.ogg"
+    ],
+    "falling-wizard": [
+      "LG-audio-falling_wizard_attack.ogg",
+      "LG-audio-falling_wizard_enter_play.ogg"
+    ],
+    "saint-jiub": [
+      "LG-audio-saint_jiub_attack.ogg",
+      "LG-audio-saint_jiub_enter_play.ogg"
+    ],
+    "hlaalu-sharpshooter": [
+      "LG-audio-hlaalu_sharpshooter_attack.ogg",
+      "LG-audio-hlaalu_sharpshooter_enter_play.ogg"
+    ],
+    "telvanni-catspaw": [
+      "LG-audio-telvanni_catspaw_attack.ogg",
+      "LG-audio-telvanni_catspaw_enter_play.ogg"
+    ],
+    "knight-of-gnisis": [
+      "LG-audio-knight_of_gnisis_attack.ogg",
+      "LG-audio-knight_of_gnisis_enter_play.ogg"
+    ],
+    "imposter": [
+      "LG-audio-imposter_attack.ogg",
+      "LG-audio-imposter_enter_play.ogg"
+    ],
+    "almalexia": [
+      "LG-audio-almalexia_attack.ogg",
+      "LG-audio-almalexia_enter_play.ogg",
+      "LG-audio-almalexia_exalt.ogg"
+    ],
+    "suran-pawnbroker": [
+      "LG-audio-suran_pawnbroker_attack.ogg",
+      "LG-audio-suran_pawnbroker_enter_play.ogg"
+    ],
+    "shrine-guardian": [
+      "LG-audio-shrine_guardian_attack.ogg",
+      "LG-audio-shrine_guardian_enter_play.ogg"
+    ],
+    "dagoth-ur": [
+      "LG-audio-dagoth_ur_attack.ogg",
+      "LG-audio-dagoth_ur_enter_play.ogg"
+    ],
+    "vivec-city-pilgrim": [
+      "LG-audio-vivec_city_pilgrim_attack.ogg",
+      "LG-audio-vivec_city_pilgrim_enter_play.ogg",
+      "LG-audio-vivec_city_pilgrim_exalt.ogg"
+    ],
+    "awakened-dreamer": [
+      "LG-audio-awakened_dreamer_attack.ogg",
+      "LG-audio-awakened_dreamer_enter_play.ogg"
+    ],
+    "deranged-corprus": [
+      "LG-audio-deranged_corprus_attack.ogg",
+      "LG-audio-deranged_corprus_enter_play.ogg"
+    ],
+    "duke-vedam-dren": [
+      "LG-audio-duke_vedam_dren_attack.ogg",
+      "LG-audio-duke_vedam_dren_enter_play.ogg"
+    ],
+    "mournhold-pilgrim": [
+      "LG-audio-mournhold_pilgrim_attack.ogg",
+      "LG-audio-mournhold_pilgrim_enter_play.ogg",
+      "LG-audio-mournhold_pilgrim_exalt.ogg"
+    ],
+    "seyda-neen-courier": [
+      "LG-audio-seyda_neen_courier_attack.ogg",
+      "LG-audio-seyda_neen_courier_enter_play.ogg"
+    ],
+    "archcanon-saryoni": [
+      "LG-audio-archcanon_saryoni_attack.ogg",
+      "LG-audio-archcanon_saryoni_enter_play.ogg",
+      "LG-audio-archcanon_saryoni_exalt.ogg"
+    ],
+    "morag-tong-assassin": [
+      "LG-audio-morag_tong_assassin_attack.ogg",
+      "LG-audio-morag_tong_assassin_enter_play.ogg"
+    ],
+    "sheepish-dunmer": [
+      "LG-audio-sheepish_dunmer_attack.ogg",
+      "LG-audio-sheepish_dunmer_enter_play.ogg"
+    ],
+    "skar-drillmaster": [
+      "LG-audio-skar_drillmaster_attack.ogg",
+      "LG-audio-skar_drillmaster_enter_play.ogg"
+    ],
+    "sun-in-shadow": [
+      "LG-audio-sun-in-shadow_attack.ogg",
+      "LG-audio-sun-in-shadow_enter_play.ogg"
+    ],
+    "grand-inquisitor": [
+      "LG-audio-grand_inquisitor_attack.ogg",
+      "LG-audio-grand_inquisitor_enter_play.ogg",
+      "LG-audio-grand_inquisitor_exalt.ogg"
+    ],
+    "caius-cosades": [
+      "LG-audio-caius_cosades_attack.ogg",
+      "LG-audio-caius_cosades_enter_play.ogg"
+    ],
+    "moonmoth-castellan": [
+      "LG-audio-moonmoth_castellan_attack.ogg",
+      "LG-audio-moonmoth_castellan_enter_play_no.ogg",
+      "LG-audio-moonmoth_castellan_enter_play_yes.ogg"
+    ],
+    "guar-stablemaster": [
+      "LG-audio-guar_stablemaster_attack.ogg",
+      "LG-audio-guar_stablemaster_enter_play.ogg"
+    ],
+    "moon-sugar-smuggler": [
+      "LG-audio-moon_sugar_smuggler_attack.ogg",
+      "LG-audio-moon_sugar_smuggler_enter_play.ogg"
+    ],
+    "crassius-favor": [
+      "LG-audio-Crassius'_favor.ogg"
+    ],
+    "dren-bodyguard": [
+      "LG-audio-dren_bodyguard_attack.ogg",
+      "LG-audio-dren_bodyguard_enter_play.ogg"
+    ],
+    "ascended-sleeper": [
+      "LG-audio-ascended_sleeper_attack.ogg",
+      "LG-audio-ascended_sleeper_enter_play.ogg"
+    ],
+    "yagrum-bagarn": [
+      "LG-audio-yagrum_bagarn_attack.ogg",
+      "LG-audio-yagrum_bagarn_enter_play.ogg"
+    ],
+    "sarethi-scion": [
+      "LG-audio-sarethi_scion_attack.ogg",
+      "LG-audio-sarethi_scion_enter_play.ogg"
+    ],
+    "mudcrab-merchant": [
+      "LG-audio-mudcrab_merchant_attack.ogg",
+      "LG-audio-mudcrab_merchant_enter_play.ogg"
+    ],
+    "temple-patriarch": [
+      "LG-audio-temple_patriarch_attack.ogg",
+      "LG-audio-temple_patriarch_enter_play.ogg",
+      "LG-audio-temple_patriarch_exalt.ogg"
+    ],
+    "berne-clan-nightstalker": [
+      "LG-audio-berne_clan_nightstalker_attack.ogg",
+      "LG-audio-berne_clan_nightstalker_enter_play.ogg"
+    ],
+    "light-of-the-three": [
+      "LG-audio-light_of_the_three_attack.ogg",
+      "LG-audio-light_of_the_three_enter_play.ogg",
+      "LG-audio-light_of_the_three_exalt.ogg"
+    ],
+    "morag-tong-aspirant": [
+      "LG-audio-morag_tong_aspirant_attack.ogg",
+      "LG-audio-morag_tong_aspirant_enter_play.ogg"
+    ],
+    "barilzars-tinkering": [
+      "LG-audio-Barilzar's_tinkering.ogg"
+    ],
+    "indoril-mastermind": [
+      "LG-audio-indoril_mastermind_attack.ogg",
+      "LG-audio-indoril_mastermind_enter_play.ogg"
+    ],
+    "temple-conjurer": [
+      "LG-audio-temple_conjurer_attack.ogg",
+      "LG-audio-temple_conjurer_enter_play.ogg",
+      "LG-audio-temple_conjurer_exalt.ogg"
+    ],
+    "telvanni-oathman": [
+      "LG-audio-telvanni_oathman_attack.ogg",
+      "LG-audio-telvanni_oathman_enter_play.ogg"
+    ],
+    "almalexias-disciple": [
+      "LG-audio-almalexia_s_disciple_attack.ogg",
+      "LG-audio-almalexia_s_disciple_enter_play.ogg",
+      "LG-audio-almalexia's_disciple_exalt.ogg"
+    ],
+    "hand-of-dagoth": [
+      "LG-audio-hand_of_dagoth_enter_play.ogg"
+    ],
+    "umbra": [
+      "LG-audio-umbra.ogg"
+    ]
+  }
+}

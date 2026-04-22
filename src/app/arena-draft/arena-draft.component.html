@@ -34,7 +34,7 @@
           <div class="draft-card-wrapper">
             <div class="draft-card"
               (click)="pickCard(card)">
-              <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
+              <img [src]="getCardImage(card)" draggable="false" alt="{{ card.name }}"/>
             </div>
           </div>
         }
@@ -193,7 +193,7 @@
     <div class="opponents-grid">
       @for (opp of arenaOpponents; track opp) {
         <div class="opponent-card" (click)="selectOpponent(opp)">
-          <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.png' : opp.avatar" class="avatar">
+          <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : opp.avatar" class="avatar">
           <!--<div class="name">{{ opp.name }}</div>
           <div class="elo">Elo {{ opp.elo }}</div>-->
         </div>
@@ -202,7 +202,7 @@
       <div class="opponent-card boss"
         [class.locked]="wins < 8"
         (click)="wins >= 8 && selectOpponent(bossOpponent!)">
-        <img [src]="bossOpponent!.beaten ? '/assets/tesl/images/icons/arena_coin.png' : bossOpponent!.avatar" class="avatar">
+        <img [src]="bossOpponent!.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : bossOpponent!.avatar" class="avatar">
         <!--<div class="name">{{ bossOpponent.name }}</div>
         <div class="locked-text" *ngIf="wins < 8">Defeat 8 opponents</div>-->
       </div>

@@ -166,7 +166,7 @@
             (click)="toggleOpponentSupportBar()"
             [class.highlight]="showOpponent && hasAvailableSupportActivations(game)">
             <div class="magicka-icon">
-              <img src="/assets/tesl/images/icons/icon_gray.png" draggable="false" alt="Supports" class="magicka-bg">
+              <img src="/assets/tesl/images/icons/icon_gray.webp" draggable="false" alt="Supports" class="magicka-bg">
               <span class="current">{{ opponentSupportCount }}</span>
             </div>
           </div>
@@ -181,7 +181,7 @@
           @if (showOpponent) {
             <div class="magicka" (click)="toggleMagickaOverlay()">
               <div class="magicka-icon">
-                <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" draggable="false" alt="Magicka" class="magicka-bg">
+                <img src="/assets/tesl/images/icons/LG-icon-Magicka.webp" draggable="false" alt="Magicka" class="magicka-bg">
                 <span class="current">{{ game.opponent.currentMagicka }}</span>
               </div>
               <!-- Overlay (appears when clicked) -->
@@ -207,6 +207,7 @@
           <!-- Hero portrait (center) -->
           <div class="hero-portrait opponent-hero"
             [class.targetable]="isHeroTargetable(game,true)"
+            [class.warded]="game.opponent.hasWard"
             (click)="game.gameRunning ? onPlayerTargetClick(game, game.opponent) : openAvatarModal('opponent')">
             <img [src]="oppHeroImage"
               draggable="false" alt="Opponent Hero">
@@ -242,13 +243,24 @@
             </button>
           }
           <!-- Hand count (right of avatar) -->
-          @if (!showOpponent) {
+          @if (!showOpponent && !game.betrayAvailable) {
             <div class="hand-count">
               <div class="hand-icon">
-                <img src="/assets/tesl/images/icons/cards_in_hand.png"
+                <img src="/assets/tesl/images/icons/cards_in_hand.webp"
                   alt="Hand" class="hand-bg" draggable="false">
                 <span class="current">{{ opponentHandCount }}</span>
               </div>
+            </div>
+          }
+          @if (!showOpponent && game.betrayAvailable) {
+            <div class="hand-count">
+              <button
+                class="settings-btn glow"
+                (click)="stageCardForBetray(game,game.player)"
+                title="Cat Last Card as Betray"
+                aria-label="Cast as Betray">
+                x2
+              </button>
             </div>
           }
           <!-- Hamburger / Settings button -->
@@ -269,11 +281,13 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-hand"
                 [isOpponent]="true"
                 [attr.data-instance-id]="card.instanceId"
                 [index]="i"
                 [canPlay]="getCardHighlightState(card).playable"
+                [canExalt]="getCardHighlightState(card).exaltable"
                 [isStagingActive]="isSummonTargeting || cancelButtonActive"
                 [isTargetable]="getCardHighlightState(card).targetable"
                 [isSelected]="selectedCard?.instanceId === card.instanceId"
@@ -283,6 +297,7 @@
                 (mouseleave)="onCardLeave()"
                 (cardSelect)="onCardSelect(card)"
                 (playCard)="stageCardForPlay(game, card, game.opponent)"
+                (exaltCard)="exaltCard(game,card,game.opponent)"
                 (click)="onHandClick(game,card)"
                 (enlarge)="enlargeCard($event)"
               ></app-tesl-card>
@@ -296,6 +311,11 @@
         (click)="onBoardBackgroundClick()">
         <!-- Field Lane (Lane 0) -->
         <div class="lane-group">
+          <img
+            class="lane-bg-image"
+            [src]="laneImage"
+            draggable="false"
+          />
           <!-- Lane icon (top-left) -->
           <div class="lane-icon">
             <img [src]="getLaneIconImage(game.laneTypes[0])"
@@ -312,6 +332,7 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-board"
                 [isOpponent]="true"
                 [laneIndex]="0"
@@ -352,6 +373,7 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-board"
                 [isOpponent]="false"
                 [laneIndex]="0"
@@ -386,6 +408,11 @@
         </div>
         <!-- Shadow Lane (Lane 1) -->
         <div class="lane-group">
+          <img
+            class="lane-bg-image"
+            [src]="laneImage"
+            draggable="false"
+          />
           <!-- Lane icon (top-left) -->
           <div class="lane-icon">
             <img [src]="getLaneIconImage(game.laneTypes[1])"
@@ -402,6 +429,7 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-board"
                 [isOpponent]="true"
                 [laneIndex]="1"
@@ -442,6 +470,7 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-board"
                 [isOpponent]="false"
                 [laneIndex]="1"
@@ -488,6 +517,7 @@
                   <app-tesl-card
                     draggable="false"
                     [card]="card"
+                    [size]="isDesktopMode ? 'medium' : 'small'"
                     class="in-board"
                     [isOpponent]="true"
                     [attr.data-instance-id]="card.instanceId"
@@ -525,6 +555,7 @@
                   <app-tesl-card
                     draggable="false"
                     [card]="card"
+                    [size]="isDesktopMode ? 'medium' : 'small'"
                     class="in-board"
                     [index]="i"
                     [isOpponent]="false"
@@ -559,11 +590,13 @@
               <app-tesl-card
                 draggable="false"
                 [card]="card"
+                [size]="isDesktopMode ? 'medium' : 'small'"
                 class="in-hand"
                 [isOpponent]="false"
                 [index]="i"
                 [attr.data-instance-id]="card.instanceId"
                 [canPlay]="getCardHighlightState(card).playable"
+                [canExalt]="getCardHighlightState(card).exaltable"
                 [isTargetable]="isHandTargetable(game,card)"
                 [isStagingActive]="isSummonTargeting || cancelButtonActive"
                 [isSelected]="selectedCard?.instanceId === card.instanceId"
@@ -573,6 +606,7 @@
                 (mouseleave)="onCardLeave()"
                 (cardSelect)="onCardSelect(card)"
                 (playCard)="stageCardForPlay(game, card, game.player)"
+                (exaltCard)="exaltCard(game,card,game.player)"
                 (click)="onHandClick(game,card)"
                 (enlarge)="enlargeCard($event)"
               ></app-tesl-card>
@@ -588,7 +622,7 @@
               <!--<span class="support-icon">🛡️</span>
               <span class="support-count">{{ playerSupportCount }}</span>-->
               <div class="magicka-icon">
-                <img src="/assets/tesl/images/icons/icon_gray.png" draggable="false" alt="Supports" class="magicka-bg">
+                <img src="/assets/tesl/images/icons/icon_gray.webp" draggable="false" alt="Supports" class="magicka-bg">
                 <span class="current">{{ playerSupportCount }}</span>
               </div>
             </div>
@@ -603,7 +637,7 @@
             @if (!showOpponent) {
               <div class="magicka" (click)="toggleMagickaOverlay()">
                 <div class="magicka-icon">
-                  <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" draggable="false" alt="Magicka" class="magicka-bg">
+                  <img src="/assets/tesl/images/icons/LG-icon-Magicka.webp" draggable="false" alt="Magicka" class="magicka-bg">
                   <span class="current">{{ game.player.currentMagicka }}</span>
                 </div>
                 <!-- Overlay (appears when clicked) -->
@@ -628,6 +662,7 @@
             }
             <div class="hero-portrait player-hero"
               [class.targetable]="isHeroTargetable(game,false)"
+              [class.warded]="game.player.hasWard"
               (click)="game.gameRunning ? onPlayerTargetClick(game,game.player) : openAvatarModal('player')">
               <img [src]="userHeroImage" draggable="false" alt="Your Hero">
               <div class="health">{{ game.player.health }}</div>
@@ -662,15 +697,26 @@
               </button>
             }
             <!-- Hand count (right of avatar) -->
-            @if (showOpponent) {
+            @if (showOpponent && !game.betrayAvailable) {
               <div class="hand-count">
                 <div class="hand-icon">
-                  <img src="/assets/tesl/images/icons/cards_in_hand.png"
+                  <img src="/assets/tesl/images/icons/cards_in_hand.webp"
                     alt="Hand" class="hand-bg" draggable="false">
                   <span class="current">{{ playerHandCount }}</span>
                 </div>
               </div>
             }
+            @if (showOpponent && game.betrayAvailable) {
+            <div class="hand-count">
+              <button
+                class="settings-btn glow"
+                (click)="stageCardForBetray(game,game.opponent)"
+                title="Cast last card as Betray"
+                aria-label="Cast as Betray">
+                x2
+              </button>
+            </div>
+          }
             <div class="discard-box player" (click)="openDiscard()">
               <span class="discard-icon">💀</span>
             </div>
@@ -718,12 +764,19 @@
               </div>
             }
             <!-- Play button - LEFT SIDE -->
-            @if (canPlayCard(game,enlargedCard, game.player.turn? game.player : game.opponent)) {
+            @if (getCardHighlightState(enlargedCard).playable) {
               <div class="modal-actions-left">
                 <button class="play-btn" (click)="playCardFromModal(enlargedCard)">
                   Play
-                </button>
-                <!--({{ player.currentMagicka - enlargedCard.cost >= 0 ? player.currentMagicka - enlargedCard.cost : 'X' }} left)-->
+                </button>                
+              </div>
+            }
+            <!-- Exalt button - MIDDLE -->
+            @if (getCardHighlightState(enlargedCard).exaltable) {
+              <div class="modal-actions-middle">
+                <button class="exalt-btn" (click)="exaltCard(game,enlargedCard,game.player.turn ? game.player : game.opponent)">
+                  Exalt
+                </button>                
               </div>
             }
             <img [src]="enlargedCardImage" draggable="false" alt="Enlarged image">
@@ -745,18 +798,46 @@
                   }
                 </div>
               }
-              @if (enlargedCard.currentKeywords && enlargedCard.currentKeywords.length > 0) {
+              <!-- Treasure Hunt Progress -->
+              @if (enlargedCard.treasureHunt) {
+                <div class="treasure-hunt-section">
+                  <strong>Treasure Hunt Progress:</strong>
+                  <div class="treasure-requirements">
+                    @for (req of enlargedCard.treasureHunt.requirements; track $index) {
+                      <div class="requirement">
+                        <span class="req-type">
+                          {{ req.type }}
+                        </span>
+                        <span class="req-progress">
+                          {{ req.found }} / {{ req.required }}
+                        </span>
+                        @if (req.found >= req.required) {
+                          <span class="complete-check">✓</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                  @if (enlargedCard.treasureHunt.completed) {
+                    <div class="treasure-complete">
+                      <strong>✓ Treasure Hunt Complete!</strong>
+                    </div>
+                  }
+                </div>
+              }
+              @if (enlargedCard.currentKeywords?.length || enlargedCard.exalted) {
                 <div class="keywords">
                   <strong>Keywords:</strong>
-                  {{ enlargedCard.currentKeywords.join(', ') }}
+                  {{
+                    [
+                      ...(enlargedCard.currentKeywords || []),
+                      ...(enlargedCard.exalted ? ['Exalted'] : [])
+                    ].join(', ')
+                  }}
                 </div>
               }
               @if (enlargedCard.maxHealth ?? 0 > 0) {
                 <div class="keywords">
-                  <strong>Stats:</strong> Attack:
-                  {{ enlargedCard.currentAttack }}, Health:
-                  {{ enlargedCard.currentHealth }}, Max.Health:
-                  {{ enlargedCard.maxHealth }}
+                  <strong>Stats:</strong>{{ enlargedStatText }}
                 </div>
               }
               @if (enlargedCard.text) {
@@ -881,6 +962,60 @@
           </div>
         </div>
       }
+      <!-- Fabricate Overlay-->
+      @if (showFabricateOverlay && selectedFabricateCreatureIndex < 0) {
+        <div class="reveal-overlay">
+          <div class="reveal-content">
+            <!-- Title -->
+            <div class="reveal-title">{{ revealTitle }}</div>
+            <!-- Action prompt -->
+            @if (revealAction) {
+              <div class="reveal-action">
+                {{ revealAction }}
+              </div>
+            }
+            <div class="mulligan-cards">
+              @for (card of revealCards; track card; let i = $index) {
+                <div class="reveal-card" (click)="selectFabricateCreature(i)">
+                  <app-tesl-card 
+                    draggable="false"
+                    class="in-discard"
+                    [card]="card"
+                    [isStagingActive]="true"
+                    (click)="selectFabricateCreature(i)">
+                  </app-tesl-card>
+                </div>
+              }
+            </div>
+          </div>          
+        </div>
+      }
+      @if (showFabricateOverlay && selectedFabricateCreatureIndex >= 0) {
+        <div class="choice-modal">
+          <div class="choice-content">
+            <h3>Choose an effect</h3>
+            <div class="choice-options">
+              @for (option of fabricateAbilities; track option; let i = $index) {
+                <button
+                  class="choice-btn"
+                  [class.selected]="selectedFabricateAbilityIndex === i"
+                  (click)="selectFabricateAbility(i)">
+                  {{ option.text }}
+                </button>
+              }
+            </div>
+            <!-- Confirm / Cancel -->
+            <div class="choice-actions">
+              <button
+                class="confirm-btn"
+                [disabled]="selectedFabricateAbilityIndex < 0"
+                (click)="confirmFabrication(game)">
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      }
       <!-- Reveal Overlay -->
       @if (showRevealOverlay) {
         <div class="reveal-overlay">
@@ -1000,17 +1135,20 @@
                   <app-tesl-card
                     draggable="false"
                     [card]="card"
+                    size="medium"
                     class="big-hand"
                     [isOpponent]="false"
                     [index]="i"
                     [attr.data-instance-id]="card.instanceId"
                     [canPlay]="getCardHighlightState(card).playable"
+                    [canExalt]="getCardHighlightState(card).exaltable"
                     [isStagingActive]="isSummonTargeting || cancelButtonActive"
                     [isSelected]="selectedCard?.instanceId === card.instanceId"
                     (mouseenter)="onCardHover(card)"
                     (mouseleave)="onCardLeave()"
                     (cardSelect)="onCardSelect(card)"
                     (playCard)="stageCardForPlay(game, card, game.player)"
+                    (exaltCard)="exaltCard(game,card,game.player)"
                     (click)="onHandClick(game,card)"
                     (enlarge)="enlargeCard($event)"
                   ></app-tesl-card>
@@ -1024,17 +1162,20 @@
                   <app-tesl-card
                     draggable="false"
                     [card]="card"
+                    size="medium"
                     class="big-hand"
                     [isOpponent]="true"
                     [index]="i"
                     [attr.data-instance-id]="card.instanceId"
                     [canPlay]="getCardHighlightState(card).playable"
+                    [canExalt]="getCardHighlightState(card).exaltable"
                     [isStagingActive]="isSummonTargeting || cancelButtonActive"
                     [isSelected]="selectedCard?.instanceId === card.instanceId"
                     (mouseenter)="onCardHover(card)"
                     (mouseleave)="onCardLeave()"
                     (cardSelect)="onCardSelect(card)"
                     (playCard)="stageCardForPlay(game, card, game.opponent)"
+                    (exaltCard)="exaltCard(game,card,game.opponent)"
                     (click)="onHandClick(game,card)"
                     (enlarge)="enlargeCard($event)"
                   ></app-tesl-card>
@@ -1078,6 +1219,7 @@
                 <app-tesl-card
                   draggable="false"
                   [card]="card"
+                  [size]="isDesktopMode ? 'medium' : 'small'"
                   class="in-discard"
                   [isOpponent]="discardView === 'opponent'"
                   [isGraveyard]="true"
@@ -1327,7 +1469,7 @@
                   <div class="deck-list">
                     @switch (opponentDeckMode) {
                       @case ('starter') {
-                        @for (deck of starterDecks; track deck; let i = $index) {
+                        @for (deck of starterDecksFiltered; track deck; let i = $index) {
                           <div class="deck-option"
                             [class.active]="selectedOpponentDeck === deck"
                             [class.locked]="!unlockedAll && deck.locked && !isExhibitionMode"
@@ -1464,7 +1606,7 @@
                 <div class="deck-list">
                   @switch (playerDeckMode) {
                     @case ('starter') {
-                      @for (deck of starterDecks; track deck; let i = $index) {
+                      @for (deck of starterDecksFiltered; track deck; let i = $index) {
                         <div class="deck-option"
                           [class.active]="selectedPlayerDeck === deck"
                           [class.locked]="!unlockedAll && deck.locked && !isExhibitionMode"
@@ -1678,6 +1820,15 @@
                 type="checkbox"
                 [(ngModel)]="customSets"
                 (change)="onCustomToggle()"
+                >
+            </label>
+            <span><br></span>
+            <label class="settings-label">
+              Morrowind Set
+              <input
+                type="checkbox"
+                [(ngModel)]="useMorrowind"
+                (change)="onMorrowindToggle()"
                 >
             </label>
             <!--<p class="settings-desc">Brief instructions appear when staging cards or summons</p>-->

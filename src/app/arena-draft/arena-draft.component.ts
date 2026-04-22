@@ -46,13 +46,13 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 	@ViewChild('firstFocusable') firstFocusable!: ElementRef;
 	
 	attributeIcons: Record<string, string> = {
-    'R': '/assets/tesl/images/icons/LG-icon-Strength.png',
-    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.png',
-    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.png',
-    'G': '/assets/tesl/images/icons/LG-icon-Agility.png',
-    'P': '/assets/tesl/images/icons/LG-icon-Endurance.png',
-    'N': '/assets/tesl/images/icons/LG-icon-Neutral.png',
-    'Dual': '/assets/tesl/images/icons/LG-icon-Dual_Attribute-small.png'
+    'R': '/assets/tesl/images/icons/LG-icon-Strength.webp',
+    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.webp',
+    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.webp',
+    'G': '/assets/tesl/images/icons/LG-icon-Agility.webp',
+    'P': '/assets/tesl/images/icons/LG-icon-Endurance.webp',
+    'N': '/assets/tesl/images/icons/LG-icon-Neutral.webp',
+    'Dual': '/assets/tesl/images/icons/LG-icon-Dual_Attribute-small.webp'
   };
 
 	readonly classes = [
@@ -71,7 +71,10 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 	private setFolders: Record<string, string> = {
     'Core Set': 'core_set',
     'Dark Brotherhood': 'brotherhood',
+    'Clockwork City': 'clockwork',
     'Heroes of Skyrim': 'heroes_of_skyrim',
+    'Houses of Morrowind': 'morrowind',
+    'Forgotten Hero Collection': 'forgotten',
     'Madhouse Collection': 'madhouse',
     'Monthly Reward': 'reward_set',
     'Story Set': 'story_set',
@@ -208,17 +211,19 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 
       if (this.selectedClass) {
         this.selectArenaClass(this.selectedClass.name);
-        this.avatarUrl = `/assets/tesl/images/avatars/LG-avatar-${this.selectedClass.race}_${state.avatarNumber}.png`;
+        this.avatarUrl = `/assets/tesl/images/avatars/LG-avatar-${this.selectedClass.race}_${state.avatarNumber}.webp`;
+
+        // If draft was in progress, regenerate current picks if needed
+        if (this.picksRemaining > 0 && this.currentPicks.length === 0) {
+          this.generateNextPicks();
+        }
+
+        this.draftDeck.forEach(c => {
+          this.addCardToList(c);
+        });
       }
 
-      // If draft was in progress, regenerate current picks if needed
-      if (this.picksRemaining > 0 && this.currentPicks.length === 0) {
-        this.generateNextPicks();
-      }
-
-      this.draftDeck.forEach(c => {
-        this.addCardToList(c);
-      });
+      
     } catch (e) {
       console.warn('Failed to load arena draft state', e);
       localStorage.removeItem(this.STORAGE_KEY);
@@ -268,9 +273,8 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     this.arenaRewardSets = [];
     this.currentRewardIndex = 0;
 
-    const allCards = this.deckService.getAllCards().filter(c => 
-      c.deckCodeId && c.set !== 'Story Set' && !this.unlockedCards.includes(c.deckCodeId) &&
-      (this.customSets || c.set !== 'Custom Set')
+    const allCards = this.deckService.getMostCards().filter(c => 
+      !this.unlockedCards.includes(c.deckCodeId!)
     );
 
     const draftAttrs = this.selectedClass.attributes; // we'll define this
@@ -573,7 +577,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 		this.selectArenaClass(cls.name);
     // Random avatar (1-4)
     const num = Math.floor(Math.random() * 4) + 1;
-    this.avatarUrl = `/assets/tesl/images/avatars/LG-avatar-${cls.race}_${num}.png`;
+    this.avatarUrl = `/assets/tesl/images/avatars/LG-avatar-${cls.race}_${num}.webp`;
 		this.avatarNum = num;
     this.startDraft();
 		this.saveState();
@@ -592,7 +596,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 			name: pickOne.name,
 			attributes: pickOne.attributes,
 			race: pickOne.race,
-			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickOne.race}_${avatarIndex}.png`
+			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickOne.race}_${avatarIndex}.webp`
 		};
 		this.classOptions.push(aClass);
 		avatarIndex = Math.floor(Math.random()*4)+1;
@@ -600,7 +604,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 			name: pickTwo.name,
 			attributes: pickTwo.attributes,
 			race: pickTwo.race,
-			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickTwo.race}_${avatarIndex}.png`
+			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickTwo.race}_${avatarIndex}.webp`
 		};
 		this.classOptions.push(aClass);
 		avatarIndex = Math.floor(Math.random()*4)+1;
@@ -608,7 +612,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 			name: pickThree.name,
 			attributes: pickThree.attributes,
 			race: pickThree.race,
-			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickThree.race}_${avatarIndex}.png`
+			avatar: `/assets/tesl/images/avatars/LG-avatar-${pickThree.race}_${avatarIndex}.webp`
 		};
 		this.classOptions.push(aClass);
 		this.saveState();
@@ -638,7 +642,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
   selectArenaClass(name: string) {
     this.arenaClass = name;
 		console.log(`choosing class: ${name}`);
-    const cardsArena = this.deckService.getAllCards().filter(c => c.tier && c.tier !== 'U');
+    const cardsArena = this.deckService.getMostCards().filter(c => c.tier && c.tier !== 'U');
     const classArena = this.classes.find(cls => cls.name === name);
 		if (!classArena) {
       console.log('couldnt find class that matched name');
@@ -647,7 +651,8 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     this.arenaClassCards = cardsArena.filter(c =>
     (c.attributes.length === 1 && ['N',...classArena.attributes].includes(c.attributes[0])) ||
     (c.attributes.length === 2 &&
-      classArena.attributes[0] === c.attributes[0] && classArena.attributes[1] === c.attributes[1]));
+      classArena.attributes[0] === c.attributes[0] && classArena.attributes[1] === c.attributes[1]) ||
+    (c.attributes.length === 3 && classArena.attributes.every(attr => c.attributes.includes(attr))));
   }
 
   getSetOfThree() {

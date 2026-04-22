@@ -35,15 +35,15 @@
           class="filter-btn"
           (click)="toggleFilter('magicka')">
           <div class="magicka-preview">
-            <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+            <img src="/assets/tesl/images/icons/LG-icon-Magicka.webp" alt="Magicka" class="filter-icon">
             <span class="cost-overlay">{{ selectedMagicka }}</span>
           </div>
         </button>
         <button
           class="filter-btn"
           (click)="toggleUnlockedOnly()">
-        <img [src]="showUnlockedOnly ? '/assets/tesl/images/icons/icon_green.png'
-          : '/assets/tesl/images/icons/icon_gray.png'" alt="unlockedCards" class="filter-icon">
+        <img [src]="showUnlockedOnly ? '/assets/tesl/images/icons/icon_green.webp'
+          : '/assets/tesl/images/icons/icon_gray.webp'" alt="unlockedCards" class="filter-icon">
           </button>
           <button
             class="filter-btn toggle-extra-btn"
@@ -61,7 +61,7 @@
             [class.active]="selectedMagicka === cost"
             (click)="selectMagicka(cost)">
             <div class="magicka-preview">
-              <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+              <img src="/assets/tesl/images/icons/LG-icon-Magicka.webp" alt="Magicka" class="filter-icon">
               <span class="cost-overlay">{{ cost }}</span>
             </div>
           </button>
@@ -129,7 +129,7 @@
             [class.active]="selectedMagicka === cost"
             (click)="selectMagicka(cost)">
             <div class="magicka-preview">
-              <img src="/assets/tesl/images/icons/LG-icon-Magicka.png" alt="Magicka" class="filter-icon">
+              <img src="/assets/tesl/images/icons/LG-icon-Magicka.webp" alt="Magicka" class="filter-icon">
               <span class="cost-overlay">{{ cost }}</span>
             </div>
           </button>

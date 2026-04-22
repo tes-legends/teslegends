@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Card, DeckService, DeckEntry, SavedDeck } from '../tesl/deck.service';
+import { UtilityService } from '../tesl/utility.service';
 
 @Component({
     selector: 'app-deck-builder',
@@ -19,6 +20,9 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
   deckName: string = 'New Deck';
   unlockedCardIds: string[] = [];   // passed from parent
   unlockAll: boolean = false;
+  morrowindAllowed: boolean = false;
+
+  enlargedCard: Card | null = null;
 
   // === CLASS SELECTION ===
   selectedClass: any = null;           // selected class object
@@ -33,31 +37,53 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
   maxDeckSize = 50;
   maxCopiesPerCard = 3;
 
+  private setFolders: Record<string, string> = {
+    'Core Set': 'core_set',
+    'Dark Brotherhood': 'brotherhood',
+    'Clockwork City': 'clockwork',
+    'Heroes of Skyrim': 'heroes_of_skyrim',
+    'Houses of Morrowind': 'morrowind',
+    'Madhouse Collection': 'madhouse',
+    'Forgotten Hero Collection': 'forgotten',
+    'Monthly Reward': 'reward_set',
+    'Story Set': 'story_set',
+    'Custom Set': 'custom_set'
+  };
+
   attributeIcons: { [key: string]: string } = {
-    'R': '/assets/tesl/images/icons/LG-icon-Strength.png',
-    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.png',
-    'P': '/assets/tesl/images/icons/LG-icon-Endurance.png',
-    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.png',
-    'G': '/assets/tesl/images/icons/LG-icon-Agility.png',
-    'N': '/assets/tesl/images/icons/LG-icon-Neutral.png'
-    // Add more if needed (e.g. dual/tri attributes)
+    'R': '/assets/tesl/images/icons/LG-icon-Strength.webp',
+    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.webp',
+    'P': '/assets/tesl/images/icons/LG-icon-Endurance.webp',
+    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.webp',
+    'G': '/assets/tesl/images/icons/LG-icon-Agility.webp',
+    'N': '/assets/tesl/images/icons/LG-icon-Neutral.webp'
   };
 
   readonly classes = [
-    { name: 'Archer', attributes: ['R','G'], color: '#ff4444' },
-    { name: 'Assassin', attributes: ['B','G'], color: '#0066ff' },
-    { name: 'Battlemage', attributes: ['R','B'], color: '#ffcc00' },
-    { name: 'Crusader', attributes: ['R','Y'], color: '#00cc66' },
-    { name: 'Mage', attributes: ['B','Y'], color: '#cc66ff' },
-    { name: 'Monk', attributes: ['Y', 'G'], color: '#9966ff' },
-    { name: 'Scout', attributes: ['G', 'P'], color: '#ff6666' },
-    { name: 'Sorcerer', attributes: ['B', 'P'], color: '#ff9900' },
-    { name: 'Spellsword', attributes: ['Y', 'P'], color: '#66cc99' },
-    { name: 'Warrior', attributes: ['R', 'P'], color: '#6699ff' },
-    // Add more if needed (e.g. Archer, Warrior, etc.)
+    { name: 'Archer', attributes: ['R','G'] },
+    { name: 'Assassin', attributes: ['B','G'] },
+    { name: 'Battlemage', attributes: ['R','B'] },
+    { name: 'Crusader', attributes: ['R','Y'] },
+    { name: 'Mage', attributes: ['B','Y'] },
+    { name: 'Monk', attributes: ['Y', 'G'] },
+    { name: 'Scout', attributes: ['G', 'P'] },
+    { name: 'Sorcerer', attributes: ['B', 'P'] },
+    { name: 'Spellsword', attributes: ['Y', 'P'] },
+    { name: 'Warrior', attributes: ['R', 'P'] },
+    { name: 'Dagoth', attributes: ['R', 'B', 'G'] },
+    { name: 'Hlaalu', attributes: ['R', 'Y', 'G'] },
+    { name: 'Redoran', attributes: ['R', 'Y', 'P'] },
+    { name: 'Telvanni', attributes: ['B', 'G', 'P'] },
+    { name: 'Tribunal', attributes: ['B', 'Y', 'P'] },
+    { name: 'Neutral', attributes: ['N'] },
+    { name: 'Strength', attributes: ['R'] },
+    { name: 'Intelligence', attributes: ['B'] },
+    { name: 'Willpower', attributes: ['Y'] },
+    { name: 'Agility', attributes: ['G'] },
+    { name: 'Endurance', attributes: ['P'] }
   ];
 
-  constructor(private deckService: DeckService,
+  constructor(private deckService: DeckService, private utilityService: UtilityService,
       public dialogRef: MatDialogRef<DeckBuilderComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any
     ) {
@@ -66,6 +92,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     }
 
   ngOnInit() {
+    this.morrowindAllowed = this.deckService.morrowindSetsAllowed;
     //this.allCards = this.deckService.getAllCards(); // your method
     //this.applyFilters();
     this.loadSavedDecks();
@@ -75,11 +102,74 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       this.firstFocusable?.nativeElement.focus();
   }
 
+  get classesFiltered(): any[] {
+    if (this.morrowindAllowed) return this.classes;
+    return this.classes.filter(cls => cls.attributes.length < 3);
+  }
+
   selectClass(cls: any) {
     this.selectedClass = cls;
     this.currentDeck = [];           // clear current deck
     this.deckName = `New ${cls.name} Deck`;
-    //this.applyFilters();
+    this.maxDeckSize = 50;
+    if (this.selectedClass.attributes.length === 1) {
+      this.maxDeckSize = 30;
+    } else if (this.selectedClass.attributes.length === 3) {
+      this.maxDeckSize = 75;
+    }
+  }
+
+  onDeckEntryClick(event: MouseEvent, entry: any) {
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+
+    const clickX = event.clientX - rect.left;
+    const width = rect.width;
+
+    // LEFT 50px → decrement
+    if (clickX <= 50) {
+      this.decrementCard(entry);
+      return;
+    }
+
+    // RIGHT 50px → increment
+    if (clickX >= width - 50) {
+      this.incrementCard(entry);
+      return;
+    }
+
+    // MIDDLE → open preview
+    this.openCardPreview(entry.card);
+  }
+
+  openCardPreview(card: Card) {
+    this.enlargedCard = card;
+  }
+
+  closeCard() {
+    this.enlargedCard = null;
+  }
+
+  get enlargedCardImage(): string {
+    return this.utilityService.getCardImageByName(this.enlargedCard ? this.enlargedCard.name : 'placeholder'
+      , this.setFolders[this.enlargedCard ? this.enlargedCard.set : '']);
+  }
+
+  incrementCard(entry: any) {
+    const max = entry.card.unique ? 1 : 3;
+
+    if (entry.count < max) {
+      entry.count++;
+    }
+  }
+
+  decrementCard(entry: any) {
+    if (entry.count > 1) {
+      entry.count--;
+    } else {
+      // remove from deck if it hits 0
+      this.currentDeck = this.currentDeck.filter(e => e !== entry);
+    }
   }
 
   toggleCard(card: Card) {
@@ -140,7 +230,8 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   get allowedAttributes(): string[] {
     if (!this.selectedClass) return ['N'];
-    return ['N', ...this.selectedClass.attributes];
+    //return ['N', ...this.selectedClass.attributes];
+    return this.selectedClass.attributes;
   }
 
   async importDeck() {
@@ -159,26 +250,30 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
         }
       }*/
       const deckAttr: string[] = [];
+      let hasNeutral = false;
       deckEntries.forEach(e => {
         e.card.attributes.forEach(a => {
           if (a !== 'N' && !deckAttr.includes(a)) deckAttr.push(a);
+          if (a === 'N') hasNeutral = true;
         })
       });
-      if (deckAttr.length > 2) {
+      if (!this.morrowindAllowed && deckAttr.length > 2) {
         alert('too many attributes');
         return;
-      } else if (deckAttr.length === 0) {
+      } else if (deckAttr.length === 0 && !hasNeutral) {
         deckAttr.push('R');
         deckAttr.push('G');
-      } else if (deckAttr.length < 2) {
+      } else if (deckAttr.length < 2 && hasNeutral) {
         if (deckAttr.includes('R')) {
           deckAttr.push('G');
         } else {
           deckAttr.push('R');
         }
-      }
+      }      
       let deckClass = this.classes.find(cls => 
-        cls.attributes[0] === deckAttr[0] && cls.attributes[1] === deckAttr[1]
+        (deckAttr.length === 2 && cls.attributes[0] === deckAttr[0] && cls.attributes[1] === deckAttr[1]) ||
+        (deckAttr.length === 1 && cls.attributes[0] === deckAttr[0]) ||
+        (deckAttr.length === 3 && cls.attributes[0] === deckAttr[0] && cls.attributes[1] === deckAttr[1] && cls.attributes[2] === deckAttr[2])
       );
       if (!deckClass) {
         deckClass = this.classes.find(cls => 
@@ -191,6 +286,13 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       }
       this.currentDeck = deckEntries;
       this.selectedClass = deckClass;
+      if (deckAttr.length > 2) {
+        this.maxDeckSize = 75;
+      } else if (deckAttr.length === 1) {
+        this.maxDeckSize = 30;
+      } else {
+        this.maxDeckSize = 50;
+      }
       this.deckName = deckClass.name + Array.from({length: 4}, () => 
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
         .charAt(Math.floor(Math.random() * 62))
@@ -220,8 +322,8 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       alert('Deck is empty');
       return;
     }
-    if (this.currentDeckTotal !== 50) {
-      alert('Deck is not 50 cards');
+    if (this.currentDeckTotal !== this.maxDeckSize) {
+      alert(`Deck is not ${this.maxDeckSize} cards`);
       return;
     }
 

@@ -68,7 +68,7 @@
               "type": "summon",
               "cardId": "treant",
               "amount": 2,
-              "target": "thisLane"
+              "target": "randomLane"
             }
           }
         ]
@@ -151,32 +151,708 @@
     ]
   },
   {
-    "id": "edwin-vancleef",
-    "name": "Edwin VanCleef",
-    "type": "Creature",
-    "subtypes": [
-      "Wood Elf"
-    ],
+    "id": "preparation",
+    "name": "Preparation",
+    "type": "Action",
+    "subtypes": [],
     "attributes": [
       "G"
     ],
-    "cost": 3,
-    "attack": 2,
-    "health": 2,
-    "rarity": "4Legendary",
-    "text": "Summon: Gain +2/+2 for each other card you've played this turn.",
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "The next card you play this turn costs 2 less.",
     "keywords": [],
     "set": "Custom Set",
     "deckCodeId": "Xd",
-    "unique": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "tempModCost",
+        "amount": -2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "ash-zombie",
+    "name": "Ash Zombie",
+    "type": "Creature",
+    "subtypes": ["Ash Creature"],
+    "attributes": ["R","G","B"],
+    "cost": 2,
+    "attack": 5,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "Can only attack or be played when you control another creature with 5 or more power",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xe",
+    "playCondition": {
+      "type": "creatureFiveAttack"
+    },
+    "attackCondition": {
+      "type": "twoCreatureFiveAttack"
+    }
+  },
+  {
+    "id": "brimming-potential",
+    "name": "Brimming Potential",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["P"],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Discard your hand. You gain +1 max magicka for each card discarded. Then, each player draws a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xf",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "discard",
+        "target": "playerHand"
+      },
+      {
+        "trigger": "Play",
+        "type": "maxMagicka",
+        "amount": 1,
+        "amountPer": "cardsDiscarded",
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "players"
+      }
+    ]
+  },
+  {
+    "id": "bubble-fish",
+    "name": "Bubble Fish",
+    "type": "Creature",
+    "subtypes": ["Fish"],
+    "attributes": ["N"],
+    "cost": 1,
+    "attack": 0,
+    "health": 1,
+    "rarity": "3Epic",
+    "text": "Lethal +2/+2 while you have 3 or fewer max magicka",
+    "keywords": ["Lethal"],
+    "set": "Custom Set",
+    "deckCodeId": "Xg",
+    "static": {
+      "condition": {
+        "type": "maxMagicka",
+        "max": 3
+      },
+      "modAttack": 2,
+      "modHealth": 2
+    }
+  },
+  {
+    "id": "call-to-action",
+    "name": "Call to Action",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["R","B"],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Transform each creature in your hand into a random action.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xh",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "transform",
+        "target": "playerHand",
+        "subtypes": ["Action"],
+        "targetCondition": {
+          "type": "hasType",
+          "subtypes": ["Creature"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "carnival-juggler",
+    "name": "Carnival Juggler",
+    "type": "Creature",
+    "subtypes": ["Orc"],
+    "attributes": ["R","P"],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Drain, Prophecy Summon: Deal 1 damage to a random enemy.",
+    "keywords": ["Drain"],
+    "set": "Custom Set",
+    "deckCodeId": "Xi",
+    "prophecy": true,
     "effects": [
       {
         "trigger": "Summon",
-        "type": "buffSelf",
+        "type": "damage",
+        "amount": 1,
+        "target": "enemyRandom"
+      }
+    ]
+  },
+  {
+    "id": "concoct",
+    "name": "Concoct",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Give a creature -1/-1. Draw a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xj",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": -1,
+        "modHealth": -1,
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "confer",
+    "name": "Confer",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["B"],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Reveal the top card of your opponent's deck. It loses Prophecy. Draw a card",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xk",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "revealTopDeck",
+        "amount": 1,
+        "target": "opponent"
+      },
+      {
+        "trigger": "Play",
+        "type": "removeProphecy",
+        "target": "oppTopDeck"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "conflagrate",
+    "name": "Conflagrate",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["R","B"],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Unsummon an enemy creature. Deal damage equal to its cost to your opponent.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xl",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "unsummon",
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 1,
+        "amountPer": "lastTargetedCost",
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "consume",
+    "name": "Consume",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy You gain 4 health. Draw a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xm",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -4,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "deshaan-manipulator",
+    "name": "Deshaan Manipulator",
+    "type": "Creature",
+    "subtypes": ["Dark Elf"],
+    "attributes": ["G"],
+    "cost": 6,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Last Gasp: Summon a 3/3 Deshaan Avenger.",
+    "keywords": ["LastGasp"],
+    "set": "Custom Set",
+    "deckCodeId": "Xn",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "summon",
+        "cardId": "deshaan-avenger",
+        "target": "thisLane"
+      }
+    ]
+  },
+  {
+    "id": "estate-theft",
+    "name": "Estate Theft",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Deal 1 damage to your opponent and gain 1 health for each of their runes.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xo",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 1,
+        "amountPer": "enemyRune",
+        "target": "opponent"
+      },
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -1,
+        "amountPer": "enemyRune",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "fruit-bat",
+    "name": "Fruit Bat",
+    "type": "Creature",
+    "subtypes": ["Beast"],
+    "attributes": ["P"],
+    "cost": 3,
+    "attack": 2,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Prophecy, Drain, Lethal, Guard",
+    "keywords": ["Drain", "Lethal", "Guard"],
+    "set": "Custom Set",
+    "deckCodeId": "Xp",
+    "prophecy": true
+  },
+  {
+    "id": "ghostly-guard",
+    "name": "Ghostly Guard",
+    "type": "Creature",
+    "subtypes": ["Spirit"],
+    "attributes": ["B","P"],
+    "cost": 3,
+    "attack": 0,
+    "health": 6,
+    "rarity": "2Rare",
+    "text": "Regenerate, Ward, Guard, Prophecy",
+    "keywords": ["Regenerate", "Ward", "Guard"],
+    "set": "Custom Set",
+    "deckCodeId": "Xq",
+    "prophecy": true
+  },
+  {
+    "id": "giant-tracker",
+    "name": "Giant Tracker",
+    "type": "Creature",
+    "subtypes": ["Nord"],
+    "attributes": ["R"],
+    "cost": 2,
+    "attack": 2,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Rally When Giant Tracker Rallies a creature with 5 or more power, it gains Cover.",
+    "keywords": ["Rally"],
+    "set": "Custom Set",
+    "deckCodeId": "Xr",
+    "effects": [
+      {
+        "trigger": "Rally",
+        "type": "buffTarget",
+        "addKeywords": ["Cover"],
+        "target": "cardRallied",
+        "targetCondition": {
+          "type": "hasAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "hold-defender",
+    "name": "Hold Defender",
+    "type": "Creature",
+    "subtypes": ["Nord"],
+    "attributes": ["R","Y"],
+    "cost": 3,
+    "attack": 2,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "Whenever a creature deals damage to you, Hold Defender deals 1 damage to it.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xs",
+    "effects": [
+      {
+        "trigger": "DamagedByCreature",
+        "type": "damage",
+        "amount": 1,
+        "target": "lastCardUsed"
+      }
+    ]
+  },
+  {
+    "id": "imprisonment",
+    "name": "Imprisonment",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": ["P"],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Uses: 3 Activate: Shackle a friendly creature and give it +2/+2",
+    "keywords": [],
+    "uses": 3,
+    "set": "Custom Set",
+    "deckCodeId": "Xt",
+    "effects": [
+      {
+        "trigger": "Activation",
+        "type": "shackle",
+        "target": "creatureFriendly"
+      },
+      {
+        "trigger": "Activation",
+        "type": "buffTarget",
         "modAttack": 2,
         "modHealth": 2,
-        "amountPer": "cardsPlayedTurn",
-        "target": "self"
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "khajiit-swashbuckler",
+    "name": "Khajiit Swashbuckler",
+    "type": "Creature",
+    "subtypes": ["Khajiit"],
+    "attributes": ["G","P"],
+    "cost": 5,
+    "attack": 3,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "Summon: Battle an enemy creature. Slay: Deal 2 damage to your opponent and gain 2 health.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xu",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "battle",
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Slay",
+        "type": "damage",
+        "amount": 2,
+        "target": "opponent"
+      },
+      {
+        "trigger": "Slay",
+        "type": "damage",
+        "amount": -2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "maroon",
+    "name": "Maroon",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["R"],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Unsummon a creature. Draw a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xv",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "unsummon",
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "mead-bee",
+    "name": "Mead Bee",
+    "type": "Creature",
+    "subtypes": ["Insect"],
+    "attributes": ["Y"],
+    "cost": 3,
+    "attack": 2,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Pilfer: Summon a copy of Mead Bee in the other lane.",
+    "keywords": ["Pilfer"],
+    "set": "Custom Set",
+    "deckCodeId": "Xw",
+    "effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "summon",
+        "cardId": "mead-bee",
+        "target": "otherLane"
+      }
+    ]
+  },
+  {
+    "id": "pay-the-fine",
+    "name": "Pay the Fine",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Destroy a creature. Give all enemy creatures +1/+1.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xx",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureEnemyAll"
+      }
+    ]
+  },
+  {
+    "id": "profligacy",
+    "name": "Profligacy",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 9,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Ongoing Whenever you play a 0-cost card, draw a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xy",
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "lastPlayedCost",
+          "max": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "shooting-star",
+    "name": "Shooting Star",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["B","G"],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Deal 5 damage to your opponent.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Xz",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 5,
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "shrewd-savior",
+    "name": "Shrewd Savior",
+    "type": "Creature",
+    "subtypes": ["High Elf"],
+    "attributes": ["Y"],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Prophecy, Guard Plot: You gain 3 health.",
+    "keywords": ["Guard"],
+    "set": "Custom Set",
+    "deckCodeId": "Ya",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "damage",
+        "amount": -3,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "stay-silent",
+    "name": "Stay Silent",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Destroy a creature with no Keywords.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yb",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creature",
+        "targetCondition": {
+          "type": "hasNoKeywords"
+        }
+      }
+    ]
+  },
+  {
+    "id": "tax-official",
+    "name": "Tax Official",
+    "type": "Creature",
+    "subtypes": ["Imperial"],
+    "attributes": ["P"],
+    "cost": 3,
+    "attack": 3,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "Summon: The top card of your opponent's deck has its cost increased by 3.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yc",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "modCost",
+        "amount": 3,
+        "target": "oppTopDeck"
+      }
+    ]
+  },
+  {
+    "id": "witness-briber",
+    "name": "Witness Briber",
+    "type": "Creature",
+    "subtypes": ["Argonian"],
+    "attributes": ["P"],
+    "cost": 2,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon: You must silence another friendly creature.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yd",
+    "targetReq": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "silence",
+        "target": "creatureFriendlyOther"
       }
     ]
   }

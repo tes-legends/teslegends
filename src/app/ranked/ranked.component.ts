@@ -32,13 +32,13 @@ export class RankedComponent implements OnInit, AfterViewInit {
   @ViewChild('firstFocusable') firstFocusable!: ElementRef;
 
   attributeIcons: Record<string, string> = {
-    'R': '/assets/tesl/images/icons/LG-icon-Strength.png',
-    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.png',
-    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.png',
-    'G': '/assets/tesl/images/icons/LG-icon-Agility.png',
-    'P': '/assets/tesl/images/icons/LG-icon-Endurance.png',
-    'N': '/assets/tesl/images/icons/LG-icon-Neutral.png',
-    'Dual': '/assets/tesl/images/icons/LG-icon-Dual_Attribute-small.png'
+    'R': '/assets/tesl/images/icons/LG-icon-Strength.webp',
+    'B': '/assets/tesl/images/icons/LG-icon-Intelligence.webp',
+    'Y': '/assets/tesl/images/icons/LG-icon-Willpower.webp',
+    'G': '/assets/tesl/images/icons/LG-icon-Agility.webp',
+    'P': '/assets/tesl/images/icons/LG-icon-Endurance.webp',
+    'N': '/assets/tesl/images/icons/LG-icon-Neutral.webp',
+    'Dual': '/assets/tesl/images/icons/LG-icon-Dual_Attribute-small.webp'
   };
 
   readonly tiers: RankTier[] = [
@@ -381,9 +381,12 @@ export class RankedComponent implements OnInit, AfterViewInit {
   }
 
   private getEligibleCards(): Card[] {
-    return this.deckService.getAllCards().filter(c =>
+    /*return this.deckService.getAllCards().filter(c =>
       c.deckCodeId && c.set !== 'Story Set' && !this.unlockedCards.includes(c.deckCodeId) &&
       (this.customSets || c.set !== 'Custom Set')
+    );*/
+    return this.deckService.getMostCards().filter(c => 
+      !this.unlockedCards.includes(c.deckCodeId!)
     );
   }
 

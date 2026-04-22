@@ -1,0 +1,164 @@
+{
+  "files": [
+    "LG-audio-mistveil_warden_trigger.ogg",
+    "LG-audio-ruin_archaeologist_trigger.ogg",
+    "LG-audio-aldora_the_daring_attack.ogg",
+    "LG-audio-aldora_the_daring_enter_play.ogg",
+    "LG-audio-aldora_the_daring_trigger.ogg",
+    "LG-audio-arcaneum_librarian_attack.ogg",
+    "LG-audio-arcaneum_librarian_enter_play.ogg",
+    "LG-audio-back-alley_rogue_attack.ogg",
+    "LG-audio-back-alley_rogue_enter_play.ogg",
+    "LG-audio-barrow_stalker_attack.ogg",
+    "LG-audio-barrow_stalker_enter_play.ogg",
+    "LG-audio-clockwork_apostle_attack.ogg",
+    "LG-audio-clockwork_apostle_enter_play.ogg",
+    "LG-audio-cog_collector_attack.ogg",
+    "LG-audio-cog_collector_enter_play.ogg",
+    "LG-audio-dragon_aspect_level_1.ogg",
+    "LG-audio-dragon_aspect_level_2.ogg",
+    "LG-audio-dragon_aspect_level_3.ogg",
+    "LG-audio-galyn_the_shelterer_attack.ogg",
+    "LG-audio-galyn_the_shelterer_enter_play.ogg",
+    "LG-audio-laaneth_attack_01.ogg",
+    "LG-audio-laaneth_attack_02.ogg",
+    "LG-audio-laaneth_attack_03.ogg",
+    "LG-audio-laaneth_attack_04.ogg",
+    "LG-audio-laaneth_enter_play_01.ogg",
+    "LG-audio-laaneth_enter_play_02.ogg",
+    "LG-audio-laaneth_enter_play_03.ogg",
+    "LG-audio-laaneth_enter_play_04.ogg",
+    "LG-audio-mecinar_attack.ogg",
+    "LG-audio-mecinar_enter_play.ogg",
+    "LG-audio-mistveil_warden_attack.ogg",
+    "LG-audio-mistveil_warden_enter_play.ogg",
+    "LG-audio-phalanx_exemplar_attack.ogg",
+    "LG-audio-phalanx_exemplar_enter_play.ogg",
+    "LG-audio-raider_of_the_ruins_attack.ogg",
+    "LG-audio-raider_of_the_ruins_enter_play.ogg",
+    "LG-audio-ratway_prospector_attack.ogg",
+    "LG-audio-ratway_prospector_enter_play.ogg",
+    "LG-audio-ratway_prospector_trigger.ogg",
+    "LG-audio-relic_hunter_attack.ogg",
+    "LG-audio-relic_hunter_enter_play.ogg",
+    "LG-audio-relic_hunter_trigger.ogg",
+    "LG-audio-riften_lawkeeper_attack.ogg",
+    "LG-audio-riften_lawkeeper_enter_play.ogg",
+    "LG-audio-ruthless_freebooter_attack.ogg",
+    "LG-audio-ruthless_freebooter_enter_play.ogg",
+    "LG-audio-ruthless_freebooter_trigger.ogg",
+    "LG-audio-sails-through-storms_attack.ogg",
+    "LG-audio-sails-through-storms_enter_play.ogg",
+    "LG-audio-scroll_seeker_attack.ogg",
+    "LG-audio-scroll_seeker_enter_play.ogg",
+    "LG-audio-scroll_seeker_trigger.ogg",
+    "LG-audio-tavern_bard_attack.ogg",
+    "LG-audio-tavern_bard_enter_play.ogg",
+    "LG-audio-thornwell_beast_attack.ogg",
+    "LG-audio-thornwell_beast_enter_play.ogg"
+  ],
+  "cardToFiles": {
+    "dragon-aspect-level-1": [
+      "LG-audio-dragon_aspect_level_1.ogg"
+    ],
+    "dragon-aspect-level-2": [
+      "LG-audio-dragon_aspect_level_2.ogg"
+    ],
+    "dragon-aspect-level-3": [
+      "LG-audio-dragon_aspect_level_3.ogg"
+    ],
+    "scroll-seeker": [
+      "LG-audio-scroll_seeker_attack.ogg",
+      "LG-audio-scroll_seeker_enter_play.ogg",
+      "LG-audio-scroll_seeker_trigger.ogg"
+    ],
+    "ratway-prospector": [
+      "LG-audio-ratway_prospector_attack.ogg",
+      "LG-audio-ratway_prospector_enter_play.ogg",
+      "LG-audio-ratway_prospector_trigger.ogg"
+    ],
+    "sails-through-storms": [
+      "LG-audio-sails-through-storms_attack.ogg",
+      "LG-audio-sails-through-storms_enter_play.ogg"
+    ],
+    "clockwork-apostle": [
+      "LG-audio-clockwork_apostle_attack.ogg",
+      "LG-audio-clockwork_apostle_enter_play.ogg"
+    ],
+    "mistveil-warden": [
+      "LG-audio-mistveil_warden_attack.ogg",
+      "LG-audio-mistveil_warden_enter_play.ogg",
+      "LG-audio-mistveil_warden_trigger.ogg"
+    ],
+    "thornwell-terror": [
+      "LG-audio-thornwell_beast_attack.ogg",
+      "LG-audio-thornwell_beast_enter_play.ogg"
+    ],
+    "phalanx-exemplar": [
+      "LG-audio-phalanx_exemplar_attack.ogg",
+      "LG-audio-phalanx_exemplar_enter_play.ogg"
+    ],
+    "galyn-the-shelterer": [
+      "LG-audio-galyn_the_shelterer_attack.ogg",
+      "LG-audio-galyn_the_shelterer_enter_play.ogg"
+    ],
+    "laaneth": [
+      "LG-audio-laaneth_attack_01.ogg",
+      "LG-audio-laaneth_attack_02.ogg",
+      "LG-audio-laaneth_attack_03.ogg",
+      "LG-audio-laaneth_attack_04.ogg",
+      "LG-audio-laaneth_enter_play_01.ogg",
+      "LG-audio-laaneth_enter_play_02.ogg",
+      "LG-audio-laaneth_enter_play_03.ogg",
+      "LG-audio-laaneth_enter_play_04.ogg"
+    ],
+    "riften-lawkeeper": [
+      "LG-audio-riften_lawkeeper_attack.ogg",
+      "LG-audio-riften_lawkeeper_enter_play.ogg"
+    ],
+    "back-alley-rogue": [
+      "LG-audio-back-alley_rogue_attack.ogg",
+      "LG-audio-back-alley_rogue_enter_play.ogg"
+    ],
+    "aldora-the-daring": [
+      "LG-audio-aldora_the_daring_attack.ogg",
+      "LG-audio-aldora_the_daring_enter_play.ogg",
+      "LG-audio-aldora_the_daring_trigger.ogg"
+    ],
+    "cog-collector": [
+      "LG-audio-cog_collector_attack.ogg",
+      "LG-audio-cog_collector_enter_play.ogg"
+    ],
+    "ruin-archaeologist": [
+      "LG-audio-ruin_archaeologist_trigger.ogg",
+      "LG-audio-raider_of_the_ruins_attack.ogg",
+      "LG-audio-raider_of_the_ruins_enter_play.ogg"
+    ],
+    "mecinar": [
+      "LG-audio-mecinar_attack.ogg",
+      "LG-audio-mecinar_enter_play.ogg"
+    ],
+    "arcaneum-librarian": [
+      "LG-audio-arcaneum_librarian_attack.ogg",
+      "LG-audio-arcaneum_librarian_enter_play.ogg"
+    ],
+    "relic-hunter": [
+      "LG-audio-relic_hunter_attack.ogg",
+      "LG-audio-relic_hunter_enter_play.ogg",
+      "LG-audio-relic_hunter_trigger.ogg"
+    ],
+    "star-sung-bard": [
+      "LG-audio-tavern_bard_attack.ogg",
+      "LG-audio-tavern_bard_enter_play.ogg"
+    ],
+    "barrow-stalker": [
+      "LG-audio-barrow_stalker_attack.ogg",
+      "LG-audio-barrow_stalker_enter_play.ogg"
+    ],
+    "ruthless-freebooter": [
+      "LG-audio-ruthless_freebooter_attack.ogg",
+      "LG-audio-ruthless_freebooter_enter_play.ogg",
+      "LG-audio-ruthless_freebooter_trigger.ogg"
+    ]
+  }
+}

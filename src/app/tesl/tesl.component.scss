@@ -281,6 +281,11 @@
       text-shadow: 2px 2px 4px white;
     }
   }
+  .glow {
+    border: 3px solid #00ccff;
+    box-shadow: 0 0 15px #00ccff;
+    animation: pulse-cyan 1.8s infinite;
+  }
 }
 
 .hero-portrait {
@@ -316,6 +321,10 @@
     box-shadow: 0 0 20px #ff4444, inset 0 0 15px rgba(255,68,68,0.5);
     cursor: crosshair;
     animation: pulse-attack 1.5s infinite;
+  }
+  &.warded {
+    border: 3px solid #00b7ff;
+    animation: pulse-ward 2s infinite;
   }
 }
 
@@ -450,6 +459,20 @@
   border: 1px solid white;
   border-radius: 12px;    // optional: rounded corners for a nicer look
   overflow: hidden;       // ensures cards don't poke out of the rounded border
+
+  .lane-bg-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+
+    opacity: 0.15;          /* subtle overlay */
+    pointer-events: none;   /* don’t block clicks */
+
+    z-index: 1;             /* above background colors */
+  }
 }
 
 .lane {
@@ -774,6 +797,12 @@ app-tesl-card.targetable {
         z-index: 10;
     }
 
+    .modal-actions-middle {
+        position: absolute;
+        top: 0px;
+        z-index: 10;
+    }
+
     img {
       max-width: 100%;
       max-height: 80vh;
@@ -783,20 +812,35 @@ app-tesl-card.targetable {
     }
 
     .play-btn {
-        background: linear-gradient(45deg, gold, orange);
-        color: black;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 25px;
-        font-weight: bold;
-        font-size: 1.1rem;
-        box-shadow: 0 4px 15px rgba(255,215,0,0.4);
-        cursor: pointer;
-        
-        &:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(255,215,0,0.6);
-        }
+      background: linear-gradient(45deg, gold, orange);
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+      cursor: pointer;
+      
+      &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255,215,0,0.6);
+      }
+    }
+
+    .exalt-btn {
+      background: rgb(151, 8, 233);
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      
+      &:hover {
+      transform: scale(1.05);
+      }
     }
 
     .close-btn {
@@ -1635,6 +1679,7 @@ input {
     background: rgba(80,80,80,0.8);
     transform: scale(1.1);
   }
+
 }
 
 /* Overlay */
@@ -1803,6 +1848,12 @@ input {
   &:nth-child(2) {
     right: -2px;          // bottom-right
     bottom: 0;
+  }
+
+  &:nth-child(3) {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
   }
 }
 
@@ -3033,4 +3084,10 @@ input {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-ward {
+  0%   { box-shadow: 0 0 10px #00b7ff, inset 0 0 6px rgba(0,183,255,0.3); }
+  50%  { box-shadow: 0 0 18px #00b7ff, inset 0 0 12px rgba(0,183,255,0.5); }
+  100% { box-shadow: 0 0 10px #00b7ff, inset 0 0 6px rgba(0,183,255,0.3); }
 }

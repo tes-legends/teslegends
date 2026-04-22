@@ -1,0 +1,32 @@
+{
+  "files": [
+    "LG-audio-guild_recruit_attack_01.ogg",
+    "LG-audio-guild_recruit_attack_02.ogg",
+    "LG-audio-guild_recruit_attack_03.ogg",
+    "LG-audio-guild_recruit_enter_play_01.ogg",
+    "LG-audio-guild_recruit_enter_play_02.ogg",
+    "LG-audio-guild_recruit_enter_play_03.ogg",
+    "LG-audio-namiras_blessing_trigger_01.ogg",
+    "LG-audio-namiras_blessing_trigger_02.ogg",
+    "LG-audio-vigilant_greybeard_attack.ogg",
+    "LG-audio-vigilant_greybeard_enter_play.ogg"
+  ],
+  "cardToFiles": {
+    "sly-marshblade": [
+      "LG-audio-guild_recruit_attack_01.ogg",
+      "LG-audio-guild_recruit_attack_02.ogg",
+      "LG-audio-guild_recruit_attack_03.ogg",
+      "LG-audio-guild_recruit_enter_play_01.ogg",
+      "LG-audio-guild_recruit_enter_play_02.ogg",
+      "LG-audio-guild_recruit_enter_play_03.ogg"
+    ],
+    "namiras-shrine": [
+      "LG-audio-namiras_blessing_trigger_01.ogg",
+      "LG-audio-namiras_blessing_trigger_02.ogg"
+    ],
+    "voice-of-balance": [
+      "LG-audio-vigilant_greybeard_attack.ogg",
+      "LG-audio-vigilant_greybeard_enter_play.ogg"
+    ]
+  }
+}

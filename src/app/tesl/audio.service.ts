@@ -21,47 +21,14 @@ export class AudioService {
     'Heroes of Skyrim': '/assets/tesl/audio/heroes_of_skyrim/',
     'Custom Set': '/assets/tesl/audio/custom_set/',
     'Madhouse Collection': '/assets/tesl/audio/madhouse/',
+    'Forgotten Hero Collection': '/assets/tesl/audio/forgotten/',
     'Monthly Reward': '/assets/tesl/audio/reward_set/',
-    'Story Set': '/assets/tesl/audio/story_set/'
+    'Story Set': '/assets/tesl/audio/story_set/',
+    'Clockwork City': '/assets/tesl/audio/clockwork/',
+    'Houses of Morrowind': '/assets/tesl/audio/morrowind/'
   };
 
-  //private basePath = '/assets/tesl/audio/core_set/';
-
   constructor(private http: HttpClient) {}
-
-  /*loadAllManifest(): Observable<boolean> {
-    this.loadManifest('Core Set').subscribe();
-    this.loadManifest('Heroes of Skyrim').subscribe();
-    if (this.manifest) return new BehaviorSubject(true);
-
-    return this.http.get<AudioManifest>(`${this.basePath}audio-manifest.json`).pipe(
-      map(data => {
-        this.manifest = data;
-        console.log(`Loaded ${data.files.length} audio files`);
-        return true;
-      })
-    );
-  }*/
-
-  /*loadManifest(set: string): Observable<boolean> {
-    if (this.manifests[set]) {
-      return new BehaviorSubject(true);
-    }
-
-    const basePath = this.setPaths[set];
-    if (!basePath) {
-      console.warn(`Unknown set: ${set}`);
-      return new BehaviorSubject(false);
-    }
-
-    return this.http.get<AudioManifest>(`${basePath}audio-manifest.json`).pipe(
-      map(data => {
-        this.manifests[set] = data;
-        console.log(`Loaded ${data.files.length} audio files for ${set}`);
-        return true;
-      })
-    );
-  }*/
 
   loadManifest(): Observable<boolean> {
 
@@ -118,6 +85,9 @@ export class AudioService {
         case 'trigger':
         pattern = /_trigger/i;
         break;
+        case 'exalt':
+        pattern = /exalt/i;
+        break;
         case 'hit':
         pattern = /_hit/i;
         break;
@@ -145,6 +115,7 @@ export class AudioService {
   queueAudio(url: string | null): void {
     if (!url) return;
     this.audioQueue.push(url);
+    //console.log(`queueing audio: ${url}`);
     this.playNext();
   }
 

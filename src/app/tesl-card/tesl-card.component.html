@@ -16,41 +16,44 @@
     loading="lazy"
     >
 
-  <!-- Future dynamic power/health overlay -->
   @if (card.currentKeywords?.includes('Ward')) {
     <div class="ward-shield">
       <div class="shield-inner"></div>
     </div>
   }
-  @if ((card.type === 'Creature' || card.type === 'Item') &&
-    ((card.currentAttack !== undefined && card.currentAttack !== card.attack) ||
-    (card.currentHealth !== undefined && card.currentHealth !== card.health))) {
-    <div class="overlay stats">
-      <div class="power"
-      [ngClass]="{
-         'buffed': (card.currentAttack ?? card.attack ?? 0) > (card.attack ?? 0),
-         'nerfed': (card.currentAttack ?? card.attack ?? 0) < (card.attack ?? 0)
-       }">
-        {{ (card.currentAttack ?? card.attack ?? 0) < 0 ? 0 :
-        (card.currentAttack ?? card.attack ?? 0) > 99 ? 99 :
-        (card.currentAttack ?? card.attack ?? 0) }}
+  @if (showStats) {
+    @if (size === 'small') {
+      <div class="overlay stats">
+        <div class="power" [ngClass]="{'buffed': attackBuffed,'nerfed': attackNerfed}">
+          {{ attackDisplay }}
+        </div>
+        <div class="health" [ngClass]="{'buffed': healthBuffed,'nerfed': wounded}">
+          {{ healthDisplay }}
+        </div>
       </div>
-      <div class="health"
-        [class.damaged]="(card.currentHealth ?? card.health ?? 0) < (card.maxHealth ?? card.health ?? 0)"
-      [ngClass]="{
-         'buffed': (card.currentHealth ?? card.health ?? 0) > (card.health ?? 0),
-         'nerfed': (card.currentHealth ?? card.health ?? 0) < (card.health ?? 0)
-       }">
-        {{ (card.currentHealth ?? card.health ?? 0) < 0 ? 0 :
-        (card.currentHealth ?? card.health ?? 0) > 99 ? 99 :
-        (card.currentHealth ?? card.health ?? 0) }}
+    }
+    @if (size !== 'small') {
+      <div class="overlay stats2">
+        <div class="power" [ngClass]="{'buffed': attackBuffed,'nerfed': attackNerfed}">
+          {{ attackDisplay }}
+        </div>
+        <div class="health" [ngClass]="{'buffed': healthBuffed,'nerfed': wounded}">
+          {{ healthDisplay }}
+        </div>
       </div>
-    </div>
+    }
   }
   @if (card.currentCost !== undefined && card.currentCost !== card.cost) {
-    <div class="overlay cost">
-      <div class="cost-value">{{ card.currentCost < 0 ? 0 : card.currentCost }}</div>
-    </div>
+    @if (size === 'small') {
+      <div class="overlay cost">
+        <div class="cost-value">{{ costDisplay }}</div>
+      </div>
+    }
+    @if (size !== 'small') {
+      <div class="overlay cost2">
+        {{ costDisplay }}
+      </div>
+    }
   }
   <!-- Show attached items (small icons or count) -->
   @if (card.attachedItems?.length) {
@@ -106,21 +109,28 @@
       </button>
     }
   </div>
+  <div class="floating-bottom">
+    @if (canExalt) {
+      <button class="action-btn exalt" (click)="exaltCard.emit(card); $event.stopPropagation()">
+        Exalt
+      </button>
+    }
+  </div>
 }
 
 @if (card.covered) {
   <div class="covered-overlay">
-    <img src="/assets/tesl/images/icons/LG-lane-Shadow.png" draggable="false" alt="Covered" class="cover-icon">
+    <img src="/assets/tesl/images/icons/LG-lane-Shadow.webp" draggable="false" alt="Covered" class="cover-icon">
   </div>
 }
 @if (card.shackled) {
   <div class="shackled-overlay">
-    <img src="/assets/tesl/images/icons/LG-icon-Shackle.png" draggable="false" alt="Shackled" class="shackled-icon">
+    <img src="/assets/tesl/images/icons/LG-icon-Shackle.webp" draggable="false" alt="Shackled" class="shackled-icon">
   </div>
 }
 @if (card.silenced) {
   <div class="silenced-overlay">
-    <img src="/assets/tesl/images/icons/LG-icon-Silence.png" draggable="false" alt="Silenced" class="silenced-icon">
+    <img src="/assets/tesl/images/icons/LG-icon-Silence.webp" draggable="false" alt="Silenced" class="silenced-icon">
   </div>
 }
 <!-- Keyword icons row (bottom center) -->
@@ -128,7 +138,7 @@
   <div class="keyword-icons">
     @for (kw of getVisibleKeywords(card.currentKeywords ?? []); track kw) {
       <img
-        [src]="'/assets/tesl/images/icons/LG-icon-' + getIconFileName(kw) + '.png'"
+        [src]="'/assets/tesl/images/icons/LG-icon-' + getIconFileName(kw) + '.webp'"
         [title]="kw"
         [alt]="kw"
         class="keyword-icon"

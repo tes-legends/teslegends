@@ -81,70 +81,87 @@ img {
 .overlay {
   position: absolute;
   color: white;
-  text-shadow: 1px 1px 3px black;
-  font-weight: bold;
-}
-
-.name {
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.1rem;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 4px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-}
-
-.stats {
-  bottom: 33%; //50px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  width: 85%;
-  //gap: 45%; //40px;
-  font-size: 1.6rem;
-  justify-content: space-between;
-
-  .power, .health {
-    color: white;
-
-    text-shadow:
+  text-shadow:
     -1px -1px 0 #000,
      1px -1px 0 #000,
     -1px  1px 0 #000,
      1px  1px 0 #000,
      0 4px 8px rgba(0,0,0,0.8);
-  }
+  font-weight: bold;
+}
 
+.stats {
+  bottom: 33%; 
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  width: 85%;
+  font-size: 1.6rem;
+  justify-content: space-between;
+  .power, .health {
+    color: white;    
+  }
   .buffed {
     color: lime;
   }
+  .nerfed {
+    color: orange;
+  }
+}
 
+.stats2 {
+  bottom: 33%; 
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  width: 85%;
+  font-size: 2.2rem;
+  justify-content: space-between;
+  .power, .health {
+    color: white;    
+  }
+  .buffed {
+    color: lime;
+  }
   .nerfed {
     color: orange;
   }
 }
 
 .cost {
+  color: #6bb3ff;
   top: 5px;
   left: 5px;
   font-size: 1.6rem;
-  color: #6bb3ff;
 }
 
-.rarity {
+.cost2 {
   top: 8px;
-  right: 12px;
-  font-size: 0.9rem;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 2px 8px;
-  border-radius: 8px;
+  left: 14px;
+  font-size: 2.2rem;
+  color: #6bb3ff;
 }
 
 .floating-actions {
   position: absolute;
   top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 30;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  .card.selected & {
+    opacity: 1;
+  }
+}
+
+.floating-bottom {
+  position: absolute;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -173,6 +190,7 @@ img {
 .play { border-color: gold; background: rgba(255,215,0,0.2); }
 .attack { border-color: #ff4444; background: rgba(255,68,68,0.2); }
 .activate { border-color: lime; background: rgba(0,255,0,0.2); }
+.exalt { border-color: rgb(151, 8, 233); background: rgba(212, 0, 255, 0.2); }
 
 .attached-items {
   position: absolute;
@@ -323,12 +341,6 @@ img {
     }
   }
 }
-
-/*.hand-grid app-tesl-card,
-.big-hand {
-  width: 130px !important;
-  height: 195px !important;
-}*/
 
 :host-context(.in-hand) .keyword-icons .keyword-icon {
   width: 16px;

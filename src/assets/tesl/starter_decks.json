@@ -74,7 +74,7 @@
       "description": "Dragons - Control",
       "locked": true,
       "tier": 5,
-      "unlockAfterChapter": 38
+      "unlockAfterChapter": 35
     },
     {
       "source": "starter",
@@ -85,7 +85,7 @@
       "description": "Combo",
       "tier": 5,
       "locked": true,
-      "unlockAfterChapter": 41
+      "unlockAfterChapter": 37
     },
     {
       "source": "starter",
@@ -96,7 +96,7 @@
       "description": "Pilfer",
       "tier": 5,
       "locked": true,
-      "unlockAfterChapter": 44
+      "unlockAfterChapter": 39
     },
     {
       "source": "starter",
@@ -105,6 +105,61 @@
       "class": "Archer",
       "deckCode": "SPAGfvfdlfoijylRAEgulhoxaNAMmGrieSgsqylznSnXeIsaslhC",
       "description": "Shouts - Midrange",
+      "tier": 5,
+      "locked": true,
+      "unlockAfterChapter": 41
+    },
+    {
+      "source": "starter",
+      "name": "Dagtoh's Might", 
+      "attributes": ["R","B","G"],
+      "class": "Dagoth",
+      "deckCode": "SPAObecjgciMoweahPrCrqqyhbcbfCcXAOdzaUgtnzaTihcJaXhSaWhhnMboguALdZgInKomcBjHqueqazlAlC",
+      "description": "Creatures with 5 or more power",
+      "tier": 5,
+      "locked": true,
+      "unlockAfterChapter": 43
+    },
+    {
+      "source": "starter",
+      "name": "Hlaalu Schemes", 
+      "attributes": ["R","Y","G"],
+      "class": "Hlaalu",
+      "deckCode": "SPAUhTffcCiPirkNmCnIimjsdQeYdyfhoxdjqGoQojftALbvcKlQdGpllYkHgsgupThlALlPjNiqkJseeVhfnMqyqWlC",
+      "description": "Plot",
+      "tier": 5,
+      "locked": true,
+      "unlockAfterChapter": 45
+    },
+    {
+      "source": "starter",
+      "name": "Redoran Onslaught", 
+      "attributes": ["R","Y","P"],
+      "class": "Redoran",
+      "deckCode": "SPAWmRneckiXgqcPlOmEgmghkQimmdiCgMhUjokZkyjTbQchAKbHmCalqRgpgTjmakrQdTALbcnymPdgayrBeVfRmwmSbt",
+      "description": "Rally",
+      "tier": 5,
+      "locked": true,
+      "unlockAfterChapter": 48
+    },
+    {
+      "source": "starter",
+      "name": "Telvanni Ambition", 
+      "attributes": ["B","G","P"],
+      "class": "Telvanni",
+      "deckCode": "SPAOpPeBbBcBiyqukHitlfgAeoaKaMliAUqfdKgyaddOrMfLgwjHpbbUcfqscErQiSkZqNcnpUAHkcnLoOeRqgaCno",
+      "description": "Betray",
+      "tier": 5,
+      "locked": true,
+      "unlockAfterChapter": 50
+    },
+    {
+      "source": "starter",
+      "name": "Tribunal Glory", 
+      "attributes": ["B","Y","P"],
+      "class": "Tribunal",
+      "deckCode": "SPARaJfBmkeerCeXgeqdqucximjGhoofiSlEiQARqidMhafUqhcBfWiDjrghhteVlYauqNdRmZAImhdnjHqQruqOcnkU",
+      "description": "Exalt",
       "tier": 5,
       "locked": true,
       "unlockAfterChapter": 51

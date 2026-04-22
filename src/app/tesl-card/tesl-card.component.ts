@@ -13,10 +13,14 @@ export class TeslCardComponent {
   @Input() card!: Card;
   @Input() isOpponent = false;
   @Input() canPlay = false;
+  @Input() canExalt = false;
+
+  @Input() size: string = 'small';
 
   @Input() index: number = 0;         // for hand position
   @Input() laneIndex: number = 0;     // for board lane (0 = left, 1 = right)
 
+  @Output() exaltCard = new EventEmitter<Card>();
   @Output() playCard = new EventEmitter<Card>();
   @Output() enlarge = new EventEmitter<Card>();
 
@@ -42,11 +46,53 @@ export class TeslCardComponent {
     return this.index !== undefined && this.laneIndex === undefined;
   }
 
+  get costDisplay(): number {
+    return (this.card.currentCost! < 0 ? 0 : this.card.currentCost!);
+  }
+
+  get healthDisplay(): number {
+    return (this.card.currentHealth ?? this.card.health ?? 0) < 0 ? 0 :
+        (this.card.currentHealth ?? this.card.health ?? 0) > 99 ? 99 :
+        (this.card.currentHealth ?? this.card.health ?? 0);
+  }
+
+  get attackDisplay(): number {
+    return (this.card.currentAttack ?? this.card.attack ?? 0) < 0 ? 0 :
+        (this.card.currentAttack ?? this.card.attack ?? 0) > 99 ? 99 :
+        (this.card.currentAttack ?? this.card.attack ?? 0);
+  }
+
+  get showStats(): boolean {
+    return (this.card.type === 'Creature' || this.card.type === 'Item') &&
+    ((this.card.currentAttack !== undefined && this.card.currentAttack !== this.card.attack) ||
+    (this.card.currentHealth !== undefined && this.card.currentHealth !== this.card.health));
+  }
+
+  get attackBuffed(): boolean {
+    return (this.card.currentAttack ?? this.card.attack ?? 0) > (this.card.attack ?? 0);
+  }
+
+  get attackNerfed(): boolean {
+    return (this.card.currentAttack ?? this.card.attack ?? 0) < (this.card.attack ?? 0);
+  }
+
+  get wounded(): boolean {
+    return (this.card.currentHealth ?? this.card.health ?? 0) < (this.card.maxHealth ?? this.card.health ?? 0) ||
+      (this.card.maxHealth ?? this.card.health ?? 0) < (this.card.health ?? this.card.health ?? 0);
+  }
+
+  get healthBuffed(): boolean {
+    return (this.card.currentHealth ?? this.card.health ?? 0) > (this.card.health ?? 0);
+  }
+
   private setFolders: Record<string, string> = {
     'Core Set': 'core_set',
     'Dark Brotherhood': 'brotherhood',
     'Heroes of Skyrim': 'heroes_of_skyrim',
+    'Houses of Morrowind': 'morrowind',
+    'Clockwork City': 'clockwork',
     'Madhouse Collection': 'madhouse',
+    'Forgotten Hero Collection': 'forgotten',
     'Monthly Reward': 'reward_set',
     'Custom Set': 'custom_set',
     'Story Set': 'story_set'
@@ -62,7 +108,7 @@ export class TeslCardComponent {
   }
 
   get cardImageUrl(): string {
-    if (!this.card?.name) return '/assets/tesl/images/core_set/cards/placeholder.png';
+    if (!this.card?.name) return '/assets/tesl/images/core_set/cards/placeholder.webp';
 
     // Convert name to filename: spaces → underscores, no special chars
     const fileName = this.card.name
@@ -73,7 +119,7 @@ export class TeslCardComponent {
     
     const set = this.card.set || 'Core Set'; // default to Core Set if undefined
 
-    return `/assets/tesl/images/${this.setFolders[set] || 'core_set'}/cards/${fileName}.png`;
+    return `/assets/tesl/images/${this.setFolders[set] || 'core_set'}/cards/${fileName}.webp`;
   }
 
   get displayPower(): number {
@@ -84,19 +130,10 @@ export class TeslCardComponent {
     return this.card.health ?? 0;
   }
 
-  /*onClick() {
-    // Normal hand/board click
-    if (!this.isOpponent && this.canPlay) {
-      this.playCard.emit(this.card);
-    }
-  }*/
-
-  // Optional: list of keywords you actually have icons for
   private readonly supportedKeywords = [
     'BeastForm', 'Breakthrough', 'Guard', 'LastGasp', 'Pilfer', 
     'Rally', 'Expertise', 'Slay', 'Regenerate', 'TreasureHunt', 
     'Veteran', 'Lethal','Drain'
-    // Add more as you create icons
   ];
 
   // Get only the keywords we have icons for
@@ -108,15 +145,13 @@ export class TeslCardComponent {
 
   // Convert keyword name to filename (case-sensitive match to your assets)
   getIconFileName(keyword: string): string {
-    // Your files are like: LG-icon-Breakthrough.png
-    // So we replace spaces with _, keep original casing
     return keyword.replace(/\s+/g, '_');
   }
 
   // Optional: fallback if icon fails to load
   handleIconError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '/assets/tesl/images/icons/placeholder.png'; // or a generic keyword icon
+    img.src = '/assets/tesl/images/icons/placeholder.webp'; // or a generic keyword icon
     img.alt = 'Icon missing';
   }
 
@@ -126,12 +161,6 @@ export class TeslCardComponent {
       this.targetClick.emit(this.card);
       return;
     }
-    
-    // Normal play mode (hand only)
-    /*if (!this.isOpponent && this.canPlay) {
-      this.playCard.emit(this.card);
-      return;
-    }*/
 
     if (!this.isStagingActive) {
 

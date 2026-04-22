@@ -3843,7 +3843,8 @@
         "trigger": "Summon",
         "type": "buffTarget",
         "addKeywords": [ "Guard" ],
-        "target": "creaturePlayerHand"
+        "target": "cardPlayerHand",
+        "subtypes": [ "Creature" ]
       }
     ]
   },

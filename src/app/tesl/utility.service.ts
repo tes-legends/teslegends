@@ -1,6 +1,6 @@
 //utility.service.ts
 import { Injectable } from '@angular/core';
-import { Card } from './deck.service';
+import { Card, CardEffect } from './deck.service';
 
 export interface HelpRule {
   title: string;
@@ -118,7 +118,105 @@ export class UtilityService {
       ARENA_LAST_ELO_REWARD: 'arena_last_elo_reward'   // ← added
     };
 
+    public readonly fabricatePool = [
+      { type: 'keyword', value: 'Breakthrough', text: 'Breakthrough' },
+      { type: 'keyword', value: 'Drain',        text: 'Drain' },
+      { type: 'keyword', value: 'Guard',        text: 'Guard' },
+      { type: 'keyword', value: 'Lethal',       text: 'Lethal' },
+      { type: 'keyword', value: 'Regenerate',   text: 'Regenerate' },
+      { type: 'keyword', value: 'Ward',         text: 'Ward' },
+      { type: 'effect',  value: 'summonDamage', text: 'Summon: Deal 1 damage' },
+      { type: 'effect',  value: 'summonHeal',   text: 'Summon: You gain 2 health' },
+      { type: 'effect',  value: 'summonBuff',   text: 'Summon: Give another creature +1/+1' },
+      { type: 'effect',  value: 'pilferBuff',   text: 'Pilfer: +1/+1' },
+    ];
+
     constructor() {}
+
+
+    public generateFabricateStatChoices(): number[] {
+      // Generate 3 unique numbers between 1 and 12
+      const rolls: number[] = [];
+      
+      while (rolls.length < 3) {
+        const roll = Math.floor(Math.random() * 12) + 1;
+        if (!rolls.includes(roll)) {
+          rolls.push(roll);
+        }
+      }
+
+      // Sort lowest to highest
+      rolls.sort((a, b) => a - b);
+
+      // Create final choices
+      return rolls;
+    }
+
+    public generateFabricateKeywordChoices() {
+      // Shuffle and take 3 unique
+      return this.shuffle(this.fabricatePool).slice(0, 3);
+    }
+
+    public applyFabricateAbility(selectedCreature: Card, selectedAbility: any) {
+      if (selectedAbility.type === 'keyword') {
+        selectedCreature.currentKeywords = Array.from(
+          new Set([
+            ...(selectedCreature.currentKeywords ?? []),
+            ...([selectedAbility.value])
+          ])
+        );
+      } else {
+        switch(selectedAbility.value) {
+          case 'summonDamage': {
+            const newEffect: CardEffect = {
+              "trigger": "Summon",
+              "type": "damage",
+              "amount": 1,
+              "target": "any"
+            };
+            selectedCreature.effects!.push(newEffect);
+            break;
+          }
+          case 'summonHeal': {
+            const newEffect: CardEffect = {
+              "trigger": "Summon",
+              "type": "damage",
+              "amount": -2,
+              "target": "player"
+            }
+            selectedCreature.effects!.push(newEffect);
+            break;
+          }
+          case 'summonBuff': {
+            const newEffect: CardEffect = {
+              "trigger": "Summon",
+              "type": "buffTarget",
+              "modAttack": 1,
+              "modHealth": 1,
+              "target": "creatureOther"
+            }
+            selectedCreature.effects!.push(newEffect);
+            break;
+          }
+          case 'pilferBuff': {
+            const newEffect: CardEffect = {
+              "trigger": "Pilfer",
+              "type": "buffSelf",
+              "modAttack": 1,
+              "modHealth": 1
+            }
+            selectedCreature.effects!.push(newEffect);
+            selectedCreature.currentKeywords = Array.from(
+              new Set([
+                ...(selectedCreature.currentKeywords ?? []),
+                ...(['Pilfer'])
+              ])
+            );
+            break;
+          }
+        }
+      }
+    }
 
     getCardImageByName(name: string, set?: string): string {
         const lookupSet = set ?? 'core_set';
@@ -128,7 +226,7 @@ export class UtilityService {
             .split(/\s+/)
             .join('_');
 
-        return `/assets/tesl/images/${lookupSet}/cards/${fileName}.png`;
+        return `/assets/tesl/images/${lookupSet}/cards/${fileName}.webp`;
     }
 
     shuffle<T>(array: T[]): T[] {

@@ -288,7 +288,8 @@
 				"trigger": "Activation",
 				"type": "transform",
 				"cardId": "legendary",
-				"target": "creaturePlayerHand"
+				"target": "cardPlayerHand",
+        		"subtypes": [ "Creature" ]
 			}
 		]
 	},

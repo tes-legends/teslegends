@@ -6,7 +6,7 @@
     @if (!selectedClass) {
       <div class="class-picker">
         <h3>Select Class</h3>
-        @for (cls of classes; track cls) {
+        @for (cls of classesFiltered; track cls) {
           <button
             class="deck-option"
             [class.active]="selectedClass === cls"
@@ -70,7 +70,7 @@
     @if (selectedClass) {
       <div class="deck-panel">
         <div class="deck-header">
-          <span class="deck-title"> Deck ({{ currentDeckTotal }} / 50)</span>
+          <span class="deck-title"> Deck ({{ currentDeckTotal }} / {{maxDeckSize}})</span>
           <input
             type="text"
             [(ngModel)]="deckName"
@@ -81,11 +81,12 @@
         <div class="deck-list">
           @for (entry of currentDeck; track entry) {
             <div class="deck-entry"
-        [ngClass]="[
-        getAttributeClass(entry.card.attributes),
-        getRarityClass(entry.card.rarity),
-        isUnlocked(entry.card.deckCodeId) ? 'unlocked' : 'locked'
-          ]">
+            (click)="onDeckEntryClick($event, entry)"
+            [ngClass]="[
+              getAttributeClass(entry.card.attributes),
+              getRarityClass(entry.card.rarity),
+              isUnlocked(entry.card.deckCodeId) ? 'unlocked' : 'locked'
+            ]">
               <div class="info">
                 <span class="cost">{{ entry.card.cost }}</span>
                 <span class="name">{{ entry.card.name }}</span>
@@ -101,4 +102,14 @@
       </div>
     }
   </div>
+
+  <!-- Full-size card modal -->
+  @if (enlargedCard) {
+    <div class="modal">
+      <div class="modal-content">
+        <img [src]="enlargedCardImage" draggable="false" alt="Enlarged image">
+        <button class="close-btn" (click)="closeCard()">X</button>
+      </div>
+    </div>
+  }
 </div>

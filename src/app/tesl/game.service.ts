@@ -1,11 +1,12 @@
 //game.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, output } from '@angular/core';
 import { UtilityService } from './utility.service';
 import { DeckService, GameState, PlayerState, Card, CardEffect
     , TargetType, HistoryEntry, AuraEffect, PendingAction
  } from './deck.service';
 import { core } from '@angular/compiler';
-import { skip } from 'rxjs';
+import { filter, first, skip } from 'rxjs';
+import { createDragRef } from '@angular/cdk/drag-drop';
 
 export interface AttackAction {
   attacker: Card;
@@ -19,6 +20,10 @@ export class GameService {
 
   private readonly MAX_DEPTH = 12; 
   keywordList = ['Breakthrough', 'Charge', 'Drain', 'Guard', 'Lethal', 'Rally', 'Regenerate', 'Ward' ];
+  immunityList = ['Shackle','Silence','ActionTarget','ActionDamage','AttackRestrictions',
+    'ActivationLimit','DefenseRestrictions','LaneRestrictions','Dragons','LethalDamage',
+    'Loyalty','SupportDamage','CreaturesInOtherLane','GainCover','AllDamage',
+    'OppHealthGain','AttackPlayer','UnbeatableExalted','Cliffs','MultipleCards'];
 
   constructor(private deckService: DeckService, private utilityService: UtilityService) {}
 
@@ -38,14 +43,18 @@ export class GameService {
       auras: [],
       cardUpgrades: {},
       playCounts: {},
+      summonCounts: {},
       turn: true,
       diedLane: [0, 0],
+      damageLane: [0, 0],
       damageTaken: 0,
       numSummon: 0,
       actionsPlayed: 0,
       cardsPlayed: 0,
       cardsDrawn: 0,
       tempCost: 0,
+      hasWard: false,
+      deckUnique: false
     };
     game.opponent = {
       health: 30,
@@ -61,14 +70,18 @@ export class GameService {
         auras: [],
         cardUpgrades: {},
         playCounts: {},
+        summonCounts: {},
         turn: false,
         diedLane: [0, 0],
+        damageLane: [0, 0],
         damageTaken: 0,
         numSummon: 0,
         actionsPlayed: 0,
         cardsPlayed: 0,
         cardsDrawn: 0,
-        tempCost: 0
+        tempCost: 0,
+        hasWard: false,
+        deckUnique: false
     };
     game.laneTypes = ['Field','Shadow'];
     game.history = [];
@@ -92,6 +105,7 @@ export class GameService {
     game.creatureSlayer = null;
     game.creatureShackled = null;
     game.thief = null;
+    game.rallyist = null;
     game.creatureMoved = null;
     game.creatureRevealed = null;
     game.lastCardPlayed = null;
@@ -106,7 +120,9 @@ export class GameService {
     game.lastHealingTaken = 0;
     game.healthJustGained=  0;
     game.isProcessingDeath = false;
+    game.isProcessingPlayerDead = false;
     game.isProcessingEndOfTurn = false;
+    game.betrayAvailable = false;
     game.waitingOnScry = false;
     game.waitingOnAnimation = false;
     game.useAnimation = anim
@@ -116,212 +132,220 @@ export class GameService {
     const deckInfoP = this.deckService.getDeckInfo(deckP);
     const deckInfoO = this.deckService.getDeckInfo(overrides?.deckCode ?? deckO);
     if (deckInfoP?.cards) {      
-        const oLength = deckInfoO!.cards.reduce((sum, c) => sum + c.count, 0);
-        if (oLength < 30) {
-          console.log(`Opponent deck length: ${oLength}. adding cards`);
-          const scale = 30 / oLength;
-          let newTotal = 0;
-          if (oLength < 15) {
-            deckInfoO!.cards.forEach(c => {
-              c.count = Math.floor(c.count * scale);
-              newTotal += c.count;
-            });
-          } else {
-            newTotal = oLength;
-          }
-          if (newTotal < 30) {
-            deckInfoO!.cards[deckInfoO!.cards.length - 1].count += (30 - newTotal);
-          }
+      const oLength = deckInfoO!.cards.reduce((sum, c) => sum + c.count, 0);
+      if (oLength < 30) {
+        console.log(`Opponent deck length: ${oLength}. adding cards`);
+        const scale = 30 / oLength;
+        let newTotal = 0;
+        if (oLength < 15) {
+          deckInfoO!.cards.forEach(c => {
+            c.count = Math.floor(c.count * scale);
+            newTotal += c.count;
+          });
+        } else {
+          newTotal = oLength;
         }
-        const pLength = deckInfoP.cards.reduce((sum, c) => sum + c.count, 0);
-        if (pLength < 30) {
-          console.log(`Player deck length: ${pLength}. adding cards`);
-          const scale = 30 / pLength;
-          let newTotal = 0;
-          if (pLength < 15) {
-            deckInfoP.cards.forEach(c => {
-              c.count = Math.floor(c.count * scale);
-              newTotal += c.count;
-            });
-          } else {
-            newTotal = pLength;
-          }
-          if (newTotal < 30) {
-            deckInfoP.cards[deckInfoP.cards.length - 1].count += (30 - newTotal);
-          }
+        if (newTotal < 30) {
+          deckInfoO!.cards[deckInfoO!.cards.length - 1].count += (30 - newTotal);
         }
-        // Convert to full deck (with multiples)
-        game.player.deck = [];
-        deckInfoP.cards.forEach(entry => {
-            for (let i = 0; i < entry.count; i++) {
+      }
+      const pLength = deckInfoP.cards.reduce((sum, c) => sum + c.count, 0);
+      if (pLength < 30) {
+        console.log(`Player deck length: ${pLength}. adding cards`);
+        const scale = 30 / pLength;
+        let newTotal = 0;
+        if (pLength < 15) {
+          deckInfoP.cards.forEach(c => {
+            c.count = Math.floor(c.count * scale);
+            newTotal += c.count;
+          });
+        } else {
+          newTotal = pLength;
+        }
+        if (newTotal < 30) {
+          deckInfoP.cards[deckInfoP.cards.length - 1].count += (30 - newTotal);
+        }
+      }
+      // Convert to full deck (with multiples)
+      game.player.deck = [];
+      game.player.deckUnique = true;
+      deckInfoP.cards.forEach(entry => {
+          if (entry.count > 1) game.player.deckUnique = false;
+          for (let i = 0; i < entry.count; i++) {
             game.player.deck.push(this.deckService.cloneCardForGame(entry.card, false)); // clone card
-            }
-        });
-        game.opponent.deck = [];
-        deckInfoO!.cards.forEach(entry => {
-            for (let i = 0; i < entry.count; i++) {
-            game.opponent.deck.push(this.deckService.cloneCardForGame(entry.card, true)); // clone card
-            }
-        });
+          }
+      });
+      game.opponent.deck = [];
+      game.opponent.deckUnique = true;
+      deckInfoO!.cards.forEach(entry => {
+          if (entry.count > 1) game.opponent.deckUnique = false;
+          for (let i = 0; i < entry.count; i++) {
+          game.opponent.deck.push(this.deckService.cloneCardForGame(entry.card, true)); // clone card
+          }
+      });
 
-        let shufflePlayer = true;
-        let shuffleOpponent = true;
-        let startingHand = 3;
+      console.log('player deck unique is ', game.player.deckUnique);
+      console.log('opponent deck unique is ', game.opponent.deckUnique);
 
-        if (overrides) {
-          //console.log('starting game with overrides');
-          if (overrides.playerdeck) {
-            console.log('player deck override');
-            game.player.deck = [];
-            overrides.playerdeck.forEach((cardId: string) => {
+      let shufflePlayer = true;
+      let shuffleOpponent = true;
+      let startingHand = 3;
+
+      if (overrides) {
+        //console.log('starting game with overrides');
+        if (overrides.playerdeck) {
+          console.log('player deck override');
+          game.player.deck = [];
+          overrides.playerdeck.forEach((cardId: string) => {
+            const card = this.deckService.getCardById(cardId);
+            const cloned = this.deckService.cloneCardForGame(card!, false);
+            game.player.deck.push(cloned);
+          });
+        }
+        if (overrides.opponentdeck) {
+          game.opponent.deck = [];
+          overrides.opponentdeck.forEach((cardId: string) => {
+            //console.log(`getting card: ${cardId}`);
+            const card = this.deckService.getCardById(cardId);
+            const cloned = this.deckService.cloneCardForGame(card!, true);
+            game.opponent.deck.push(cloned);
+          });
+        }
+        if (overrides.health) {
+          game.player.health = overrides.health;
+          game.opponent.health = overrides.health;
+        }
+        if (overrides.runes !== undefined && overrides.runes !== null) {
+          game.player.runes = Array(5).fill(true).slice(0, overrides.runes);
+          game.opponent.runes = Array(5).fill(true).slice(0, overrides.runes);
+        }
+        if (overrides.firstPlayer) {
+          game.firstPlayer = overrides.firstPlayer;
+        }
+        if (overrides.lanes) {
+          game.laneTypes = [...overrides.lanes];
+        }
+        if (overrides.board) {
+          // Pre-place opponent board cards
+          overrides.board.forEach((laneCards: string[], laneIdx: number) => {
+            laneCards.forEach(cardId => {
+              const card = this.deckService.getCardById(cardId);
+              const cloned = this.deckService.cloneCardForGame(card!, true);
+              if (cloned) {
+                cloned.laneIndex = laneIdx;
+                cloned.sick = false;
+                game.opponent.board[laneIdx].push(cloned);
+              }
+            });
+          });
+        }
+        if (overrides.playerBoard) {
+          // Pre-place opponent board cards
+          overrides.playerBoard.forEach((laneCards: string[], laneIdx: number) => {
+            laneCards.forEach(cardId => {
               const card = this.deckService.getCardById(cardId);
               const cloned = this.deckService.cloneCardForGame(card!, false);
-              game.player.deck.push(cloned);
+              if (cloned) {
+                cloned.laneIndex = laneIdx;
+                cloned.sick = false;
+                game.player.board[laneIdx].push(cloned);
+              }
             });
+          });
+        }
+        if (overrides.support) {
+          overrides.support.forEach((cardId: string) => {
+            const card = this.deckService.getCardById(cardId);
+            const cloned = this.deckService.cloneCardForGame(card!, true);
+            if (cloned) {
+              game.opponent.support.push(cloned);
+              this.applyCardAuras(game, cloned, game.opponent);
+            }
+          });
+        }
+        if (overrides.playerSupport) {
+          overrides.playerSupport.forEach((cardId: string) => {
+            const card = this.deckService.getCardById(cardId);
+            const cloned = this.deckService.cloneCardForGame(card!, false);
+            if (cloned) {
+              game.player.support.push(cloned);
+              this.applyCardAuras(game, cloned, game.player);
+            }
+          });
+        }
+        if (overrides.cards !== undefined && overrides.cards !== null) startingHand = overrides.cards;
+        if (overrides.forcedDraw) {
+          console.log('forced draw');
+          if (overrides.playerdeck) {
+            shufflePlayer = false;
           }
           if (overrides.opponentdeck) {
-            game.opponent.deck = [];
-            overrides.opponentdeck.forEach((cardId: string) => {
-              //console.log(`getting card: ${cardId}`);
-              const card = this.deckService.getCardById(cardId);
-              const cloned = this.deckService.cloneCardForGame(card!, true);
-              game.opponent.deck.push(cloned);
-            });
+            shuffleOpponent = false;
           }
-          if (overrides.health) {
-            game.player.health = overrides.health;
-            game.opponent.health = overrides.health;
-          }
-          if (overrides.runes !== undefined && overrides.runes !== null) {
-            game.player.runes = Array(5).fill(true).slice(0, overrides.runes);
-            game.opponent.runes = Array(5).fill(true).slice(0, overrides.runes);
-          }
-          if (overrides.firstPlayer) {
-            game.firstPlayer = overrides.firstPlayer;
-          }
-          if (overrides.lanes) {
-            game.laneTypes = [...overrides.lanes];
-          }
-          if (overrides.board) {
-            // Pre-place opponent board cards
-            overrides.board.forEach((laneCards: string[], laneIdx: number) => {
-              laneCards.forEach(cardId => {
-                const card = this.deckService.getCardById(cardId);
-                const cloned = this.deckService.cloneCardForGame(card!, true);
-                if (cloned) {
-                  cloned.laneIndex = laneIdx;
-                  cloned.sick = false;
-                  game.opponent.board[laneIdx].push(cloned);
-                }
-              });
-            });
-          }
-          if (overrides.playerBoard) {
-            // Pre-place opponent board cards
-            overrides.playerBoard.forEach((laneCards: string[], laneIdx: number) => {
-              laneCards.forEach(cardId => {
-                const card = this.deckService.getCardById(cardId);
-                const cloned = this.deckService.cloneCardForGame(card!, false);
-                if (cloned) {
-                  cloned.laneIndex = laneIdx;
-                  cloned.sick = false;
-                  game.player.board[laneIdx].push(cloned);
-                }
-              });
-            });
-          }
-          if (overrides.support) {
-            overrides.support.forEach((cardId: string) => {
-              const card = this.deckService.getCardById(cardId);
-              const cloned = this.deckService.cloneCardForGame(card!, true);
-              if (cloned) {
-                game.opponent.support.push(cloned);
-                this.applyCardAuras(game, cloned, game.opponent);
+        }
+        if (overrides.maxMagicka) game.opponent.maxMagicka += overrides.maxMagicka;
+        if (overrides.playerMaxMagicka) game.player.maxMagicka += overrides.playerMaxMagicka;
+        if (overrides.special) {
+          switch (overrides.special) {
+            case 'summonRandomLowCost': {
+              console.log('opponent summoning a random cheap creature from deck');
+              const creaturesInDeck = game.opponent.deck.filter(c => 
+                c.type === 'Creature' && c.cost < 3);
+              if (creaturesInDeck.length > 0) {
+                const chosenCreature = this.utilityService.random(creaturesInDeck);
+                const clonedCreature = this.deckService.cloneCardForGame(chosenCreature,true);
+                clonedCreature.sick = false;
+                let chosenLane = Math.random() < 0.5 ? 0 : 1;
+                if (game.laneTypes[chosenLane] === 'Disabled') chosenLane = 1 - chosenLane;
+                if (game.opponent.board[chosenLane].length < 4) game.opponent.board[chosenLane].push(clonedCreature);
               }
-            });
-          }
-          if (overrides.playerSupport) {
-            overrides.playerSupport.forEach((cardId: string) => {
-              const card = this.deckService.getCardById(cardId);
-              const cloned = this.deckService.cloneCardForGame(card!, false);
-              if (cloned) {
-                game.player.support.push(cloned);
-                this.applyCardAuras(game, cloned, game.player);
-              }
-            });
-          }
-          if (overrides.cards !== undefined && overrides.cards !== null) startingHand = overrides.cards;
-          if (overrides.forcedDraw) {
-            console.log('forced draw');
-            if (overrides.playerdeck) {
-              shufflePlayer = false;
+              break;
             }
-            if (overrides.opponentdeck) {
-              shuffleOpponent = false;
-            }
-          }
-          if (overrides.maxMagicka) game.opponent.maxMagicka += overrides.maxMagicka;
-          if (overrides.playerMaxMagicka) game.player.maxMagicka += overrides.playerMaxMagicka;
-          if (overrides.special) {
-            switch (overrides.special) {
-              case 'summonRandomLowCost': {
-                console.log('opponent summoning a random cheap creature from deck');
-                const creaturesInDeck = game.opponent.deck.filter(c => 
-                  c.type === 'Creature' && c.cost < 3);
-                if (creaturesInDeck.length > 0) {
-                  const chosenCreature = this.utilityService.random(creaturesInDeck);
-                  const clonedCreature = this.deckService.cloneCardForGame(chosenCreature,true);
-                  clonedCreature.sick = false;
-                  let chosenLane = Math.random() < 0.5 ? 0 : 1;
-                  if (game.laneTypes[chosenLane] === 'Disabled') chosenLane = 1 - chosenLane;
-                  if (game.opponent.board[chosenLane].length < 4) game.opponent.board[chosenLane].push(clonedCreature);
-                }
-                break;
+            case 'shuffleRandomUniques': {
+              console.log('shuffling 3 random unique creatures into each deck');
+              const uniqueCards = this.deckService.getMostCards().filter(c => 
+                c.unique && c.type === 'Creature'
+              );
+              for (let i = 0; i < 3; i++) {
+                const chosenUniqueP = this.utilityService.random(uniqueCards);
+                const cloneP = this.deckService.cloneCardForGame(chosenUniqueP,false);
+                game.player.deck.push(cloneP);
+                const chosenUniqueO = this.utilityService.random(uniqueCards);
+                const cloneO = this.deckService.cloneCardForGame(chosenUniqueO,false);
+                game.opponent.deck.push(cloneO);
               }
-              case 'shuffleRandomUniques': {
-                console.log('shuffling 3 random unique creatures into each deck');
-                const uniqueCards = this.deckService.getAllCards().filter(c => 
-                  c.set !== 'Story Set' && c.deckCodeId !== null && c.unique && c.type === 'Creature'
-                );
-                for (let i = 0; i < 3; i++) {
-                  const chosenUniqueP = this.utilityService.random(uniqueCards);
-                  const cloneP = this.deckService.cloneCardForGame(chosenUniqueP,false);
-                  game.player.deck.push(cloneP);
-                  const chosenUniqueO = this.utilityService.random(uniqueCards);
-                  const cloneO = this.deckService.cloneCardForGame(chosenUniqueO,false);
-                  game.opponent.deck.push(cloneO);
-                }
-                break;
-              }
+              break;
             }
           }
         }
-        console.log('shuffle player: ', shufflePlayer, ", shuffle opponent: ", shuffleOpponent);
-        // === ADD RING OF MAGICKA TO OPPONENT'S SUPPORTS ===
-        const secondPlayer = game.firstPlayer === 'player' ? game.opponent : game.player;
-        const ringOfMagickaOriginal = this.deckService.getCardById('ring-of-magicka');
-        if (ringOfMagickaOriginal) {
-            secondPlayer.support.push(this.deckService.cloneCardForGame(ringOfMagickaOriginal, game.firstPlayer === 'player'));
-        } else {
-            console.warn('Ring of Magicka not found');
-        }
-    
-        game.gameRunning = true;
-        game.player.turn = false;
-        game.opponent.turn = false;
-        // Shuffle deck
-        if (shufflePlayer) game.player.deck = this.utilityService.shuffle(game.player.deck);
-        if (shuffleOpponent) game.opponent.deck = this.utilityService.shuffle(game.opponent.deck);
-    
-        // Draw starting hands (example: player 3 cards, opponent 4)
-        this.drawCards(game.player, startingHand, game);
-        this.drawCards(game.opponent, (startingHand + handC), game);
-    
-        console.log("Before mulligan - player hand:", game.player.hand.length);
+      }
+      console.log('shuffle player: ', shufflePlayer, ", shuffle opponent: ", shuffleOpponent);
+      // === ADD RING OF MAGICKA TO OPPONENT'S SUPPORTS ===
+      const secondPlayer = game.firstPlayer === 'player' ? game.opponent : game.player;
+      const ringOfMagickaOriginal = this.deckService.getCardById('ring-of-magicka');
+      if (ringOfMagickaOriginal) {
+          secondPlayer.support.push(this.deckService.cloneCardForGame(ringOfMagickaOriginal, game.firstPlayer === 'player'));
+      } else {
+          console.warn('Ring of Magicka not found');
+      }
+  
+      game.gameRunning = true;
+      game.player.turn = false;
+      game.opponent.turn = false;
+      // Shuffle deck
+      if (shufflePlayer) game.player.deck = this.utilityService.shuffle(game.player.deck);
+      if (shuffleOpponent) game.opponent.deck = this.utilityService.shuffle(game.opponent.deck);
+  
+      // Draw starting hands (example: player 3 cards, opponent 4)
+      this.drawCards(game.player, startingHand, game);
+      this.drawCards(game.opponent, (startingHand + handC), game);
+  
+      console.log("Before mulligan - player hand:", game.player.hand.length);
     }
   }
 
   drawCards(player: PlayerState, count: number, game: GameState, full: boolean = false) {
+    game.lastCardDrawn = null;
     for (let i = 0; i < count; i++) {
       if (player.deck.length > 0) {
           player.cardsDrawn++;
@@ -344,7 +368,8 @@ export class GameService {
             game.lastCardDrawn = card;
             player.hand.push(card);
             this.runEffects('DrawCard', player, game);
-            this.executeEffectsForCard('AddToHand',card, player, game);
+            this.executeEffectsForCard('AddToHand',card, game);
+            this.checkTreasureHunt(game,game.lastCardDrawn);
           }
       } else if (!full) {
         // Deck empty → break a rune
@@ -382,29 +407,54 @@ export class GameService {
     this.updateStaticBuffs(game, player);
   }
 
+  handleTempKeywords(game: GameState, creature: Card, tempKw: string[]) {
+    if (tempKw.length > 0) {
+      if (this.immunityList.includes(tempKw[0])) {
+        creature.immunity = Array.from(
+          new Set([
+            ...(creature.immunity ?? []),
+            ...(tempKw ?? [])
+          ])
+        );
+      } else {
+        this.addUniqueKeywords(creature,game,tempKw);                    
+      }
+      creature.tempKeywords = Array.from(
+      new Set([
+          ...(creature.tempKeywords ?? []),
+          ...(tempKw)
+      ])
+      );
+    }
+  }
+
   playCard(
       game: GameState,
       card: Card, 
       fromOpponent: boolean = false, 
       laneIndex?: number, 
       targetCard?: Card | PlayerState,
-      isProphecy: boolean = false
+      isProphecy: boolean = false,
+      isBetray: boolean = false
   ) {
     const owner = fromOpponent ? game.opponent : game.player;
     const enemy = fromOpponent ? game.player : game.opponent;
-    if (!isProphecy) {
+    if (!isProphecy && !isBetray) {
       //if (fromOpponent || !this.player.turn) return;
       if (owner.currentMagicka < (card.currentCost ?? card.cost)) return;
       // Remove from hand
       const handIndex = owner.hand.indexOf(card);
       if (handIndex === -1) return;
       owner.hand.splice(handIndex, 1);
-      //this.handVersion++;
       if ((card.currentCost ?? card.cost) > 0) owner.currentMagicka -= (card.currentCost ?? card.cost);      
     } else {
-      const played = owner.deck.shift()!;
-      console.log("Prophecy play — no cost, no turn requirement");
-      // For prophecy, remove from stagedProphecy instead of hand
+      if (isProphecy) {
+        owner.deck.shift()!;
+        console.log("Prophecy play — no cost, no turn requirement");
+        // For prophecy, remove from stagedProphecy instead of hand
+      } else if (isBetray) {
+        console.log("Betray play — no cost");
+      }
     }
     if (game.tempCostAdjustment !== 0) {
       owner.hand.forEach(cardInHand => {
@@ -412,7 +462,7 @@ export class GameService {
       });
       game.tempCostAdjustment = 0;
     }
-    if (!card.effects?.some(e => e.type === 'modCost' && e.target === 'self')) card.currentCost = card.cost;
+    if (!card.effects?.some(e => e.type === 'modCost' && e.target === 'self') && !['custom-fabricant','abomination'].includes(card.id)) card.currentCost = card.cost;
     game.lastCardPlayed = card;
 
     // In playCard or opponentPlayCard
@@ -422,6 +472,10 @@ export class GameService {
       description: `${card.isOpponent ? 'Opponent' : 'You'} played ${card.name}`,
       details: card.type === 'Creature' ? [`To lane ${game.laneTypes[laneIndex!]}`] : []
     });
+    game.betrayAvailable = false;
+    owner.cardsPlayed++;
+    const cardId = card.id;
+    owner.playCounts[cardId] = (owner.playCounts[cardId] || 0) + 1;
 
     // Put on board (for simplicity: always to left lane)
     const refType = this.deckService.getEffectiveType(card);
@@ -442,7 +496,7 @@ export class GameService {
         sick: hasCharge ? false: true, //charge gets 1 attack immediately
         attacks: 1, 
         covered: game.laneTypes[laneIndex] === 'Shadow' && !hasGuard &&
-            !card.immunity?.includes('Cover')  // true in shadow lane unless Guard
+            !card.immunity?.includes('GainCover')  // true in shadow lane unless Guard
         };
         const spendAll = card.effects?.some(e => 
           e.trigger === 'Play' && e.type === 'spendAllForStats'
@@ -456,6 +510,7 @@ export class GameService {
         }
         owner.board[laneIndex].push(creatureCopy);
         game.lastCardSummoned2 = game.lastCardSummoned;
+        owner.summonCounts[creatureCopy.id] = (owner.summonCounts[creatureCopy.id] || 0) + 1;
         game.lastCardSummoned = creatureCopy;
         if (creatureCopy.covered) {
           creatureCopy.effects?.forEach(effect => {
@@ -475,7 +530,9 @@ export class GameService {
           this.executeEffect(itemEffect,creatureCopy,game,creatureCopy);
         }
         if (owner.numSummon == 0) {
-            this.runEffects('SummonFirst',owner, game);
+          this.runEffects('SummonFirst',owner, game);
+        } else if (owner.numSummon == 1) {
+          this.runEffects('SummonSecond',owner,game);
         }
         owner.numSummon++;
         this.runEffects('SummonCreature',owner, game);
@@ -484,17 +541,31 @@ export class GameService {
         this.applyCardAuras(game, creatureCopy, owner);
 
         if (!game.stagedSummon) {
-          const summonEffects = creatureCopy.effects?.filter(e => e.trigger === 'Summon') || [];
+          const summonEffects = creatureCopy.effects?.filter(e => 
+            e.trigger === 'Summon' || e.trigger === 'Play' || 
+            (e.trigger === 'Exalt' && creatureCopy.exalted) ||
+            (e.trigger === 'Plot' && owner.cardsPlayed >= 2)) || [];
           if (summonEffects.length > 0) {
               let allAuto = true;
               let hasValidTargets = true;
               summonEffects.forEach(effect => {
-                  if (allAuto && !this.isAutoTarget(effect.target)) {
-                      allAuto = false;                  
-                      game.stagedSummonEffect = effect;                      
+                  if (allAuto && !this.isAutoTarget(effect.target) && 
+                    (!effect.condition || this.isConditionMet(game,effect,effect.condition, creatureCopy))) {
+                      game.stagedSummon = creatureCopy;
+                      game.stagedSummonEffect = effect; 
+                      if (this.hasValidSummonTargets(game)) {
+                        allAuto = false;                  
+                      } else if (creatureCopy.targetReq) {
+                        allAuto = false; //don't let other effects work if targetReq on card set to true
+                      } else {
+                        game.stagedSummon = null;
+                        game.stagedSummonEffect = null;
+                        console.log(`No valid targets for summon effect of ${card.name}:${effect.type}`);
+                      }               
                   }
               });
               if (allAuto) {
+                  game.stagedSummon = null;
                   //run all effects
                   summonEffects.forEach(effect => {
                       this.executeEffect(effect,creatureCopy, game);
@@ -532,17 +603,7 @@ export class GameService {
     
                 // Apply keywords from item
                 this.addUniqueKeywords(creature,game, card.currentKeywords ?? card.keywords ?? []);
-    
-                const tempKeywordsToAdd = card.tempKeywords ?? [];
-                this.addUniqueKeywords(creature,game,tempKeywordsToAdd);
-                if (card.tempKeywords) {
-                    creature.tempKeywords = Array.from(
-                    new Set([
-                        ...(creature.tempKeywords ?? []),
-                        ...(tempKeywordsToAdd)
-                    ])
-                    );
-                }
+                this.handleTempKeywords(game, creature, card.tempKeywords ?? []);                
                 if (card.immunity) {
                   creature.immunity = Array.from(
                     new Set([
@@ -571,25 +632,27 @@ export class GameService {
                 });
     
                 if (!game.stagedSummon) {
-    
-                    card.effects?.forEach(effect => {
-                    if (effect.trigger !== 'Summon') return;
-    
-                    // Auto-target effects → resolve immediately
-                    if (this.isAutoTarget(effect.target)) {
-                        this.executeEffect(effect, card, game);
-                    } else {
-                        // Manual target required → stage it
-                        game.stagedSummon = card;
-                        game.stagedSummonEffect = effect;
-                        if (!this.hasValidSummonTargets(game)) {
-                        console.log(`No valid targets for summon effect of ${card.name} — auto-skipping`);
-                        this.clearSummonTargeting(game);
+                    const summonEffects = card.effects?.filter(e => 
+                    e.trigger === 'Summon' || e.trigger === 'Play' || 
+                    (e.trigger === 'Plot' && owner.cardsPlayed >= 2)) || [];
+                    if (summonEffects.length > 0) {
+                      summonEffects.forEach(effect => {        
+                        // Auto-target effects → resolve immediately
+                        if (this.isAutoTarget(effect.target)) {
+                            this.executeEffect(effect, card, game);
                         } else {
-                        console.log(`Manual summon targeting started for ${card.name}`);
+                            // Manual target required → stage it
+                            game.stagedSummon = card;
+                            game.stagedSummonEffect = effect;
+                            if (!this.hasValidSummonTargets(game)) {
+                            console.log(`No valid targets for summon effect of ${card.name} — auto-skipping`);
+                            this.clearSummonTargeting(game);
+                            } else {
+                            console.log(`Manual summon targeting started for ${card.name}`);
+                            }
                         }
+                      });
                     }
-                    });
                 }
     
                 found = true;
@@ -634,18 +697,25 @@ export class GameService {
   
       case 'Action':
         game.targetLaneRequired = false;
-        const originalCard = this.deckService.getCardById(card.id);
-        const freshCopy = this.deckService.cloneCardForGame(originalCard!, card.isOpponent || false);
-        owner.discard.push(freshCopy);
+        if (!isBetray) {
+          if (card.currentKeywords?.includes('Betray') ||
+            this.hasKeywordAura(owner,'Betray')) game.betrayAvailable = true;
+          const originalCard = this.deckService.getCardById(card.id);
+          const freshCopy = this.deckService.cloneCardForGame(originalCard!, card.isOpponent || false);
+          owner.discard.push(freshCopy);
+        }
         // Resolve Play effects (this is the new main path)
-        card.effects?.forEach(effect => {
-            if (effect.trigger !== 'Play') return;
-            
-            let laneTarget: number | undefined;
-            if (laneIndex !== undefined) laneTarget = laneIndex;
-            if (laneTarget === undefined && card.laneIndex) laneTarget = card.laneIndex;
-            this.executeEffect(effect, card, game, targetCard, laneTarget);
-        });
+        const playEffects = card.effects?.filter(e => 
+          e.trigger === 'Play' || 
+          (e.trigger === 'Plot' && owner.cardsPlayed >= 2)) || [];
+        if (playEffects.length > 0) {
+          playEffects.forEach(effect => {           
+              let laneTarget: number | undefined;
+              if (laneIndex !== undefined) laneTarget = laneIndex;
+              if (laneTarget === undefined && card.laneIndex) laneTarget = card.laneIndex;
+              this.executeEffect(effect, card, game, targetCard, laneTarget);
+          });
+        }
         if (card.effects?.some(e => e.trigger === 'EndOfTurn')) {
           console.log(`pushing ${card.name} to limbo`);
           owner.limbo.push(card);
@@ -656,9 +726,6 @@ export class GameService {
       default:
         console.warn(`Unknown card type: ${card.type}`);
     }
-    owner.cardsPlayed++;
-    const cardId = card.id;
-    owner.playCounts[cardId] = (owner.playCounts[cardId] || 0) + 1;
     //console.log(`${owner === game.player ? 'Player' : 'Opponent'} played ${card.name} (${cardId}) — now played ${owner.playCounts[cardId]} times`);
     this.runEffects('PlayCard',owner, game);
     this.updateStaticBuffs(game,game.player);
@@ -735,6 +802,7 @@ export class GameService {
     private applyCardAuras(game: GameState, card: Card, owner: PlayerState) {
       card.effects?.forEach(effect => {
         if (effect.trigger !== 'Aura') return;
+        if (effect.condition && !this.isConditionMet(game,effect,effect.condition,card)) return;
         const target = effect.target;
         const isHandAura = target!.includes('Hand');
         const isAllHands = target === 'allHands';
@@ -819,18 +887,17 @@ export class GameService {
     return modTotal;
   }
 
-  hasBreakthroughAura(player: PlayerState): boolean {
-    console.log(player.auras);
-    return player.auras.some(a => a.isPlayerAura && ((a.keywordsToAdd ?? []).includes('Breakthrough')));
+  hasKeywordAura(player: PlayerState, keyword: string): boolean {
+    return player.auras.some(a => a.isPlayerAura && ((a.keywordsToAdd ?? []).includes(keyword)));
   }
 
-  hasDoubleMagickaAura(player: PlayerState): boolean {
-    console.log(player.auras);
-    return player.auras.some(a => a.isPlayerAura && ((a.keywordsToAdd ?? []).includes('DoubleMagicka')));
+  hasTypeAura(player: PlayerState, type: string): boolean {
+    return player.auras.some(a => a.isPlayerAura && a.type === type);
   }
 
-  hasPilferSlayAura(player: PlayerState): boolean {
-    return player.auras.some(a => a.isPlayerAura && a.type === 'pilferSlay');
+  hasImmunityAura(player: PlayerState, immType: string): boolean {
+    return player.auras.some(a => a.isPlayerAura && a.type === 'grantImmunity' && 
+      a.immunity === immType);
   }
 
   getMagickaLimitAura(game: GameState): number {
@@ -843,16 +910,6 @@ export class GameService {
       })
     });
     return magickaLimit;
-  }
-
-  hasActionImmunityAura(player: PlayerState): boolean {
-    return player.auras.some(a => a.isPlayerAura && a.type === 'grantImmunity' && 
-      a.immunity === 'ActionDamage');
-  }
-
-  hasSupportImmunityAura(player: PlayerState): boolean {
-    return player.auras.some(a => a.isPlayerAura && a.type === 'grantImmunity' && 
-      a.immunity === 'SupportDamage');
   }
   
   private applyPlayerAura(game: GameState, aura: AuraEffect, owner: PlayerState) {
@@ -913,6 +970,8 @@ export class GameService {
         'self',
         'creatureEnemyAll',
         'creatureEnemyRandom',
+        'creatureEnemyRandomLeftLane',
+        'creatureEnemyRandomRightLane',
         'creatureEnemyThisLaneAll',
         'creatureFriendlyRandom',
         'creatureFriendlyAll',
@@ -936,22 +995,32 @@ export class GameService {
         'otherLane',
         'leftLane',
         'rightLane',
+        'weakerLane',
         'randomLane',
         'drawnCard',
+        'playedCard',
         'summon',
         'moved',
         'thief',
+        'cardRallied',
         'slain',
         'slayer',
         'wielder',
+        'namedCard',
+        'instanceId',
         'lastCardUsed',
         'creatureDamaged',
         'creatureTopDeck',
+        'creaturesTopDeck',
         'supportFriendlyAll',
         'creatureDiscardAll',
         'cardPlayerHandRandom',
         'playerHand',
-        'deck'
+        'maxCostOppHand',
+        'factotum',
+        'deck',
+        'topDeck',
+        'oppTopDeck'
         // Add more as you define them
       ];
   
@@ -966,8 +1035,12 @@ export class GameService {
         (target.immunity?.includes('ActionTarget') ||
         target.currentKeywords?.includes('Camouflage'))) return false;
 
-      if (source.type === 'Creature' && source.subtypes.includes('Dragon') && this.isCard(target) &&
-        (target.immunity?.includes('Dragons'))) return false;
+      if (source.type === 'Creature' && 
+        (source.subtypes.includes('Dragon') || source.subtypes.includes('All')) && 
+        this.isCard(target) && (target.immunity?.includes('Dragons'))) return false;
+
+      if (source.type === 'Creature' &&  source.id.startsWith('cliff') && 
+        this.isCard(target) && (target.immunity?.includes('Cliffs'))) return false;        
   
       if (effect.targetCondition && this.isCard(target)) {
         if (!this.deckService.isTargetConditionMet(target,effect.targetCondition,source)) {
@@ -987,11 +1060,12 @@ export class GameService {
 
       if (expected.endsWith('Hand')) {
         switch (expected) {
-          case 'creaturePlayerHand':
-            return (this.isCard(target) && target.type === 'Creature' && 
-            (target.laneIndex === undefined || target.laneIndex === null));
           case 'cardPlayerHand':
-            return (this.isCard(target) && target !== source && this.isCardInHand(game, target));
+            if (effect.subtypes && effect.subtypes.length > 0) {
+              return (this.isCard(target) && target !== source && this.isCardInHand(game, target) && effect.subtypes.includes(target.type));
+            } else {
+              return (this.isCard(target) && target !== source && this.isCardInHand(game, target));
+            }
           default:
             return false;
         }
@@ -1027,9 +1101,14 @@ export class GameService {
           return this.isCard(target) && target.type === 'Creature' && target.laneIndex === laneIndex;
         case 'creatureEnemyThisLane':
           return this.isCard(target) && target.type === 'Creature' && target.laneIndex === laneIndex && target.isOpponent !== source.isOpponent;
+        case 'creatureEnemyOtherLane':
+          return this.isCard(target) && target.type === 'Creature' && target.laneIndex !== laneIndex && target.isOpponent !== source.isOpponent;
         case 'creatureFriendlyOtherThisLane':
           return this.isCard(target) && target.type === 'Creature' && 
           target.laneIndex === laneIndex && target.isOpponent === source.isOpponent && target.instanceId !== source.instanceId;
+        case 'creatureFriendlyOtherLane':
+          return this.isCard(target) && target.type === 'Creature' && 
+          target.laneIndex !== undefined && target.laneIndex !== laneIndex && target.isOpponent === source.isOpponent;
         case 'creatureFriendlyOther':
           return this.isCard(target) && target.type === 'Creature' && 
           target.isOpponent === source.isOpponent && target.instanceId !== source.instanceId;
@@ -1054,11 +1133,6 @@ export class GameService {
           ((target.type === 'Support' && this.isCardOnSupport(game,target)) || 
           target.type === 'Creature') && 
           target.isOpponent !== source.isOpponent);
-        case 'creaturePlayerHand':
-          return (this.isCard(target) && target.type === 'Creature' && 
-          (target.laneIndex === undefined || target.laneIndex === null));
-        case 'cardPlayerHand':
-          return (this.isCard(target) && this.isCardInHand(game, target));
         // Lane
         case 'lane':
         case 'otherLane':
@@ -1080,6 +1154,7 @@ export class GameService {
         isPlayerTurn = !sourceCard.isOpponent;
       }
       const owner = sourceCard && sourceCard.isOpponent ? game.opponent : game.player;
+      const enemy = sourceCard && sourceCard.isOpponent ? game.player : game.opponent;
       switch (targetType) {
         case 'self':
           return sourceCard;
@@ -1091,42 +1166,50 @@ export class GameService {
           return isPlayerTurn ? game.player : game.opponent;
         case 'deck':
           return this.utilityService.random(owner.deck);
-        case 'creatureEnemyRandom':
-          const enemies = isPlayerTurn ? this.getEnemyCreatures(game) : this.getPlayerCreatures(game);
+        case 'creatureEnemyRandom': {
+          const enemies = [...enemy.board[0],...enemy.board[1]];
           return enemies.length > 0 ? this.utilityService.random(enemies) : null;
+        }
+        case 'creatureEnemyRandomLeftLane': {
+          const enemies = [...enemy.board[0]];
+          return enemies.length > 0 ? this.utilityService.random(enemies) : null;
+        }
+        case 'creatureEnemyRandomRightLane': {
+          const enemies = [...enemy.board[1]];
+          return enemies.length > 0 ? this.utilityService.random(enemies) : null;
+        }
         case 'creatureFriendlyRandom':
-          const friendlies = isPlayerTurn ? this.getPlayerCreatures(game) : this.getEnemyCreatures(game);
+          const friendlies = [...owner.board[0],...owner.board[1]];
           return friendlies.length > 0 ? this.utilityService.random(friendlies) : null;
         case 'creatureFriendlyOtherRandom': {
-          const friendlies2 = isPlayerTurn ? this.getPlayerCreatures(game) : this.getEnemyCreatures(game);
+          const friendlies2 = [...owner.board[0],...owner.board[1]];
           const filtered = friendlies2.filter(c =>
             !sourceCard || c.instanceId !== sourceCard.instanceId
           );
           return filtered.length > 0 ? this.utilityService.random(filtered): null;
         }
         case 'creatureFriendlyRandomLeftLane': {
-          const friendlies2 = isPlayerTurn ? this.getPlayerCreatures(game) : this.getEnemyCreatures(game);
-          const filtered = friendlies2.filter(c =>
-            c.laneIndex === 0
-          );
-          return filtered.length > 0 ? this.utilityService.random(filtered): null;
+          const friendlies2 = [...owner.board[0]];
+          return friendlies2.length > 0 ? this.utilityService.random(friendlies2): null;
         }
         case 'creatureFriendlyRandomRightLane': {
-          const friendlies2 = isPlayerTurn ? this.getPlayerCreatures(game) : this.getEnemyCreatures(game);
-          const filtered = friendlies2.filter(c =>
-            c.laneIndex === 1
-          );
-          return filtered.length > 0 ? this.utilityService.random(filtered): null;
+          const friendlies2 = [...owner.board[1]];
+          return friendlies2.length > 0 ? this.utilityService.random(friendlies2): null;
         }
         case 'enemyRandom':
           // Random enemy creature or player
-          const all = isPlayerTurn ? [...this.getEnemyCreatures(game), game.opponent] :
-            [...this.getPlayerCreatures(game), game.player];
+          const all = [...enemy.board[0],...enemy.board[1],enemy];
           console.log('number of enemy targets is: ',all.length);
           return this.utilityService.random(all);
         case 'creatureTopDeck':            
           const topCreature = owner.deck.find(card => card.type === 'Creature');
           return topCreature || null;
+        case 'topDeck':
+          const topCard = owner.deck.length > 0 ? owner.deck[0] : null;
+          return topCard;
+        case 'oppTopDeck':
+          const oppTopCard = enemy.deck.length > 0 ? enemy.deck[0] : null;
+          return oppTopCard;
         case 'cardPlayerHandRandom':
           let validCards = owner.hand;
           console.log(`cards in hand: ${validCards.length}`);
@@ -1145,7 +1228,8 @@ export class GameService {
             } 
             if (requestedSubtypes?.length) {
               validCards = validCards.filter(card => 
-                requestedSubtypes.some(sub => card.subtypes!.includes(sub))
+                requestedSubtypes.some(sub => card.subtypes!.includes(sub)) ||
+                card.subtypes?.includes('All')
               );
             }
             console.log(`cards: ${validCards.length} after filtering for ${effect.subtypes}`);
@@ -1158,7 +1242,7 @@ export class GameService {
       }
     }
   
-    isAttackConditionMet(condition?: Card['attackCondition'], laneIndex?: number, player?: PlayerState): boolean {
+    isAttackConditionMet(condition: Card['attackCondition'], player: PlayerState, laneIndex?: number): boolean {
       if (!condition) {
         return true; // no condition = always allowed
       }
@@ -1170,6 +1254,13 @@ export class GameService {
           } else {
             return false;
           }
+        case 'playedAction': {
+          return player.actionsPlayed >= 1;
+        }
+        case 'twoCreatureFiveAttack': {
+          return [...player!.board[0],...player!.board[1]].filter(c =>
+            (c.currentAttack ?? c.attack ?? 0) >= 5).length >= 2;
+        }
         default:
           console.warn(`Unknown targetCondition type: ${condition.type}`);
           return false; // safe default
@@ -1188,11 +1279,21 @@ export class GameService {
           } else {
             return false;
           }
+        case 'damageEachLane':
+          return player!.damageLane[0] > 0 && player!.damageLane[1] > 0;
+        case 'creatureFiveAttack':
+          return [...player!.board[0],...player!.board[1]].some(c => 
+            (c.currentAttack ?? c.attack ?? 0) >= 5);
         default:
           console.warn(`Unknown targetCondition type: ${condition.type}`);
           return true; // safe default
       }
     }
+
+    private hasCreatureWithAttack(game: GameState, minAttack: number, isOpp: boolean): boolean {
+      const player = isOpp ? game.opponent : game.player;
+      return [...player.board[0],...player.board[1]].some(c => (c.currentAttack ?? 0) >= minAttack);
+    }    
   
     private isConditionMet(
       game: GameState,
@@ -1202,7 +1303,6 @@ export class GameService {
       target?: (Card | PlayerState)
     ): boolean {
       if (!condition) return true; // No condition = always true
-  
       const owner = sourceCard.isOpponent ? game.opponent : game.player;
       const enemy = sourceCard.isOpponent ? game.player : game.opponent;
       const allowedSubtypes = condition.subtypes ?? [];
@@ -1215,13 +1315,65 @@ export class GameService {
         }          
         case 'lanesFull': 
           return owner.board[0].length === 4 && owner.board[1].length === 4;
+        case 'deckUnique':
+          return owner.deckUnique;
+        case 'hasExaltedCreature':
+          return [...owner.board[0],...owner.board[1]].some(c => c.exalted === true);
+        case 'notExalted':
+          return !(sourceCard.exalted === true);
+        case 'hasCreatureAttack':
+          return this.hasCreatureWithAttack(game, condition.min ?? 5, sourceCard.isOpponent!);
         case 'playedActions':
           return owner.actionsPlayed >= (condition.min ?? 1);
+        case 'playedCards':
+          return owner.cardsPlayed >= (condition.min ?? 1) && owner.cardsPlayed <= (condition.max ?? 9);
+        case 'playedActionItemSupport': {
+          const hasPlayedAction = owner.discard.some(c => c.type === 'Action');
+          // Has Support either in discard OR currently in play (excluding Ring of Magicka)
+          const hasSupport = 
+            owner.discard.some(c => c.type === 'Support' && c.id !== 'ring-of-magicka') ||
+            owner.support.some(c => c.id !== 'ring-of-magicka');
+          // Has Item either in discard OR attached to any creature on board
+          const hasItem = 
+            owner.discard.some(c => c.type === 'Item') ||
+            [...owner.board[0], ...owner.board[1]].some(c => 
+              c.attachedItems && c.attachedItems.length > 0
+            );
+          return hasPlayedAction && hasSupport && hasItem;
+        }
         case 'isFirstTurn':
           return game.currentTurn <= 2;
         case 'numActivations':
           return (sourceCard.activations ?? 0) >= (condition.min ?? 1);
-
+        case 'inLane':
+          return sourceCard.laneIndex !== undefined && 
+            sourceCard.laneIndex >= (condition.min ?? 0) &&
+            sourceCard.laneIndex <= (condition.max ?? 1);
+        case 'haveAllAttributes': {
+          const cardsInPlay = [...owner.board[0],...owner.board[1],...owner.support];
+          let hasAllInPlay = true;
+          ["N","R","B","Y","G","P"].forEach(a => {
+            if (!cardsInPlay.some(c => c.attributes.includes(a))) {
+              hasAllInPlay = false;
+              console.log(`missing attribute ${a}`);
+            }
+          });
+          return hasAllInPlay;
+        }
+        case 'hasInPlay': {
+          if (condition.attribute) {
+            return [...owner.board[0],...owner.board[1],...owner.support].filter(c =>
+              !condition.attribute || c.attributes.includes(condition.attribute)
+            ).length >= (condition.min ?? 1);
+          } else if (condition.subtypes) {
+            return [...owner.board[0],...owner.board[1],...owner.support].filter(c =>
+              c.subtypes?.some(sub => condition.subtypes?.includes(sub)) ||
+                c.subtypes?.includes('All')
+            ).length >= (condition.min ?? 1);
+          }
+        }
+        case 'isPlayerTurn':
+          return owner.turn;
         case 'isAlive': 
           return sourceCard.type === 'Creature' && (sourceCard.currentHealth ?? 0) > 0;
   
@@ -1235,10 +1387,11 @@ export class GameService {
           return (owner.diedLane[0] + owner.diedLane[1] +
             enemy.diedLane[0] + enemy.diedLane[1]) >= minDeaths;
           
-        case 'creatureFriendlyDied':
+        case 'creatureFriendlyDied': {
           const minFriendlyDeaths = condition.min ?? 0;
           console.log(`number deaths is : ${(owner.diedLane[0] + owner.diedLane[1])}`)
           return (owner.diedLane[0] + owner.diedLane[1]) >= minFriendlyDeaths;
+        }
   
         case 'targetNotOnBoard':
           // If no target was provided → condition can't be evaluated → false
@@ -1261,9 +1414,14 @@ export class GameService {
         case 'hasNotKeyword':
           return !(sourceCard.currentKeywords ?? []).includes(condition.keyword!);
 
+        case 'hasKeyword':
+          return (sourceCard.currentKeywords ?? []).includes(condition.keyword!);
+
         case 'discardHasSubtype':
           const discardCount = owner.discard
-          .filter(card => card.subtypes?.some(sub => allowedSubtypes.includes(sub))).length;
+          .filter(card => 
+            card.subtypes?.some(sub => allowedSubtypes.includes(sub)) ||
+            card.subtypes?.includes('All')).length;
           return discardCount > 0;
   
         case 'topDeckAttribute':
@@ -1334,6 +1492,11 @@ export class GameService {
         case 'enemyCreatureInSameLane':
           if (sourceCard.laneIndex === undefined) return false;
           return enemy.board[sourceCard.laneIndex!].length > 0;
+
+        case 'noEnemyCreaturesThisLane': {
+          if (sourceCard.laneIndex === undefined) return false;
+          return enemy.board[sourceCard.laneIndex!].length === 0;
+        }
   
         case 'hasSubtype':
           if (!condition.subtypes?.length) return false;  
@@ -1352,7 +1515,8 @@ export class GameService {
           if (["Creature", "Item", "Support", "Action"].includes(condition.subtypes[0])) {
             return allowedSubtypes.includes(refCard.type);
           } else {
-            return refCard.subtypes?.some(sub => allowedSubtypes.includes(sub));
+            return refCard.subtypes?.some(sub => allowedSubtypes.includes(sub)) ||
+              refCard.subtypes?.includes('All');
           }              
   
         case 'summonAttribute':
@@ -1392,9 +1556,11 @@ export class GameService {
   
         case 'hasOtherOnBoard':
           return (owner.board[0]
-            .filter(c => c.subtypes.some(s => allowedSubtypes.includes(s))).length + 
+            .filter(c => c.subtypes.some(s => allowedSubtypes.includes(s)) ||
+            c.subtypes.includes('All')).length + 
             owner.board[1]
-            .filter(c => c.subtypes.some(s => allowedSubtypes.includes(s))).length) > 1; // >1 means others exist
+            .filter(c => c.subtypes.some(s => allowedSubtypes.includes(s)) ||
+            c.subtypes.includes('All')).length) > 1; // >1 means others exist
         
         case 'drawnCardCost':
           return game.lastCardDrawn!.cost >= (condition.min ?? 0);
@@ -1457,6 +1623,12 @@ export class GameService {
   
       const owner = card.isOpponent ? game.opponent : game.player;
       const location = this.findCardLocation(game, card);
+
+      if (source && !(typeof source === 'string') && source.isOpponent === card.isOpponent) {
+        this.executeEffectsForCard('Sacrifice',card,game);
+      } else if (source === undefined) {
+        this.executeEffectsForCard('Sacrifice',card,game);
+      }
   
       if (!location) {
         console.warn(`Card ${card.name} (${card.instanceId}) not found in any location`);
@@ -1465,10 +1637,10 @@ export class GameService {
       if (card.type === 'Creature') owner.diedLane[card.laneIndex!]++;
       const lastGaspShuffle = card.effects?.some(e => e.trigger === 'LastGasp' && 
           e.type === 'shuffleIntoDeck' && e.target === 'self');
-      if (card.banished) {
-        console.log('skipping discard for banish tag');
-      } else if (lastGaspShuffle) {
-        console.log('skipping discard for shuffle tag');
+      const lastGaspReturn = card.effects?.some(e => e.trigger === 'LastGasp' &&
+          e.type === 'addToHand' && e.cardId === card.id);
+      if (card.banished || lastGaspShuffle || card.id === 'ring-of-magicka' || lastGaspReturn) {
+        console.log('skipping discard for this card');
       } else {
         const originalCard = this.deckService.getCardById(card.id);
         const freshCopy = this.deckService.cloneCardForGame(originalCard!, card.isOpponent!);
@@ -1480,11 +1652,15 @@ export class GameService {
         description: `${card.isOpponent ? 'Opp' : 'You'}: ${card.name}`,
         details: source ? [`Source: ${typeof source === 'string' ? source : source.name}`] : []
       });
-      if (card.type === 'Creature' && card.attachedItems?.length) {
+      if (card.type === 'Creature' && card.attachedItems?.length && !card.banished) {
         card.attachedItems.forEach(item => {
-          const originalItem = this.deckService.getCardById(item.id);
-          const freshItem = this.deckService.cloneCardForGame(originalItem!, item.isOpponent || false);
-          owner.discard.push(freshItem);     
+          const itemLastGaspReturn = item.effects?.some(e => e.trigger === 'LastGasp' &&
+            e.type === 'addToHand' && e.cardId === item.id);
+          if (!itemLastGaspReturn) {
+            const originalItem = this.deckService.getCardById(item.id);
+            const freshItem = this.deckService.cloneCardForGame(originalItem!, item.isOpponent || false);
+            owner.discard.push(freshItem);     
+          }
         });
       }
   
@@ -1509,7 +1685,6 @@ export class GameService {
           const handIdx = owner.hand.indexOf(card);
           if (handIdx !== -1) {
             owner.hand.splice(handIdx, 1);
-            //this.handVersion++;
           }
           break;
   
@@ -1531,7 +1706,7 @@ export class GameService {
   
       // 3. Trigger death effects (Last Gasp, Slay triggers on source, etc.)
       if (card.type === 'Creature' && card.laneIndex !== undefined) {
-        this.triggerDeathEffects(game, card, source);
+        if (!card.banished) this.triggerDeathEffects(game, card, source);
         this.runEffects('CreatureFriendlyDeath',owner, game);
         const oppPlayer = owner === game.player ? game.opponent : game.player;
         this.runEffects('CreatureEnemyDeath',oppPlayer, game);
@@ -1549,6 +1724,8 @@ export class GameService {
             });
           });
         });
+      } else if (card.type === 'Support') {
+        this.triggerDeathEffects(game,card,source);
       }
       this.updateStaticBuffs(game,game.player);
       this.updateStaticBuffs(game,game.opponent);
@@ -1738,6 +1915,7 @@ export class GameService {
   private resetTurnStats(player: PlayerState) {
       //console.log(`resetting stats from died lane 0: ${player.diedLane[0]}, lane 1: ${player.diedLane[1]}, dmgTaken: ${player.damageTaken}`);
       player.diedLane = [0, 0];
+      player.damageLane = [0, 0];
       player.damageTaken = 0;
       player.numSummon = 0;
       player.actionsPlayed = 0;
@@ -1753,16 +1931,23 @@ export class GameService {
           return (card.keywords ?? []).length;
         }
         case 'cardsPlayedTurn': {
-          return owner.cardsPlayed;
+          return owner.cardsPlayed-1;
+        }
+        case 'lastTargetedCost': {
+          return game.lastCreatureTargeted?.cost ?? 0;
         }
         case 'actionsInDiscard': {
           return owner.discard.filter(c => 
             c.type === 'Action'
           ).length;
         }
+        case 'cardsDiscarded': {
+          return game.cardsDiscarded ?? 0;
+        }
         case 'numSubtypeDiscard': {
           return owner.discard.filter(c => 
-            c.subtypes?.some(sub => card.subtypes?.includes(sub))
+            c.subtypes?.some(sub => card.subtypes?.includes(sub)) ||
+            c.subtypes?.includes('All')
           ).length;
         }
         case 'healthGained': {
@@ -1775,6 +1960,10 @@ export class GameService {
         case 'creatureSummoned': {
           return owner.numSummon ?? 0;
         }
+        case 'skeeversSummoned': {
+          return Math.max(0,(owner.summonCounts['skeevaton'] ?? 0) + (owner.summonCounts['skeever'] ?? 0) - 1);
+        }
+
         case 'creaturePlayerDiscardAll': {
           return owner.discard
             .filter(c =>
@@ -1789,14 +1978,27 @@ export class GameService {
         case 'creatureEnemyThisLaneAll': {
           return opponent.board[card.laneIndex ?? laneIndex ?? 0].length;
         }
+        case 'creatureEnemyAll': {
+          return (opponent.board[0].length + opponent.board[1].length);
+        }
         case 'destroyedEnemyRune': {
           return opponent.runes.filter(r => r === false).length;
+        }
+        case 'enemyRune': {
+          return opponent.runes.filter(r => r === true).length;
         }
         case 'creatureFriendlyOtherAll': {
           return (owner.board[0].length + owner.board[1].length - 1);
         }
         case 'creatureFriendlyAll': {
           return (owner.board[0].length + owner.board[1].length);
+        }
+        case 'creatureFriendlyLane': {
+          return laneIndex !== undefined ? owner.board[laneIndex].length : 
+            Math.max(owner.board[0].length, owner.board[1].length);
+        }
+        case 'sourcePower': {
+          return game.lastCardSummoned?.currentAttack ?? 0;
         }
         case 'creatureFriendlyWardAll': {
           const matchingCount = owner.board[0]
@@ -1838,11 +2040,11 @@ export class GameService {
           const matchingCount = owner.board[0]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Dragon')
+            (creature.subtypes?.includes('Dragon') || creature.subtypes?.includes('All'))
           ).length + owner.board[1]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Dragon')
+            (creature.subtypes?.includes('Dragon') || creature.subtypes?.includes('All'))
           ).length;
           return Math.max(0,matchingCount);
         }
@@ -1850,11 +2052,11 @@ export class GameService {
           const matchingCount = owner.board[0]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Orc')
+            (creature.subtypes?.includes('Orc') || creature.subtypes?.includes('All'))
           ).length + owner.board[1]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Orc')
+            (creature.subtypes?.includes('Orc') || creature.subtypes?.includes('All'))
           ).length;
           return Math.max(0,matchingCount);
         }
@@ -1862,11 +2064,11 @@ export class GameService {
           const matchingCount = owner.board[0]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Wolf')
+            (creature.subtypes?.includes('Wolf') || creature.subtypes?.includes('All'))
           ).length + owner.board[1]
           .filter(creature => 
             creature.type === 'Creature' &&
-            creature.subtypes?.includes('Wolf')
+            (creature.subtypes?.includes('Wolf') || creature.subtypes?.includes('All'))
           ).length;
           return Math.max(0,matchingCount-1);
         }
@@ -1876,6 +2078,7 @@ export class GameService {
     }
   
     private clearEndOfTurnEffects(player: PlayerState, game: GameState) {
+      game.betrayAvailable = false;
       //check for windy lane(s)
       if (player === game.opponent) {
         //console.log('check windy');
@@ -1926,7 +2129,7 @@ export class GameService {
           if (creature.tempKeywords?.length) {
             if (!creature.covered && creature.tempKeywords.includes('Cover') && 
               !creature.currentKeywords?.includes('Guard') &&
-              !creature.immunity?.includes('Cover') ) {
+              !creature.immunity?.includes('GainCover') ) {
               console.log('covering creature at end of turn, assassins bow?');
               creature.covered = true;
               creature.effects?.forEach(effect => {
@@ -1941,24 +2144,63 @@ export class GameService {
             creature.currentKeywords = creature.currentKeywords?.filter(k =>
               !creature.tempKeywords!.includes(k)
             ) || [];
+            creature.immunity = creature.immunity?.filter(k => 
+              !creature.tempKeywords!.includes(k)
+            ) || [];
             creature.tempKeywords = [];
           }
-          if (creature.endOfTurn) {
-            if (creature.endOfTurn === 'destroy') {
-              this.destroyCard(game, creature, creature);
-            } else if (creature.endOfTurn === 'moveToBottom') {
-              const newCardToAdd = this.deckService.getCardById(creature.id);
-              const clonedToAdd = this.deckService.cloneCardForGame(newCardToAdd!,creature.isOpponent!);
-              player.deck.push(clonedToAdd);
-              const lanePos = lane.indexOf(creature);
-              if (lanePos !== -1) {
-                lane.splice(lanePos, 1);
-              }
-            }
-          }
+          
           // Add other end-of-turn clears here later (e.g. temporary buffs)
         });
       });
+
+      const endOfTurnCreatures: Card[] = [...player.board[0],...player.board[1]].filter(c => c.endOfTurn);
+      endOfTurnCreatures.forEach(creature => {
+        if (creature.endOfTurn) {
+          if (creature.endOfTurn === 'destroy') {
+            this.destroyCard(game, creature, creature);
+          } else if (creature.endOfTurn === 'moveToBottom') {
+            const newCardToAdd = this.deckService.getCardById(creature.id);
+            const clonedToAdd = this.deckService.cloneCardForGame(newCardToAdd!,creature.isOpponent!);
+            player.deck.push(clonedToAdd);
+            const laneIndex = creature.laneIndex;
+              if (laneIndex !== undefined) {
+              const lanePos = player.board[laneIndex].indexOf(creature);
+              if (lanePos !== -1) {
+                player.board[laneIndex].splice(lanePos, 1);
+              }
+            }
+          } else if (creature.endOfTurn === 'unsummon') {
+            creature.endOfTurn = undefined;
+            const tempEffect: CardEffect = {
+              "trigger": "EndOfTurn",
+              "type": "unsummon",
+              "target": "creature"
+            }
+            this.executeEffect(tempEffect,creature,game,creature);
+          } else if (creature.endOfTurn === 'swapOwner') { //reverse the steal at end of turn
+            creature.endOfTurn = undefined;
+            const stealOwner = creature.isOpponent ? game.player : game.opponent;
+            const stealLane = creature.laneIndex!;
+            if (stealOwner.board[stealLane].length < 4) {
+              // Remove from original owner
+              const origOwner = creature.isOpponent ? game.opponent : game.player;
+              const origLane = origOwner.board[creature.laneIndex!];
+              const pos = origLane.indexOf(creature);
+              if (pos !== -1) origLane.splice(pos, 1);
+              // Revert auras from original owner
+              this.reverseAurasOnTarget(game,creature);
+              // Change ownership
+              creature.isOpponent = !creature.isOpponent;
+              // Add to new owner
+              stealOwner.board[stealLane].push(creature);
+              // Apply new owner's auras
+              this.applyCardAuras(game, creature, stealOwner);
+            }
+          }
+        }
+      });
+
       if (game.tempCostAdjustment !== 0) {
         player.hand.forEach(cardInHand => {
           cardInHand.currentCost = (cardInHand.currentCost ?? cardInHand.cost ?? 0) - game.tempCostAdjustment;
@@ -1990,7 +2232,7 @@ export class GameService {
           if (creature.tempKeywords?.length) {
             if (!creature.covered && creature.tempKeywords.includes('Cover') && 
               !creature.currentKeywords?.includes('Guard') &&
-              !creature.immunity?.includes('Cover') ) {
+              !creature.immunity?.includes('GainCover') ) {
               console.log('covering creature at end of turn, assassins bow?');
               creature.covered = true;
               creature.effects?.forEach(effect => {
@@ -2000,6 +2242,9 @@ export class GameService {
               });
             }
             creature.currentKeywords = creature.currentKeywords?.filter(k =>
+              !creature.tempKeywords!.includes(k)
+            ) || [];
+            creature.immunity = creature.immunity?.filter(k =>
               !creature.tempKeywords!.includes(k)
             ) || [];
             creature.tempKeywords = [];
@@ -2023,33 +2268,31 @@ export class GameService {
   
     runEffects(trigger: string, player: PlayerState, game: GameState) {
       // Board
-      for (let i = 0; i < 2; i++) {
-        player.board[i].forEach(card => {
-          if (trigger === 'SummonCreature') {
-            if (card.instanceId !== game.lastCardSummoned!.instanceId) {
-              this.executeEffectsForCard(trigger, card, player, game, -1);
-            }
-          } else if (trigger === 'FriendlyAttack') {
-            if (card.instanceId !== game.stagedAttack!.instanceId) {
-              this.executeEffectsForCard(trigger, card, player, game);
-            }
-          } else if (trigger === 'FriendlySlay') {
-            if (card.instanceId !== game.creatureSlayer!.instanceId) {
-              this.executeEffectsForCard(trigger, card, player, game);
-            }
-          } else if (trigger === 'EquipFriendly') {
-            if (card.instanceId !== this.findWielderOfItem(game, game.lastCardEquipped!)?.instanceId!) {
-              this.executeEffectsForCard(trigger, card, player, game);
-            }
-          } else {
-            this.executeEffectsForCard(trigger, card, player, game);
+      [...player.board[0],...player.board[1]].forEach(card => {
+        if (trigger === 'SummonCreature') {
+          if (card.instanceId !== game.lastCardSummoned!.instanceId) {
+            this.executeEffectsForCard(trigger, card, game, -1);
           }
-        });
-      }
+        } else if (trigger === 'FriendlyAttack') {
+          if (card.instanceId !== game.stagedAttack!.instanceId) {
+            this.executeEffectsForCard(trigger, card, game);
+          }
+        } else if (trigger === 'FriendlySlay') {
+          if (card.instanceId !== game.creatureSlayer!.instanceId) {
+            this.executeEffectsForCard(trigger, card, game);
+          }
+        } else if (trigger === 'EquipFriendly') {
+          if (card.instanceId !== this.findWielderOfItem(game, game.lastCardEquipped!)?.instanceId!) {
+            this.executeEffectsForCard(trigger, card, game);
+          }
+        } else {
+          this.executeEffectsForCard(trigger, card, game);
+        }
+      });
   
       // Support
       player.support.forEach(card => {
-        this.executeEffectsForCard(trigger, card, player, game);
+        this.executeEffectsForCard(trigger, card, game);
       });
   
       // hand
@@ -2073,35 +2316,54 @@ export class GameService {
         });
       });
 
-      //board summon effect.types after summoncreature
-      for (let i = 0; i < 2; i++) {
-        player.board[i].forEach(card => {
-          if (trigger === 'SummonCreature') {
-            if (card.instanceId !== game.lastCardSummoned!.instanceId) {
-              this.executeEffectsForCard(trigger, card, player, game, 1);
-            }
-          } 
+      // drawFromDeck
+      player.deck.forEach(card => {
+        card.effects?.forEach (effect => {
+          if (effect.trigger === trigger && effect.type === 'drawFromDeck') {
+            this.executeEffect(effect, card, game);
+          }
         });
-      }
+      });
+
+      //board summon effect.types after summoncreature
+      [...player.board[0],...player.board[1]].forEach(card => {
+        if (trigger === 'SummonCreature') {
+          if (card.instanceId !== game.lastCardSummoned!.instanceId) {
+            this.executeEffectsForCard(trigger, card, game, 1);
+          }
+        } 
+      });
+
+      if (trigger === 'PlayerDead') game.isProcessingPlayerDead = false;
     }
   
-  executeEffectsForCard(trigger: string, card: Card, player: PlayerState, game: GameState, summonFlag: number = 0) {
+  executeEffectsForCard(trigger: string, card: Card, game: GameState, summonFlag: number = 0) {
+    const player = card.isOpponent ? game.opponent : game.player;
     card.effects?.forEach(effect => {
       const triggerMatch = effect.trigger === trigger;
       // Skip if not the right trigger
       if (!triggerMatch) return;
       if (summonFlag === 1 && !effect.type.startsWith('summon')) return;
       if (summonFlag === -1 && effect.type.startsWith('summon')) return;
-      const abortAfterEffect = effect.type === 'change';
       // Auto-target effects → execute immediately
       if (this.isAutoTarget(effect.target)) {
         this.executeEffect(effect, card, game, player); // player as context if needed
-        if (!abortAfterEffect) console.log(`Executed ${effect.trigger} auto effect on ${card.name}`);
       } else {
           this.executeEffect(effect, card, game);
-          if (!abortAfterEffect) console.log(`Executed ${effect.trigger} effect on ${card.name}`);
       }
-      //if (abortAfterEffect) return;
+    });
+    card.attachedItems?.forEach(item => {
+      item.effects?.forEach(effect => {
+        const triggerMatch = effect.trigger === trigger;
+        if (!triggerMatch) return;
+        if (summonFlag === 1 && !effect.type.startsWith('summon')) return;
+        if (summonFlag === -1 && effect.type.startsWith('summon')) return;
+        if (this.isAutoTarget(effect.target)) {
+          this.executeEffect(effect, item, game, player);           
+        } else {
+          this.executeEffect(effect, item, game);            
+        }
+      });
     });
   }
   
@@ -2109,13 +2371,11 @@ export class GameService {
       // Refill/Increase magicka
       if (game.currentTurn <= 24) {
         player.maxMagicka++;
-        if (this.hasDoubleMagickaAura(player)) player.maxMagicka++;
+        if (this.hasKeywordAura(player,'DoubleMagicka')) player.maxMagicka++;
         this.runEffects('MaxMagickaIncreased',player, game);
       }
       player.currentMagicka = Math.min(player.maxMagicka,this.getMagickaLimitAura(game));
       
-      // Draw card
-      //this.drawCards(player, 1, game);
       // Reset all creatures
       player.board.forEach(lane => {
         lane.forEach(creature => {
@@ -2186,6 +2446,57 @@ export class GameService {
       const attemptedCards: string[] = [];
       
       while (attemptsWithoutPlay < maxAttempts && game.gameRunning) {
+        if (game.betrayAvailable && game.lastCardPlayed) {
+          const newCard = this.deckService.cloneCardForGame(game.lastCardPlayed,true);
+          if (newCard && newCard.type === 'Action') {
+            const playEffects = newCard.effects?.filter(e => e.trigger === 'Play' || 
+              (e.trigger === 'Plot' && game.opponent.cardsPlayed >= 2)) || [];
+            if (playEffects.length === 0) break;
+  
+            // Try to find a valid target for the first manual-target effect
+            let target: Card | PlayerState | undefined = undefined;
+            let chosenLane: number | undefined = undefined;
+  
+            for (const effect of playEffects) {
+              if (this.isAutoTarget(effect.target,newCard.type)) {
+                // Auto effect — just play
+                target = undefined;
+                break;
+              }
+              if (effect.target?.includes("ane") || effect.target === "lane") {
+                chosenLane = this.getBestLaneForOppAction(game, effect);
+                if (chosenLane !== undefined) {
+                  target = undefined; // lane is chosen separately
+                  break;
+                }
+              } else {
+                // Manual target — try to find one
+                target = this.getActionTarget(game,newCard, effect, true);
+                if (target) break;
+              }
+            }            
+            const canPlay = target !== undefined || 
+                  chosenLane !== undefined || 
+                  playEffects.every(e => this.isAutoTarget(e.target,card.type));
+  
+            if (canPlay) {
+              
+              // Can play: either found target or all effects are auto
+              this.opponentPlayCard(game, newCard, chosenLane, target,false,true);
+              playedSomethingThisLoop = true;
+              this.logOpponent(
+                target 
+                  ? `Played action "${newCard.name}" on "${(target as any).name || 'face'}"`
+                  : `Played action "${newCard.name}"`
+              );                           
+            } else {
+              console.log(`Could not play action "${newCard.name}" — no valid targets or lanes`);
+              game.betrayAvailable = false;
+            }
+          } else {
+            game.betrayAvailable = false;
+          }
+        }
         playedSomethingThisLoop = false;
         const hasRingOfMagickaBonus = game.opponent.support.some(s => 
           s.id === 'ring-of-magicka' && (s.attacks ?? 0) > 0 && (s.uses ?? 0) > 0);
@@ -2281,7 +2592,8 @@ export class GameService {
           }
   
           case 'Action': {
-            const playEffects = card.effects?.filter(e => e.trigger === 'Play') || [];
+            const playEffects = card.effects?.filter(e => e.trigger === 'Play' || 
+              (e.trigger === 'Plot' && game.opponent.cardsPlayed >= 2)) || [];
             if (playEffects.length === 0) break;
   
             // Try to find a valid target for the first manual-target effect
@@ -2378,9 +2690,9 @@ export class GameService {
   
     }
 
-  private getBestLaneForOppAction(game: GameState, effect: CardEffect): number | undefined {
-    const opponent = game.opponent;
-    const player = game.player;
+  private getBestLaneForOppAction(game: GameState, effect: CardEffect, isOpp: boolean = true): number | undefined {
+    const opponent = isOpp ? game.opponent : game.player;
+    const player = isOpp ? game.player : game.opponent;
 
     // Helper to count creatures in a lane
     const countCreatures = (laneIndex: number, isFriendly: boolean) => {
@@ -2822,7 +3134,9 @@ export class GameService {
   }
 
 
-    private drawFilteredCards(player: PlayerState, amount: number, game: GameState, cost?: number, subtypes?: string[]) {
+    private drawFilteredCards(player: PlayerState, amount: number, game: GameState, 
+      cost?: number, subtypes?: string[], attributes?: string[], keywords?: string[]) {
+        game.lastCardDrawn = null;
       if (amount <= 0) return;
       //const cardsToDraw = Math.min(10-player.hand.length,amount);
       const cardsToDraw = amount;
@@ -2830,7 +3144,7 @@ export class GameService {
       let deck = player.deck;
   
       // Apply filters if provided
-      if (cost !== undefined || subtypes?.length) {
+      if (cost !== undefined || subtypes?.length || attributes?.length || keywords?.length) {
         deck = deck.filter(card => {
           //console.log(`cost checked is ${cost}`);
           const costMatch = cost === undefined || (card.currentCost ?? card.cost ?? 0) === cost;
@@ -2845,11 +3159,26 @@ export class GameService {
               typeOrSubtypeMatch = subtypes.includes(card.type);
             } else {
               // Filter by subtypes
-              typeOrSubtypeMatch = card.subtypes?.some(sub => subtypes.includes(sub)) ?? false;
+              typeOrSubtypeMatch = (card.subtypes?.some(sub => subtypes.includes(sub)) || 
+                card.subtypes?.includes('All')) ?? false;
             }
           }
+
+          let attributeMatch = true;
+          if (attributes?.length) {
+            if (attributes[0] === 'X') { //want multi-attributes
+              attributeMatch = card.attributes.length > 1;
+            } else {
+              attributeMatch = card.attributes?.some(attr => attributes.includes(attr)) ?? false;
+            }
+          }
+
+          let keywordMatch = true;
+          if (keywords?.length) {
+            keywordMatch = (card.currentKeywords || []).some(kw => keywords.includes(kw));
+          }
   
-          return costMatch && typeOrSubtypeMatch;
+          return costMatch && typeOrSubtypeMatch && attributeMatch && keywordMatch;
         });
       }
   
@@ -2879,7 +3208,8 @@ export class GameService {
               player.hand.push(card);
               console.log(`Drew filtered card: ${card.name}`);
               this.runEffects('DrawCard',player,game);
-              this.executeEffectsForCard('AddToHand', card, player, game);
+              this.executeEffectsForCard('AddToHand', card, game);
+              this.checkTreasureHunt(game,game.lastCardDrawn);
           }
       });
   
@@ -2914,6 +3244,7 @@ export class GameService {
   placeOnBoard(game: GameState, player: PlayerState, lane: number, card: Card) {
     game.lastCardSummoned2 = game.lastCardSummoned;
     game.lastCardSummoned = card;
+    player.summonCounts[card.id] = (player.summonCounts[card.id] || 0) + 1;
     
     player.board[lane].push(card);
     if (game.laneTypes[lane] === 'Plunder') {
@@ -2928,12 +3259,14 @@ export class GameService {
     }
     if (player.numSummon == 0) {
       this.runEffects('SummonFirst',player, game);
+    } else if (player.numSummon == 1) {
+      this.runEffects('SummonSecond',player, game);
     }
     player.numSummon++;
     
     if (game.laneTypes[card.laneIndex!] === 'Shadow' && 
         !card.keywords?.includes('Guard') &&
-        !card.immunity?.includes('Cover') ) {
+        !card.immunity?.includes('GainCover') ) {
       card.covered = true;
       card.effects?.forEach(effect => {
         if (effect.trigger === 'GainCover') {
@@ -2952,12 +3285,233 @@ export class GameService {
       player === game.player ? game.opponent : game.player, game);
 
     console.log(`Summoned ${card.name} to lane ${lane}`);
+    let creatureTarget: Card | PlayerState;
+    card.effects?.forEach(effect => {
+      if (effect.trigger !== 'Summon') return;
+      if (this.isAutoTarget(effect.target)) {
+        this.executeEffect(effect, card, game);
+      } else {
+        // Manual target → AI chooses intelligently
+        creatureTarget = creatureTarget ?? this.getSummonTarget(game, effect, card, card.isOpponent!);
+        if (creatureTarget) {
+          this.executeEffect(effect, card, game, creatureTarget);              
+        } 
+      }
+    });
+    // Apply auras & check death
+    this.applyCardAuras(game, card, card.isOpponent ? game.opponent : game.player);
+    const deathsBefore = this.currentDeathTotalThisTurn(game);
+    this.checkCreatureDeath(game);
+    const deathsAfter = this.currentDeathTotalThisTurn(game);
+    if (deathsAfter !== deathsBefore) {
+      this.checkCreatureDeath(game);
+    }
+  }
 
+  checkTreasureHunt(game: GameState, drawnCard: Card) {
+    if (drawnCard.isOpponent && !game.opponent.turn) return;
+    if (!drawnCard.isOpponent && !game.player.turn) return;
+    const player = drawnCard.isOpponent? game.opponent : game.player;
+    const hunters = this.getTreasureHuntCards(game, drawnCard.isOpponent!);
+    hunters.forEach(h => {
+      if (h.treasureHunt!.completed) return; //nothing to find
+      let foundAnyMatch = false;
+      h.treasureHunt!.requirements.forEach(r => {
+        if (r.found >= r.required) return; //already found this one
+        let matches = false;
+        const isType = ['Action','Item','Creature','Support'].includes(r.type);
+        const isAttribute = ['N','B','R','Y','G','P'].includes(r.type);
+        const isKeyword = ['Charge','Ward','Guard','Lethal','Drain','Breakthrough','Rally','Regenerate'].includes(r.type);
+        const isCost = r.type.startsWith('Cost:'); //format Cost:##
+        if (isType && drawnCard.type === r.type) matches = true;
+        if (isAttribute && drawnCard.attributes.includes(r.type)) matches = true;
+        if (isKeyword && (drawnCard.currentKeywords ?? drawnCard.keywords ?? []).includes(r.type)) matches = true;
+        if (isCost) {
+          const costFilter = parseInt(r.type.substring(5),10);
+          if (costFilter === (drawnCard.currentCost ?? drawnCard.cost)) matches = true;
+        }
+        if (matches) {
+          r.found++;
+          foundAnyMatch = true;
+          if (isKeyword && r.found >= r.required) {
+            //run effects for trigger Treasure[Keyword] on hunter
+            this.executeEffectsForCard(`Treasure${r.type}`,h,game);
+          }
+        }
+      });
+      if (foundAnyMatch) {
+        this.queuePendingAction(game, {
+          type: 'audio',
+          sourceCard: h,
+          prompt: 'trigger'
+        });
+        //run effects for trigger 'FriendlyTreasure'
+        this.runEffects('FriendlyTreasure',player,game);
+        const isComplete = h.treasureHunt!.requirements.every(r => r.found >= r.required);
+        if (isComplete) {
+          h.treasureHunt!.completed = true;
+          h.currentKeywords = h.currentKeywords?.filter(k => k !== 'TreasureHunt');
+          //run effects for trigger TreasureHunt on hunter
+          this.executeEffectsForCard('TreasureHunt',h,game);
+        }
+      }
+    });
+  }
+
+  getTreasureHuntCards(game: GameState, isOpp: boolean): Card[] {
+    const board = isOpp ? game.opponent : game.player;
+    return [
+      ...board.board[0],
+      ...board.board[1],
+      ...board.support
+    ].filter(c => c && c.treasureHunt);
+  }
+
+  private getHighestCostCard(hand: Card[]): Card[] {
+    if (hand.length === 0) return [];
+
+    const highest = hand.reduce((prev, current) => {
+      const prevCost = prev.currentCost ?? prev.cost ?? 0;
+      const currCost = current.currentCost ?? current.cost ?? 0;
+      return currCost > prevCost ? current : prev;
+    });
+
+    return [highest];
+  }
+
+  public stitchCard(game: GameState, isOpp: boolean, baseCard: Card, augmentCard: Card) {
+    if (baseCard.isOpponent !== isOpp) baseCard.isOpponent = !baseCard.isOpponent;
+    if ((augmentCard.currentCost ?? augmentCard.cost) > (baseCard.currentCost ?? baseCard.cost)) {
+      baseCard.currentCost = augmentCard.currentCost ?? augmentCard.cost;
+    }
+    baseCard.currentAttack = (baseCard.currentAttack ?? baseCard.attack!) + (augmentCard.currentAttack ?? augmentCard.attack!);
+    baseCard.currentHealth = (baseCard.currentHealth ?? baseCard.health!) + (augmentCard.currentHealth ?? augmentCard.health!);
+    baseCard.maxHealth = (baseCard.maxHealth ?? baseCard.health!) + (augmentCard.maxHealth ?? augmentCard.health!);
+    baseCard.id = 'abomination';
+    baseCard.name = 'Abomination';
+    baseCard.cost = 1;
+    baseCard.attack = 1;
+    baseCard.health = 1;
+    baseCard.set = 'Clockwork City';
+    if (isOpp) {
+      if (game.opponent.hand.length < 10) {
+        game.opponent.hand.push(baseCard);
+        this.reapplyHandAuras(game.opponent);
+      }
+    } else {
+      if (game.player.hand.length < 10) {
+        game.player.hand.push(baseCard);
+        this.reapplyHandAuras(game.player);
+      }
+    }
+  }
+
+  private findRandomAvailableLane(owner: PlayerState): number | null {
+    const board = owner.board;
+    const available: number[] = [];
+    if (board[0].length < 4) available.push(0);
+    if (board[1].length < 4) available.push(1);
+    if (available.length === 0) return null;
+    return this.utilityService.random(available);
   }
 
   executeEffect(effect: CardEffect, sourceCard: Card, game: GameState, chosenTarget?: Card | PlayerState, chosenLane?: number) {
     const outputLogs = game.simulating ? false : true;
-    if (effect.type === 'choice' || effect.type === 'revealAndTransform' || effect.type === 'choiceRandom' || effect.type === 'scry') {
+    const owner = sourceCard.isOpponent ? game.opponent : game.player;
+    const enemy = sourceCard.isOpponent ? game.player : game.opponent;
+
+    if (effect.condition && !this.isConditionMet(game, effect, effect.condition, sourceCard, chosenTarget)) {
+      if (outputLogs) console.log(`Effect skipped: condition not met for ${sourceCard.name}`);
+      return; // Early exit if condition fails
+    }
+
+    if (!owner.turn && ['fabricate','stitch','choice','reveal','revealAndChoose',
+      'revealAndGuess','revealTopDeck','revealAndGuessBuff','revealAndChooseGive',
+      'revealAndChooseOpp','revealAndChooseDeck','revealAndChooseCost',
+      'revealAndChooseName'
+    ].includes(effect.type)) {
+      if (game.stagedProphecy === null) { //allow choice on prophecy play
+        if (game.stagedSummon === sourceCard) this.clearSummonTargeting(game);
+        if (outputLogs) console.log(`Effect skipped for ${sourceCard.name}: ${effect.type} because not their turn`);
+        return;
+      }
+    }
+
+    if (effect.type === 'fabricate') {
+      if (!owner.turn) {
+        if (outputLogs) console.log(`Effect skipped for ${sourceCard.name}: ${effect.type} because not their turn`);
+        return;
+      }
+      const statRolls = this.utilityService.generateFabricateStatChoices();
+      const startCreature = this.deckService.getCardById(effect?.cardId ?? 'custom-fabricant');
+      if (!startCreature) return;
+      const candidates: Card[] = [];
+      for (let i = 0; i < 3; i++) {               
+        const cloneCreature = this.deckService.cloneCardForGame(startCreature,sourceCard.isOpponent!);
+        cloneCreature.currentCost = statRolls[i];
+        cloneCreature.currentAttack = statRolls[i];
+        cloneCreature.currentHealth = statRolls[i];
+        cloneCreature.maxHealth = statRolls[i];
+        candidates.push(cloneCreature);
+      }
+      if (sourceCard.isOpponent && game.cpuPlaying) {
+        const selectedCreature = candidates[1];
+        const selectedAbility = this.utilityService.generateFabricateKeywordChoices()[1];
+        selectedCreature.text = selectedAbility.text;
+        this.utilityService.applyFabricateAbility(selectedCreature,selectedAbility);
+        if (game.opponent.hand.length < 10) {
+          game.opponent.hand.push(selectedCreature);
+        }
+        return;
+      }
+
+      // Show choice modal
+      this.queuePendingAction(game, {
+        type: 'fabricate',
+        sourceCard,
+        effect,
+        revealCards: candidates,
+        opponentTarget: sourceCard.isOpponent,
+        prompt: 'Choose a creature to fabricate'
+      });
+      if (outputLogs) console.log(`Selected 3 options for fabricate`);
+      return;
+    } else if (effect.type === 'stitch') {
+      if (!owner.turn) {
+        if (outputLogs) console.log(`Effect skipped for ${sourceCard.name}: ${effect.type} because not their turn`);
+        return;
+      }
+      const topPlayerCreature = game.player.deck.find(card => card.type === 'Creature');
+      const topOpponentCreature = game.opponent.deck.find(card => card.type === 'Creature');
+      if (!topPlayerCreature || !topOpponentCreature) {
+        if (outputLogs) console.log('missing creature(s) for stitch');
+        return;
+      }
+      const indexPlayer = game.player.deck.findIndex(c => c.instanceId === topPlayerCreature.instanceId);
+      if (indexPlayer !== -1) {
+        game.player.deck.splice(indexPlayer,1);
+      }
+      const indexOpponent = game.opponent.deck.findIndex(c => c.instanceId === topOpponentCreature.instanceId);
+      if (indexOpponent !== -1) {
+        game.opponent.deck.splice(indexOpponent,1);
+      }
+      const candidates: Card[] = [topPlayerCreature,topOpponentCreature];
+      if (sourceCard.isOpponent && game.cpuPlaying) {
+        const selectedBase = Math.random() < 0.5 ? 0 : 1;
+        this.stitchCard(game, true, candidates[selectedBase], candidates[1-selectedBase]);
+        return;
+      }
+      // Show choice modal
+      this.queuePendingAction(game, {
+        type: 'stitch',
+        sourceCard,
+        effect,
+        revealCards: candidates,
+        opponentTarget: sourceCard.isOpponent,
+        prompt: 'Choose which creature is base for abomination'
+      });
+      return;
+    } else if (['choice','revealAndTransform','choiceRandom','scry'].includes(effect.type)) {
       if (!effect.choices || effect.choices.length === 0) {
         if (outputLogs) console.warn('Choice effect has no options');
         return;
@@ -2979,17 +3533,14 @@ export class GameService {
           });
         }
       }
-      const currentChoiceEffect = effect;
       const currentChoiceSource = sourceCard;
       const currentChoiceOptions = effect.choices;
       let selectedChoiceIndex = null;
       if (sourceCard.isOpponent && game.cpuPlaying) {
         if (effect.type === 'scry') return;
-        selectedChoiceIndex = Math.floor(Math.random() * effect.choices.length);
-        
+        selectedChoiceIndex = Math.floor(Math.random() * effect.choices.length);        
         const chosen = currentChoiceOptions[selectedChoiceIndex];
         const nestedEffect = chosen.effect;
-
         // Check if nested effect needs manual target
         if (!this.isAutoTarget(nestedEffect.target)) {
           const aiTarget = this.getSummonTarget(game, nestedEffect, sourceCard, sourceCard.isOpponent);
@@ -3012,18 +3563,235 @@ export class GameService {
         options: effect.choices,
         prompt: effect.type === 'choiceRandom' ? 'random' : 'Choose an effect'
       });
-      //this.selectedChoiceIndex = null;
-      //this.showChoiceModal = true;
+      return;
+    } else if (effect.type === 'oneOfEach') {
+      const maxCost = effect.cost ?? 2;
+      // Step 1: Get unique creatures by ID, respecting cost limit
+      const seenIds = new Set<string>();
+      let uniqueCreatures = owner.deck.filter(c => {
+        if (c.type !== 'Creature') return false;
+        if ((c.currentCost ?? c.cost) > maxCost) return false;
+        if (seenIds.has(c.id)) return false;
+        seenIds.add(c.id);
+        return true;
+      });
+      uniqueCreatures = this.utilityService.shuffle(uniqueCreatures);
+      // Step 2: Summon as many as possible to random available lanes
+      let summonedCount = 0;
+      const MAX_SUMMONS = 6;
+      for (const creature of uniqueCreatures) {
+        if (summonedCount >= MAX_SUMMONS) break;
+        const availableLane = this.findRandomAvailableLane(owner);
+        if (availableLane === null) break; // both lanes are full
+        // Remove from deck
+        const deckIndex = owner.deck.indexOf(creature);
+        if (deckIndex !== -1) {
+          owner.deck.splice(deckIndex, 1);
+        } else {
+          break;
+        }
+        // Clone and summon
+        creature.laneIndex = availableLane;
+        creature.attachedItems = [];
+        creature.sick = creature.currentKeywords?.includes('Charge') ? false : true;
+        creature.attacks = creature.attacksPerTurn ?? 1;
+        creature.covered = game.laneTypes[availableLane] === 'Shadow' && creature.keywords?.includes('Guard') &&
+            creature.immunity?.includes('GainCover')
+        // Add to board
+        this.placeOnBoard(game, owner, availableLane, creature);        
+        this.logHistory(game,{
+          player: owner === game.player ? 'You' : 'Opponent',
+          actionType: 'summon-effect',
+          description: `${owner === game.player ? 'You' : 'Opponent'}: ${sourceCard.name} summoned ${creature.name} (${effect.type})`,
+          details: [`Lane: ${game.laneTypes[availableLane!]}`]
+        });
+        summonedCount++;
+      }
+      return;
+    } else if (effect.type === 'playRandomDeck') {
+      let pool = owner.deck;
+      // Optional subtype filter
+      if (effect.subtypes && effect.subtypes.length > 0) {
+        pool = pool.filter(c => effect.subtypes!.includes(c.type));
+      }
+      if (pool.length === 0) return;
+      const cardToPlay = this.utilityService.random(pool);
+      // Remove from deck
+      const index = owner.deck.indexOf(cardToPlay);
+      if (index !== -1) owner.deck.splice(index, 1);
+      if (cardToPlay) {
+        const cardIndex = owner.deck.indexOf(cardToPlay);
+        if (cardIndex !== -1) owner.deck.splice(cardIndex, 1);
+        game.lastCardPlayed = cardToPlay;
+        this.logHistory(game,{
+          player: cardToPlay.isOpponent ? 'Opponent' : 'You',
+          actionType: 'play-card',
+          description: `${cardToPlay.isOpponent ? 'Opponent' : 'You'} played ${cardToPlay.name}`,
+          details: []
+        });
+        owner.cardsPlayed++;
+        const cardId = cardToPlay.id;
+        owner.playCounts[cardId] = (owner.playCounts[cardId] || 0) + 1;
+        switch (cardToPlay.type) {
+          case 'Creature': {
+            const availableLane = this.findRandomAvailableLane(owner);
+            if (availableLane === null) break; // both lanes are full
+            cardToPlay.laneIndex = availableLane;
+            cardToPlay.attachedItems = [];
+            cardToPlay.sick = cardToPlay.currentKeywords?.includes('Charge') ? false : true;
+            cardToPlay.attacks = cardToPlay.attacksPerTurn ?? 1;
+            cardToPlay.covered = game.laneTypes[availableLane] === 'Shadow' && cardToPlay.keywords?.includes('Guard') &&
+                cardToPlay.immunity?.includes('GainCover')
+            // Add to board
+            this.placeOnBoard(game, owner, availableLane, cardToPlay);
+            break;
+          }
+          case 'Item': {
+            const targets = [...owner.board[0],...owner.board[1]];
+            if (targets.length === 0) break;
+            const target = this.utilityService.random(targets);
+            //this.opponentPlayCard(game, card, undefined, target);
+            target.currentAttack! += cardToPlay.currentAttack ?? cardToPlay.attack ?? 0;
+            target.currentHealth! += cardToPlay.currentHealth ?? cardToPlay.health ?? 0;
+            target.maxHealth! += cardToPlay.currentHealth ?? cardToPlay.health ?? 0;
+    
+            this.addUniqueKeywords(target,game, cardToPlay.currentKeywords ?? cardToPlay.keywords ?? []);
+            this.handleTempKeywords(game, target, cardToPlay.tempKeywords ?? []);            
+            if (cardToPlay.immunity) {
+              target.immunity = Array.from(
+                new Set([
+                  ...(target.immunity ?? []),
+                  ...(cardToPlay.immunity ?? [])
+                ])
+              );
+            }
+    
+            target.attachedItems!.push({ ...cardToPlay });
+            game.lastCardEquipped = cardToPlay;
+            this.runEffects('EquipFriendly',owner,game);
+    
+            target.effects?.forEach(effect => {
+                  if (effect.trigger !== 'EquipItem') return;
+                  // Auto-target effects → resolve immediately
+                  if (this.isAutoTarget(effect.target)) {
+                    console.log('Equip Item triggered for: ', target.name)
+                    this.executeEffect(effect, target, game);
+                  } else {
+                    console.log('no auto target for equip item target: ', effect.target)
+                  }
+                });
+    
+            cardToPlay.effects?.forEach(effect => {
+              if (effect.trigger !== 'Summon') return;
+              
+              if (this.isAutoTarget(effect.target)) {
+                this.executeEffect(effect, cardToPlay, game);
+              } else {
+                const aiTarget = this.getSummonTarget(game, effect, cardToPlay, true);
+                if (aiTarget) {
+                  this.executeEffect(effect, cardToPlay, game, aiTarget);
+                  console.log(`Opponent chose summon target: ${(aiTarget as any).name || 'face'}`);
+                } else {
+                  console.log(`No valid summon target for opponent: ${cardToPlay}`);
+                }
+              }
+            });
+            break;
+          }
+          case 'Support': {
+            //this.opponentPlayCard(game, card);
+            owner.support.push({ ...cardToPlay });
+            this.applyCardAuras(game, cardToPlay, owner);
+            cardToPlay.effects?.forEach(effect => {
+              if (effect.trigger !== 'Summon') return;
+    
+              if (this.isAutoTarget(effect.target)) {
+                this.executeEffect(effect, cardToPlay, game);
+              } else {
+                // Manual target → AI chooses intelligently
+                const aiTarget = this.getSummonTarget(game, effect, cardToPlay, cardToPlay.isOpponent!);
+                if (aiTarget) {
+                  this.executeEffect(effect, cardToPlay, game, aiTarget);
+                  console.log(`Automatically chose summon target: ${(aiTarget as any).name || 'face'}`);
+                } else {
+                  console.log(`No valid summon target for: ${cardToPlay.name}`);
+                }
+              }
+            });
+            break;
+          }
+          case 'Action': {
+            const playEffects = cardToPlay.effects?.filter(e => e.trigger === 'Play') || [];
+            if (playEffects.length === 0) break;
+            let target: Card | PlayerState | undefined = undefined;
+            let chosenLane: number | undefined = undefined;
+            for (const effect of playEffects) {
+              if (this.isAutoTarget(effect.target,cardToPlay.type)) {
+                target = undefined;
+                break;
+              }
+              if (effect.target?.includes("ane") || effect.target === "lane") {
+                chosenLane = this.getBestLaneForOppAction(game, effect, cardToPlay.isOpponent);
+                if (chosenLane !== undefined) {
+                  target = undefined; // lane is chosen separately
+                  break;
+                }
+              } else {
+                target = this.getActionTarget(game,cardToPlay, effect, true);
+                if (target) break;
+              }
+            }   
+            const canPlay = target !== undefined || 
+              chosenLane !== undefined || 
+              playEffects.every(e => this.isAutoTarget(e.target,cardToPlay.type));
+            if (canPlay) {
+              //this.opponentPlayCard(game, card, chosenLane, target);
+              const originalCard = this.deckService.getCardById(cardToPlay.id);
+              const freshCopy = this.deckService.cloneCardForGame(originalCard!, true);
+              owner.discard.push(freshCopy);
+              // Resolve Play effects
+              cardToPlay.effects?.forEach(effect => {
+                if (effect.trigger !== 'Play') return;
+                console.log(`${cardToPlay.name}: ${effect.type}, lane: ${chosenLane}`);
+                // Auto effects
+                if (this.isAutoTarget(effect.target)) {
+                  this.executeEffect(effect, cardToPlay, game, undefined, chosenLane);
+                } else if (target !== undefined) {
+                  this.executeEffect(effect, cardToPlay, game, target, chosenLane);
+                } else {
+                  // Manual target (find one using AI logic)
+                  const aiTarget = target ?? this.getActionTarget(game, cardToPlay, effect, true);
+                  if (aiTarget) {
+                    this.executeEffect(effect, cardToPlay, game, aiTarget, chosenLane);
+                  } else if (chosenLane !== undefined) {
+                    this.executeEffect(effect, cardToPlay, game, undefined, chosenLane);
+                  } else {
+                    console.log(`No valid target for opponent Action effect: ${effect.type}`);
+                  }
+                }
+              });
+              if (cardToPlay.effects?.some(e => e.trigger === 'EndOfTurn')) {
+                console.log(`pushing ${cardToPlay.name} to limbo.`);
+                owner.limbo.push(cardToPlay);
+              }
+              this.logOpponent(`Played action "${cardToPlay.name}"`);
+              owner.actionsPlayed++;
+            }
+            break;
+          }
+        }
+        
+        
+        this.runEffects('PlayCard',owner, game);
+        this.updateStaticBuffs(game,game.opponent);
+        this.updateStaticBuffs(game,game.player);
+      }
       return;
     }
     
-    if (effect.condition && !this.isConditionMet(game, effect, effect.condition, sourceCard, chosenTarget)) {
-      if (outputLogs) console.log(`Effect skipped: condition not met for ${sourceCard.name}`);
-      return; // Early exit if condition fails
-    }
+    
 
-    const owner = sourceCard.isOpponent ? game.opponent : game.player;
-    const enemy = sourceCard.isOpponent ? game.player : game.opponent;
+    
     
     let targetLane: number | undefined;  
     if (chosenLane !== undefined) {
@@ -3057,6 +3825,8 @@ export class GameService {
             }
             targetLane = 1 - game.lastCardSummoned!.laneIndex!;
         }
+      } else if (effect.target === 'weakerLane') {
+        targetLane = this.getWeakerLane(game, sourceCard.isOpponent!);
       } else if (effect.target === 'leftLane') {
         targetLane = 0;
       } else if (effect.target === 'rightLane') {
@@ -3078,6 +3848,10 @@ export class GameService {
         // Default: try to use source lane, or random available
         if (outputLogs) console.log('using random lane b');
         targetLane = sourceCard.laneIndex ?? (Math.random() < 0.5 ? 0 : 1);
+        if (owner.board[targetLane].length >= 4) {
+          //try other lane
+          targetLane = 1 - targetLane;
+        }
       }
 
       if (targetLane === undefined || targetLane < 0 || targetLane > 1) {
@@ -3105,13 +3879,21 @@ export class GameService {
       let cardToSummon: Card | undefined;
       let summonCost = 0;
       // 1. Determine source card
-      if (effect.type === 'summon' || effect.type === 'summonOpponent' || effect.type === 'summonBuffStats') {
+      if (['summon','summonOpponent','summonBuffStats','summonUnique','summonMaxAttack'].includes(effect.type)) {
         if (effect.cardId) {
           if (effect.cardId === 'targetedCreature' && game.lastCreatureTargeted?.id) {
             cardToSummon = this.deckService.getCardById(game.lastCreatureTargeted.id);
           } else {
             cardToSummon = this.deckService.getCardById(effect.cardId);
           }
+          if (effect.cardId === 'lava-atronach' && effect.subtypes?.includes('Atronach') && 
+            !this.hasCreatureWithAttack(game,5,sourceCard.isOpponent!)) {
+            if (outputLogs) console.log(`didn't have creature with 5 attack. fallback to random atronach`)
+            cardToSummon = this.deckService.getRandomCardBySubtypes(effect.subtypes);
+          }
+          console.log(`getting ready to summon ${cardToSummon?.id}`);
+          if (cardToSummon && effect.type === 'summonUnique' && 
+            [...owner.board[0],...owner.board[1]].filter(c => c.id === cardToSummon!.id).length > 0) return;
         } else if (effect.subtypes?.length) {
           cardToSummon = this.deckService.getRandomCardBySubtypes(effect.subtypes);
         } else if (effect.names?.length) {
@@ -3123,10 +3905,12 @@ export class GameService {
           return;
         }
         cardToSummon = game.lastCardSummoned!;
-      } else if (effect.type === 'summonDeck' || effect.type === 'summonDeckLastCost' ||
-        effect.type === 'summonDeckCost'
-      ) {
+        if (effect.target === 'creatureFriendly' && chosenTarget !== undefined && this.isCard(chosenTarget)) {
+          cardToSummon = chosenTarget;
+        }
+      } else if (['summonDeck','summonDeckLastCost','summonDeckCost','summonTopDeck','summonDeckCostMax'].includes(effect.type)) {
         let costFilter: number = -1;
+        let filterDirection = 'equal';
         if (effect.type === 'summonDeckLastCost') {
           costFilter = game.lastCardPlayed!.cost;
         } else if (effect.type === 'summonDeckCost') {
@@ -3134,20 +3918,34 @@ export class GameService {
           if ((effect.increment ?? 0) > 0) {
             sourceCard.scaleDamage = (sourceCard.scaleDamage ?? 0) + effect.increment!;
           }
+        } else if (effect.type === 'summonDeckCostMax') {
+          costFilter = effect.cost ?? 3;
+          filterDirection = 'max';
         }
         let deckCreatures = owner.deck.filter(c => c.type === 'Creature');
         if (costFilter >= 0) {
-          deckCreatures = deckCreatures.filter(c => c.cost === costFilter);
+          if (filterDirection === 'equal') {
+            deckCreatures = deckCreatures.filter(c => c.cost === costFilter);
+          } else {
+            deckCreatures = deckCreatures.filter(c => c.cost <= costFilter);
+          }
         }
         if (deckCreatures.length === 0) {
           if (outputLogs) console.log('No creatures in deck to summon');
           cardToSummon = this.deckService.getCardById('sweet-roll');
+        } else if (effect.type === 'summonTopDeck') {
+          cardToSummon = deckCreatures[0];
         } else {
           cardToSummon = this.utilityService.random(deckCreatures);
         }
-      } else if (effect.type === 'summonRandomCost') {
-        if (effect.cost !== undefined && effect.cost !== null) {
-          summonCost = effect.cost;
+      } else if (['summonRandomCost','summonRandomMagicka'].includes(effect.type)) {
+        const hasCost = effect.cost !== undefined && effect.cost !== null;
+        if (hasCost || effect.type === 'summonRandomMagicka') {
+          if (hasCost) {
+            summonCost = effect.cost!;
+          } else {
+            summonCost = owner.currentMagicka;
+          }
           if (effect.increment) summonCost = summonCost + effect.increment;
           if (outputLogs) console.log('find creature with cost: ', summonCost);
           cardToSummon = this.deckService.getRandomCreatureByCost(summonCost,'equal');
@@ -3161,10 +3959,13 @@ export class GameService {
           if (outputLogs) console.log('find creature with cost: ', summonCost);
           cardToSummon = this.deckService.getRandomCreatureByCost(summonCost,'equal');
         }
+      } else if (effect.type === 'summonRandomCounter') {
+        summonCost = sourceCard.counter ?? 0;
+        cardToSummon = this.deckService.getRandomCreatureByCost(summonCost,'equal',undefined,'N');
       } else if (effect.type === 'summonRandomMax') {
         summonCost = owner.maxMagicka;
         cardToSummon = this.deckService.getRandomCreatureByCost(summonCost,'max');
-      } else if (effect.type === 'summonDiscard' || effect.type === 'summonOppDiscard' || effect.type === 'summonHighTemp') {
+      } else if (['summonDiscard','summonOppDiscard','summonHighTemp','summonDiscardAttack'].includes(effect.type)) {
         // 1. Determine which player's discard pile to use
         const discardOwner = effect.type !== 'summonOppDiscard' ? 
           (sourceCard.isOpponent ? game.opponent : game.player) : (sourceCard.isOpponent ? game.player : game.opponent);
@@ -3182,8 +3983,17 @@ export class GameService {
 
         if (effect.subtypes && effect.subtypes.length > 0) {
           candidates = candidates.filter(c => 
-            c.subtypes?.some(sub => effect.subtypes!.includes(sub))
+            c.subtypes?.some(sub => effect.subtypes!.includes(sub)) ||
+            c.subtypes?.includes('All')
           );
+        }
+
+        if (effect.cardId) {
+          candidates = candidates.filter(c => c.id === effect.cardId);
+        }
+
+        if (effect.type === 'summonDiscardAttack') {
+          candidates = candidates.filter(c => (c.currentAttack ?? c.attack ?? 0) < (sourceCard.currentAttack ?? sourceCard.attack ?? 3));
         }
 
         if (candidates.length === 0) {
@@ -3247,7 +4057,7 @@ export class GameService {
           sick: summonedCopy.keywords?.includes('Charge') ? false : true,
           attacks: 1,
           covered: game.laneTypes[targetLane!] === 'Shadow' && !summonedCopy.keywords?.includes('Guard') &&
-            !summonedCopy.immunity?.includes('Cover'),
+            !summonedCopy.immunity?.includes('GainCover'),
         };
 
         if (creatureCopy.id === 'ancient-giant' && summonCost > 0) {
@@ -3257,9 +4067,22 @@ export class GameService {
           creatureCopy.currentHealth = summonCost;
           creatureCopy.maxHealth = summonCost;
         }
+        if (effect.type === 'summonMaxAttack') {
+          const highestAtkCard = [...owner.board[0],...owner.board[1]].reduce((prev, curr) => 
+            (curr.currentAttack ?? curr.attack ?? 0) > (prev.currentAttack ?? prev.attack ?? 0) 
+              ? curr 
+              : prev
+          );
+          if (highestAtkCard) {
+            const highestAttack = highestAtkCard.currentAttack ?? highestAtkCard.attack ?? 1;
+            creatureCopy.currentAttack = highestAttack;
+            creatureCopy.currentHealth = highestAttack;
+            creatureCopy.maxHealth = highestAttack;
+          }
+        }
 
         // Special handling per summon type
-        if (effect.type === 'summonDiscard' || effect.type === 'summonOppDiscard' || effect.type === 'summonHighTemp') {
+        if (['summonDiscard','summonOppDiscard','summonHighTemp','summonDiscardAttack'].includes(effect.type)) {
           // Remove from discard
           const discardOwner = effect.type !== 'summonOppDiscard' ? 
             (sourceCard.isOpponent ? game.opponent : game.player) : (sourceCard.isOpponent ? game.player : game.opponent);
@@ -3275,9 +4098,7 @@ export class GameService {
         } else if (effect.type === 'summonSlain') {
           // Optional: clear slain reference if needed
           game.creatureSlain = null;
-        } else if (effect.type === 'summonDeck' || effect.type === 'summonDeckCost' ||
-          effect.type === 'summonDeckLastCost'
-        ) {
+        } else if (['summonDeck','summonDeckLastCost','summonDeckCost','summonTopDeck','summonDeckCostMax'].includes(effect.type)) {
           const index = owner.deck.findIndex(c => c.instanceId === cardToSummon.instanceId);
           if (index !== -1) {
             owner.deck.splice(index,1);
@@ -3291,36 +4112,12 @@ export class GameService {
           }
         }
 
+        if (effect.type === 'summonDeckCostMax') {
+          creatureCopy.endOfTurn = 'unsummon';
+        }
+
         // Place on board
-        this.placeOnBoard(game, altPlayer ? enemy : owner, targetLane!, creatureCopy);
-        
-        // Trigger its own Summon effects
-        if (creatureCopy.id !== sourceCard.id) {
-          //this.executeEffectsForCard('Summon',creatureCopy, owner, game);
-          creatureCopy.effects?.forEach(e => {
-            if (e.trigger !== 'Summon') return;
-
-            if (this.isAutoTarget(e.target)) {
-              this.executeEffect(e, creatureCopy, game);
-            } else {
-              const aiTarget = this.getSummonTarget(game, e, creatureCopy, creatureCopy.isOpponent!);
-              if (aiTarget) {
-                this.executeEffect(e, creatureCopy, game, aiTarget);
-              } else {
-                if (outputLogs) console.log(`No valid summon target for ${creatureCopy.name}`);
-              }
-            }
-          });
-        }
-
-        // Apply auras & check death
-        this.applyCardAuras(game, creatureCopy, altPlayer ? enemy: owner);
-        const deathsBefore = this.currentDeathTotalThisTurn(game);
-        this.checkCreatureDeath(game);
-        const deathsAfter = this.currentDeathTotalThisTurn(game);
-        if (deathsAfter !== deathsBefore) {
-          this.checkCreatureDeath(game);
-        }
+        this.placeOnBoard(game, altPlayer ? enemy : owner, targetLane!, creatureCopy);        
       }
 
       // Common history log
@@ -3361,12 +4158,28 @@ export class GameService {
       targets = [sourceCard];
     } else if (effect.target === 'drawnCard') {
       targets = [game.lastCardDrawn!];
+    } else if (effect.target === 'playedCard') {
+      targets = [game.lastCardPlayed!];
     } else if (effect.target === 'deck') {
       targets = [...owner.deck];
     } else if (effect.target === 'thief') {
       targets = [game.thief!];
+    } else if (effect.target === 'namedCard') {
+      if (effect.names){
+      const foundNamedCard = [...owner.board[0],...owner.board[1]].find(c => effect.names?.includes(c.id));
+      if (foundNamedCard) targets = [foundNamedCard];
+      }
+    } else if (effect.target === 'instanceId') {
+      if (effect.cardId){
+      const foundInstanceCard = [...owner.board[0],...owner.board[1],
+        ...enemy.board[0],...enemy.board[1]].find(c => effect.cardId === c.instanceId);
+      if (foundInstanceCard) targets = [foundInstanceCard];
+      }
+    } else if (effect.target === 'cardRallied') {
+      targets = [game.rallyist!];
     } else if (effect.target === 'wielder') {
       targets = [this.findWielderOfItem(game, sourceCard)!];
+      console.log('target of wielder',targets[0]);
     } else if (effect.target === 'moved') {
       targets = [game.creatureMoved!];
     } else if (effect.target === 'slain') {
@@ -3379,17 +4192,13 @@ export class GameService {
       targets = [game.lastCardDealingDamage!];
     } else if (effect.target === 'creatureDamaged') {
       targets = [game.lastCardReceivingDamage!];
+    } else if (effect.target === 'maxCostOppHand') {
+      targets = this.getHighestCostCard(sourceCard.isOpponent ? game.player.hand : game.opponent.hand);
     } else if (effect.target === 'players') {
         targets = [game.player, game.opponent];
     } else if (effect.target === 'summon') {
       if (!game.lastCardSummoned) {
         if (outputLogs) console.warn('No last summoned card available');
-        return;
-      }
-      // Apply targetCondition to filter the summon target
-      if (effect.targetCondition && 
-        !this.deckService.isTargetConditionMet(game.lastCardSummoned, effect.targetCondition, sourceCard)) {
-        if (outputLogs) console.log(`Summon effect skipped: target condition not met for ${sourceCard.name}`);
         return;
       }
       targets = [game.lastCardSummoned];
@@ -3416,12 +4225,33 @@ export class GameService {
       }
       if (finalTarget) targets = [finalTarget];
     }
-
-    if (effect.targetCondition) {
-      targets.filter(t => {
-        if (!this.isCard(t)) return true; // players pass
-        return this.deckService.isTargetConditionMet(t as Card, effect.targetCondition, sourceCard);
-    });
+    if (targets.length === 1 && effect.targetCondition && effect.target && 
+      ['summon','wielder','drawnCard','slain','cardRallied'].includes(effect.target!) && this.isCard(targets[0])) {
+      // Apply targetCondition to filter
+      if (effect.targetCondition && 
+        !this.deckService.isTargetConditionMet(targets[0], effect.targetCondition, sourceCard)) {
+        if (outputLogs) console.log(`Summon effect skipped: target condition not met for ${sourceCard.name}`);
+        return;
+      }
+    }
+    if (targets.length > 1 && effect.targetCondition && effect.targetCondition.type === 'notMostPowerful') {
+      //need to filter so that most poweful (highest attack) card on each side (one for player and opponent) of a lane is excluded
+      for (let i = 0; i < 2; i++) {
+        const oppCreatures = game.opponent.board[i];
+        if (oppCreatures.length > 0) {
+          const strongestOpp = oppCreatures.reduce((prev, curr) => 
+            (curr.currentAttack ?? 0) > (prev.currentAttack ?? 0) ? curr : prev
+          );
+          targets = targets.filter (t => t !== strongestOpp);
+        }
+        const playerCreatures = game.player.board[i];
+        if (playerCreatures.length > 0) {
+          const strongestPlayer = playerCreatures.reduce((prev, curr) => 
+            (curr.currentAttack ?? 0) > (prev.currentAttack ?? 0) ? curr : prev
+          );   
+          targets = targets.filter (t => t !== strongestPlayer);   
+        }  
+      }
     }
 
     if (targets.length > 0) {
@@ -3431,6 +4261,11 @@ export class GameService {
           sourceCard: sourceCard,
           prompt: 'trigger'
         });
+      }
+      if (effect.type === 'damageName' && targets.length === 1 && this.isCard(targets[0])) {
+        const targetName = targets[0].id;
+        const targetOwner = targets[0].isOpponent ? game.opponent : game.player;
+        targets = [...targetOwner.board[0],...targetOwner.board[1]].filter(c => c.id === targetName);
       }
     }
 
@@ -3459,6 +4294,8 @@ export class GameService {
         details: [`Targets: ${targetDetails.join(', ')}`]
       });
     }
+
+    if (effect.type === 'discard') game.cardsDiscarded = 0;
 
     targets.forEach(target => {
       switch (effect.type) {
@@ -3493,6 +4330,7 @@ export class GameService {
           if (outputLogs) console.log(`Revealed top ${topCards.length} card(s) from ${isEnemy ? 'opponent' : 'player'} deck`);
           break;
 
+        case 'revealAndGuessBuff':
         case 'revealAndGuess': {
           if (this.isCard(target)) {
             if (outputLogs) console.warn('revealAndGuess needs PlayerState target');
@@ -3502,23 +4340,24 @@ export class GameService {
           const player = target as PlayerState; // the guessing player
           const enemy = player === game.player ? game.opponent : game.player;
 
-          const handIds = new Set(target.hand.map(c => c.id)); // IDs already in enemy's hand
+          const handIds = new Set(player.hand.map(c => c.id)); // IDs already in enemy's hand
 
-          if (target.deck.length < (effect.amount ?? 3) - 1) {
+          if (player.deck.length < (effect.amount ?? 3) - 1) {
             if (outputLogs) console.log(`Not enough cards in enemy deck for revealAndGuess`);
             break;
           }
 
           // 1. Pick 1 real card from enemy's hand (or fallback if hand empty)
           let realHandCard: Card | undefined;
-          if (target.hand.length > 0) {
-            realHandCard = this.utilityService.random(target.hand);
+          if (player.hand.length > 0) {
+            realHandCard = this.utilityService.random(player.hand);
           } else {
-            if (outputLogs) console.log('Enemy hand empty — using deck card as fallback');
+            if (outputLogs) console.log('Enemy hand empty');
+            break;
           }
 
           // 2. Pick remaining cards from enemy deck, excluding hand IDs
-          let deckCandidates = target.deck.filter(c => !handIds.has(c.id));
+          let deckCandidates = player.deck.filter(c => !handIds.has(c.id));
           deckCandidates = this.utilityService.shuffle(deckCandidates);
 
           const numDeckCards = (effect.amount ?? 3) - (realHandCard ? 1 : 0);
@@ -3540,17 +4379,18 @@ export class GameService {
             if (outputLogs) console.log(`CPU guessing ${chosen.name}`);
 
             // Resolve draw for chosen card
-            const chosenDeckIndex = enemy.deck.findIndex(c => c.instanceId === chosen.instanceId);
+            const chosenDeckIndex = player.hand.findIndex(c => c.instanceId === chosen.instanceId);
             if (chosenDeckIndex !== -1) {
-              const actualCard = enemy.deck.splice(chosenDeckIndex, 1)[0];
-              if (player.hand.length < 10) {
-                player.hand.push(actualCard);
-                this.reapplyHandAuras(player);
+              const actualCard = player.hand[chosenDeckIndex];
+              const copyCard = this.deckService.cloneCardForGame(actualCard,true);
+              if (enemy.hand.length < 10) {
+                enemy.hand.push(copyCard);
+                this.reapplyHandAuras(enemy);
               } else {
                 this.queuePendingAction(game, {
                   type: 'burn',
-                  sourceCard: actualCard,
-                  opponentTarget: player === game.opponent
+                  sourceCard: copyCard,
+                  opponentTarget: true
                 });
               }
             }
@@ -3564,93 +4404,118 @@ export class GameService {
             effect,
             revealCards: shuffledRevealed,
             opponentTarget: sourceCard.isOpponent,
-            prompt: 'Guess which card is in their hand'
+            prompt: effect.type === 'revealAndGuess' ? 
+              'Guess which card is in their hand to draw a copy.' :
+              'Guess which card is in their hand to buff your hand.'
           });
 
           if (outputLogs) console.log(`Revealed ${shuffledRevealed.length} cards for guess (1 from hand, rest from deck)`);
           break;
         }
 
+        case 'revealAndChooseGive':
         case 'revealAndChooseOpp':
         case 'revealAndChooseDeck':
         case 'revealAndChooseCost':
-        case 'revealAndChoose':
+        case 'revealAndChooseName':
+        case 'revealAndChoose': {
           if (this.isCard(target)) {
             console.warn('revealAndChoose needs PlayerState target');
             break;
           }
 
           const player = target as PlayerState;
+          const enemy = player === game.player ? game.opponent : game.player;
           const deck2 = effect.type === 'revealAndChooseOpp' ? 
             (player === game.player ? game.opponent.deck : game.player.deck) : 
             player.deck;
-
-          if (deck2.length < (effect.amount ?? 3)) {
-            if (outputLogs) console.log(`Not enough cards in deck to reveal ${(effect.amount ?? 3)}`);
+          let revealAmount = effect.amount ?? 3;
+          if (deck2.length === 0) {
+            if (outputLogs) console.log(`No cards in deck to reveal ${(effect.amount ?? 3)}`);
             break;
+          } else if (deck2.length < revealAmount) {
+            revealAmount = deck2.length;
           }
-
           let candidates: Card[] = [];
-          if (effect.type === 'revealAndChooseCost' && effect.cost !== undefined) {
+          if (effect.type === 'revealAndChooseName' && effect.names) {
+            effect.names.forEach(name => {
+              const candidate = this.deckService.getCardById(name);
+              if (candidate) candidates.push(candidate);
+            });
+          } else if (effect.type === 'revealAndChooseCost' && effect.cost !== undefined) {
             let revealCost = effect.cost + (sourceCard.scaleDamage ?? 0);
             if ((effect.increment ?? 0) > 0) {
               sourceCard.scaleDamage = (sourceCard.scaleDamage ?? 0) + effect.increment!;
             }
-            candidates = this.deckService.getAllCards()
+            candidates = this.deckService.getMostCards()
               .filter(c => (c.currentCost ?? c.cost ?? 0) === revealCost);
-            if (effect.subtypes && effect.subtypes.length > 0) {
-              const requestedTypes = effect.subtypes.filter(t =>
-                ["Creature", "Item", "Support", "Action"].includes(t)
-              );
-              if (requestedTypes.length > 0) {
-                candidates = candidates.filter(c => 
-                  requestedTypes!.includes(c.type)
-                );
-              }
-
-              const requestedSubtypes = effect.subtypes.filter(t =>
-                !["Creature", "Item", "Support", "Action"].includes(t)
-              );
-              if (requestedSubtypes.length > 0) {
-                candidates = candidates.filter(c => 
-                  c.subtypes?.some(sub => requestedSubtypes!.includes(sub))
-                );
-              }
-            }
-            candidates = this.utilityService.shuffle(candidates);
-          } else if (effect.type === 'revealAndChooseDeck') {
-            candidates = [...deck2];
+          } else if (effect.type === 'revealAndChooseGive') {
+            candidates = this.deckService.getMostCards();
           } else {
-            candidates = this.utilityService.shuffle([...deck2]);
+            candidates = [...deck2];
           }
 
+          if (effect.subtypes && effect.subtypes.length > 0) {
+            const requestedTypes = effect.subtypes.filter(t =>
+              ["Creature", "Item", "Support", "Action"].includes(t)
+            );
+            if (requestedTypes.length > 0) {
+              candidates = candidates.filter(c => 
+                requestedTypes!.includes(c.type)
+              );
+            }
+            const requestedSubtypes = effect.subtypes.filter(t =>
+              !["Creature", "Item", "Support", "Action"].includes(t)
+            );
+            if (requestedSubtypes.length > 0) {
+              candidates = candidates.filter(c => 
+                c.subtypes?.some(sub => requestedSubtypes!.includes(sub)) ||
+                c.subtypes?.includes('All')
+              );
+            }
+          }
 
+          if (effect.type !== 'revealAndChooseDeck') {
+            candidates = this.utilityService.shuffle(candidates);
+          }
 
-
-          const revealed = candidates.slice(0, effect.amount ?? 3);
+          const revealed = candidates.slice(0, revealAmount);
 
           if (sourceCard.isOpponent && game.cpuPlaying) {
-            const oppCard = revealed[this.utilityService.random([0,1,2])];
+            if (revealed.length === 0) break;
+            const idx = Math.floor(Math.random() * revealed.length);
+            const oppCard = revealed[idx];
+            let clonedOppCard: Card | null = null;
             if (outputLogs) console.log(`opponent automatically selecting ${oppCard.name} from reveal options`);
             const chosenDeckIndex = deck2.indexOf(oppCard);
             if (chosenDeckIndex !== -1) {
               if (effect.type === 'revealAndChoose') deck2.splice(chosenDeckIndex, 1);
               game.lastCardDrawn = oppCard;
-              if (player.hand.length < 10) {
-                player.hand.push(oppCard);
-                //this.handVersion++;
-                this.reapplyHandAuras(player);
-              } else {
-                if (outputLogs) console.log(`burned ${oppCard.name} because hand is full`);
-                //this.showBurnHint(oppCard, player === game.opponent);
-                this.queuePendingAction(game, {
-                    type: 'burn',
-                    sourceCard: oppCard,
-                    opponentTarget: player === game.opponent
-                });
-              }
+            } else {
+              const clonedOppCard = this.deckService.cloneCardForGame(oppCard,true);
+              game.lastCardDrawn = clonedOppCard;              
             }
-            if (outputLogs) console.log(`Drew ${oppCard.name} from Moment of Clarity reveal`);
+            const finalCard = clonedOppCard === null ? oppCard : clonedOppCard;
+            if (player.hand.length < 10) {
+              player.hand.push(finalCard);
+              this.reapplyHandAuras(player);
+              this.checkTreasureHunt(game,game.lastCardDrawn);
+            } else {
+              if (outputLogs) console.log(`burned ${finalCard.name} because hand is full`);
+              this.queuePendingAction(game, {
+                  type: 'burn',
+                  sourceCard: finalCard,
+                  opponentTarget: player === game.opponent
+              });
+            }
+            if (effect.type === 'revealAndChooseGive' && revealed.length === 2 &&
+              enemy.hand.length < 10) {
+              const playerCard = revealed[1-idx];
+              const finalPlayerCard = this.deckService.cloneCardForGame(playerCard,false);
+              enemy.hand.push(finalPlayerCard);
+              this.reapplyHandAuras(enemy);              
+            }
+            if (outputLogs) console.log(`Drew ${finalCard.name} from ${sourceCard.name} reveal`);
             break;
           }
 
@@ -3663,10 +4528,12 @@ export class GameService {
             opponentTarget: target === game.opponent,
             prompt: effect.type === 'revealAndChooseDeck' ? 
               'Choose one to draw. Discard the others.' :
-              'Choose one to draw'
+              (effect.type === 'revealAndChooseGive' ? 'Choose one to draw. Give opponent the other.' :
+              'Choose one to draw')
           });
           if (outputLogs) console.log(`Revealed ${revealed.length} cards for choice`);
           break;
+        }
         
         case 'playSupport': {
           let cardId: string | null;
@@ -3730,7 +4597,8 @@ export class GameService {
             targetHand.forEach(card => {
               if (card.type === 'Creature') {
                 if (effect.subtypes && effect.subtypes.length > 0) {
-                  if (card.subtypes?.some(sub => effect.subtypes!.includes(sub))) {
+                  if (card.subtypes?.some(sub => effect.subtypes!.includes(sub)) ||
+                    card.subtypes?.includes('All')) {
                     handTargets.push(card);
                   }
                 } else {
@@ -3750,6 +4618,28 @@ export class GameService {
             if (outputLogs) console.log('No keywords on target for giveKeywordsToHandRandom effect');
             break;
           }
+          break;
+        }
+
+        case 'setNeutral': {
+          if (this.isCard(target)) {
+            target.attributes = ['N'];
+            if (outputLogs) console.log(`setting attribute of ${target.name} to neutral`);
+          }
+          break;
+        }
+
+        case 'banishDiscard': {
+          if (this.isCard(target)) return;
+          target.discard = [];
+          if (outputLogs) console.log(`${target === game.player ? 'player' : 'opponent'} discard was banished`);
+          break;
+        }
+
+        case 'restoreRune': {
+          if (this.isCard(target)) return;
+          const numRunes = effect.amount ?? 1;          
+          this.restoreRunes(target, numRunes);
           break;
         }
 
@@ -3809,14 +4699,6 @@ export class GameService {
 
           // Shuffle the entire deck
           target.deck = this.utilityService.shuffle([...target.deck]);
-
-          // Optional: log history
-          /*this.logHistory(game, {
-            player: target === game.player ? 'You' : 'Opponent',
-            actionType: 'action-effect',
-            description: `${target === game.player ? 'You' : 'Opponent'} shuffled ${creaturesInDiscard.length} creatures from discard into deck`,
-            details: []
-          });*/
           break;
         }
 
@@ -3840,6 +4722,17 @@ export class GameService {
           break;
         }
 
+        case 'invertStats': {
+          if (this.isCard(target)) {
+            const currAttack = target.currentAttack ?? target.attack ?? 0;
+            const currHealth = target.currentHealth ?? target.health ?? 0;
+            target.currentHealth = currAttack;
+            target.maxHealth = currAttack;
+            target.currentAttack = currHealth;
+          }
+          break;
+        }
+
         case 'buffDeck': {
           if (this.isCard(target)) {
             if (outputLogs) console.log('invalid target');
@@ -3857,6 +4750,7 @@ export class GameService {
         }
 
         case 'triggerSummon': {
+          
           if (!this.isCard(target)) {
             if (outputLogs) console.log('invalid target');
             break;
@@ -3884,16 +4778,7 @@ export class GameService {
             if (outputLogs) console.log('no slayer');
             break;
           }
-          game.creatureSlayer.effects?.forEach(effect => {
-            if (effect.trigger !== 'Slay') return;
-            // Auto-target effects → resolve immediately
-            if (this.isAutoTarget(effect.target)) {
-              if (outputLogs) console.log('Slay triggered for: ', game.creatureSlayer!.name)
-              this.executeEffect(effect, game.creatureSlayer!, game);
-            } else {
-              if (outputLogs) console.log('no auto target for slay target: ', effect.target)
-            }
-          });
+          this.executeEffectsForCard('Slay',game.creatureSlayer,game);
           break;
         }
 
@@ -3957,11 +4842,42 @@ export class GameService {
           if (playerIndex >= 0) {
             owner.hand.splice(playerIndex,1);
             owner.discard.push(target);
-            if (outputLogs) console.log(`discarded ${target.name} from hand`);
+            game.cardsDiscarded = (game.cardsDiscarded ?? 0) + 1;
+            if (outputLogs) console.log(`discarded ${target.name} from hand. discard count = ${game.cardsDiscarded}`);
+
+          } else {
+            const deckIndex = owner.deck.indexOf(target);
+            if (deckIndex >= 0) {
+              owner.deck.splice(deckIndex,1);
+              owner.discard.push(target);
+              game.cardsDiscarded = (game.cardsDiscarded ?? 0) + 1;
+            }
           }
           break;
         }
 
+        case 'takeCard': {
+          if (enemy.hand.length === 0 || owner.hand.length >= 10) {
+            if (outputLogs) console.log(`can't take a card`);
+            break;
+          }
+          const lowestOppCard = enemy.hand.reduce((prev, curr) => 
+            (curr.currentCost ?? curr.cost ?? 999) < (prev.currentCost ?? prev.cost ?? 999) 
+              ? curr 
+              : prev
+          );
+          const lowestOppIndex = enemy.hand.indexOf(lowestOppCard);
+          if (lowestOppIndex >= 0) {
+            enemy.hand.splice(lowestOppIndex,1);
+            lowestOppCard.isOpponent = !lowestOppCard.isOpponent;
+            owner.hand.push(lowestOppCard);
+            this.reapplyHandAuras(owner);
+            this.updateStaticBuffs(game, owner);
+            this.reapplyHandAuras(enemy);
+            this.updateStaticBuffs(game, enemy);
+          }
+          break;
+        }
         case 'tradeHand': {
           if (enemy.hand.length === 0) {
             if (outputLogs) console.log('no card to trade');
@@ -3982,6 +4898,10 @@ export class GameService {
             owner.hand.push(randomOppCard);
             enemy.hand.push(target);
             if (outputLogs) console.log(`traded ${target.name} for ${randomOppCard.name} in opponent's hand`);
+            this.reapplyHandAuras(owner);
+            this.updateStaticBuffs(game, owner);
+            this.reapplyHandAuras(enemy);
+            this.updateStaticBuffs(game, enemy);
           } else {
             if (outputLogs) console.log('failed to trade cards');
           }
@@ -4006,6 +4926,35 @@ export class GameService {
           break;
         }
 
+        case 'removeProphecy': {
+          if (this.isCard(target)) target.prophecy = false;
+          break;
+        }
+
+        case 'grantWard': {
+          if (!this.isCard(target)) {
+            target.hasWard = true;
+            if (outputLogs) console.log(`${target === game.opponent ? 'Opponent' : 'Player'} gained ward`);
+          }
+          break;
+        }
+
+        case 'grantImmunity': {
+          if (this.isCard(target)) {
+            if (effect.immunity) {
+              if (outputLogs) console.log(`${target.name} gained immunity to action targeting`);
+              if (!target.immunity?.includes(effect.immunity)) {
+                if (target.immunity) {
+                  target.immunity.push(effect.immunity);
+                } else {
+                  target.immunity = [effect.immunity];
+                }
+              }
+            }
+          }
+          break;
+        }
+
         case 'grantEffect': {
           if (!this.isCard(target)) {
             if (outputLogs) console.log('invalid target');
@@ -4018,9 +4967,10 @@ export class GameService {
           break;
         }
 
+        case 'battleAttack':
         case 'battle': {
           if (!this.isCard(target)) {
-            if (outputLogs) console.log('invalid target');
+            if (outputLogs) console.log('invalid target for battle');
             return;
           }
           let attacker: Card | null = null;
@@ -4039,8 +4989,20 @@ export class GameService {
             enemyCreatures.sort((a, b) => (b.currentAttack ?? 0) - (a.currentAttack ?? 0));
             defender = enemyCreatures[0];
           } else {
-            attacker = sourceCard;
             defender = target;
+            if (effect.type === 'battleAttack') {
+              const creaturesFive = [...owner.board[0],...owner.board[1]].filter(c =>
+                (c.currentAttack ?? c.attack ?? 0) >= 5
+              );
+              if (creaturesFive.length > 0) {
+                attacker = creaturesFive[0];
+              } else {
+                if (outputLogs) console.log(`couldn't find 5 attack creature for battle`);
+                return;
+              }
+            } else {
+              attacker = sourceCard;
+            }
           }
           this.resolveAttack(game, attacker, defender, true);
           break;
@@ -4059,7 +5021,8 @@ export class GameService {
             if (opponent.hand.length < 10) {
               opponent.hand.push(stolenCard);
               this.runEffects('DrawCard', opponent, game);
-              this.executeEffectsForCard('AddToHand',stolenCard, opponent, game);
+              this.executeEffectsForCard('AddToHand',stolenCard, game);
+              this.checkTreasureHunt(game,game.lastCardDrawn);
             }
             if (effect.cardId) {
               const counterCard = this.deckService.getCardById(effect.cardId);
@@ -4136,7 +5099,10 @@ export class GameService {
             [...game.player.board[refLane], ...game.opponent.board[refLane]].forEach(c => {
               if (target.instanceId === c.instanceId) return;
               const hasWard = c.currentKeywords?.includes('Ward');
-              if (hasWard && amount > 0) {
+              const immuneDmg = c.immunity?.includes('AllDamage');
+              if (immuneDmg && amount > 0) {
+                if (outputLogs) console.log(`${c.name} is immune to damage`);
+              } else if (hasWard && amount > 0) {
                 c.currentKeywords = c.currentKeywords?.filter(k => k !== 'Ward');
                 c.effects?.forEach(effect2 => {
                   if (effect2.trigger !== 'WardBroken') return;
@@ -4145,10 +5111,10 @@ export class GameService {
               } else {
                 if (amount > (c.currentHealth ?? 0)) {
                   const excess = amount - (c.currentHealth ?? 0);
-                  if (outputLogs) console.log(`checking excess. is breakthrough? ${this.hasBreakthroughAura(owner)}`);
-                  if (sourceCard.type === 'Action' && this.hasBreakthroughAura(owner) &&
+                  if (sourceCard.type === 'Action' && this.hasKeywordAura(owner,'Breakthrough') &&
                     c.isOpponent !== sourceCard.isOpponent) {
                       const ownerTarget = c.isOpponent ? game.opponent : game.player;
+                      owner.damageLane[refLane] += excess;
                       ownerTarget.health = Math.max(0,ownerTarget.health - excess);
                       if (outputLogs) console.log(`dealt ${excess} excess damage to face`);
                   }
@@ -4159,6 +5125,7 @@ export class GameService {
                   game.lastCardReceivingDamage = c;
                   target.totalDamageDealt = (target.totalDamageDealt ?? 0) + amount;                
                   game.lastDamageTaken = amount;
+                  this.runEffects('FriendlyDamageTaken',c.isOpponent ? game.opponent : game.player,game);
                   c.effects?.forEach(effect2 => {
                   if (effect2.trigger !== 'DamageTaken') return;
                     this.queuePendingAction(game, {
@@ -4198,7 +5165,13 @@ export class GameService {
             break;
           }
           let magickaAmount = effect.amount ?? 0;
-          if (this.hasDoubleMagickaAura(target)) magickaAmount *= 2;
+          let adjScalar = 1;
+          if (effect.amountPer) {
+            adjScalar = this.getAmountPer(game, effect.amountPer, sourceCard);
+            if (outputLogs) console.log('effect type: ', effect.type, ' triggered ', adjScalar, 'x');
+          }
+          magickaAmount *= adjScalar;
+          if (this.hasKeywordAura(target,'DoubleMagicka')) magickaAmount *= 2;
           target.maxMagicka = (target.maxMagicka ?? 0) + magickaAmount;
           this.runEffects('MaxMagickaIncreased',target, game);
           this.updateStaticBuffs(game, target);
@@ -4272,7 +5245,8 @@ export class GameService {
           if (this.isCard(target)) {
             owner.board.forEach(pl => {
               pl.forEach(c => {
-                if (target.subtypes.some(s => c.subtypes.includes(s))) {
+                if (target.subtypes.some(s => c.subtypes.includes(s)) ||
+                    c.subtypes.includes('All')) {
                   const attackBuff = effect.modAttack ?? 0;
                   const healthBuff = effect.modHealth ?? 0;
                   c.currentAttack = (c.currentAttack ?? 0) + attackBuff;
@@ -4289,6 +5263,7 @@ export class GameService {
         case 'buffTarget':
         case 'buffSelf':
           if (this.isCard(target)) {
+            game.lastCreatureTargeted = target;
             if ((target.currentHealth ?? 0) <= 0 && effect.trigger !== 'LastGasp') {
               if (outputLogs) console.log(`${target.name} should already be dead. can't buff`);
               break;
@@ -4322,7 +5297,7 @@ export class GameService {
             target.currentHealth = (target.currentHealth ?? 0) + healthMod;
             target.maxHealth = (target.maxHealth ?? 0) + healthMod;
             this.addUniqueKeywords(target, game, keywordsToAdd);
-            this.addUniqueKeywords(target, game, tempKeywordsToAdd);
+            this.handleTempKeywords(game, target, tempKeywordsToAdd);
             keywordsToRemove.forEach(w => {
               target.currentKeywords = (target.currentKeywords ?? []).filter(k => k !== w);
               if (w === 'Cover') {
@@ -4330,15 +5305,7 @@ export class GameService {
               }
             });
             if (effect.tempAttack) target.tempAttack = (target.tempAttack ?? 0) + tempAttackMod;
-            if (effect.tempHealth) target.tempHealth = (target.tempHealth ?? 0) + tempHealthMod;
-            if (effect.tempKeywords) {
-              target.tempKeywords = Array.from(
-                new Set([
-                  ...(target.tempKeywords ?? []),
-                  ...(tempKeywordsToAdd)
-                ])
-              );
-            }
+            if (effect.tempHealth) target.tempHealth = (target.tempHealth ?? 0) + tempHealthMod;            
             if (outputLogs) console.log(`Buffed ${target.name}: +${attackBuff}/+${healthBuff}`);
           }
           break;
@@ -4356,6 +5323,65 @@ export class GameService {
           break;
         }
 
+        case 'playerBattle': {
+          if (!this.isCard(target)) return;
+          if (target.type !== 'Creature') return;
+          const defenderWard = (target.currentKeywords || []).includes('Ward');
+          const defenderAttack = target.currentAttack ?? 0;
+          const defenderImmune = target.immunity?.includes('AllDamage');
+          const playerAttack = effect.modAttack ?? 0;
+          if (playerAttack > 0) {
+            if (defenderImmune) {
+              if (outputLogs) console.log(`${target.name} is immune to damage`);
+            } else if (defenderWard) {
+              target.currentKeywords = target.currentKeywords?.filter(k => k !== 'Ward');
+              target.effects?.forEach(e => {
+              if (e.trigger !== 'WardBroken') return;
+                this.executeEffect(e, target, game);
+              });
+            } else {
+              target.currentHealth = Math.max(0,(target.currentHealth ?? target.health!) - playerAttack);
+              game.lastCardReceivingDamage = target;
+              game.lastDamageTaken = playerAttack;
+              game.lastCardDealingDamage = null;
+              this.runEffects('FriendlyDamageTaken',target.isOpponent ? game.opponent : game.player,game);
+              target.effects?.forEach(e => {
+                  if (e.trigger !== 'DamageTaken') return;                      
+                  this.queuePendingAction(game, {
+                      type: 'audio',
+                      sourceCard: target,
+                      prompt: 'hit'
+                  });
+                this.executeEffect(e, target, game);
+              });
+            }
+          }
+          if (defenderAttack > 0) {
+            if (owner.hasWard) {
+              owner.hasWard = false;
+            } else {
+              owner.health = Math.max(0, owner.health - defenderAttack);
+              owner.damageTaken = defenderAttack;
+              game.lastCardReceivingDamage = null;
+              game.lastDamageTaken = defenderAttack;
+              game.lastCardDealingDamage = target;
+              target.effects?.forEach(e => {
+                if (e.trigger !== 'DamageDealt') return;
+                this.executeEffect(e, target, game);
+              });
+            }
+          }
+          this.breakRunesIfNeeded(game, owner === game.opponent ? game.player : game.opponent);
+          const deathsBefore = this.currentDeathTotalThisTurn;
+          this.checkCreatureDeath(game);
+          const deathsAfter = this.currentDeathTotalThisTurn;
+          if (deathsAfter !== deathsBefore) {
+            this.checkCreatureDeath(game);
+          }
+          break;
+        }
+
+        case 'damageName':
         case 'damage': {
           let amount = effect.amount ?? 0;
           let dmgScalar = 1;
@@ -4373,6 +5399,7 @@ export class GameService {
             game.lastCreatureTargeted = target;
             if (target.immunity?.includes('ActionDamage') && sourceCard.type === 'Action') amount = 0;
             if (target.immunity?.includes('SupportDamage') && sourceCard.type === 'Support') amount = 0;
+            if (target.immunity?.includes('AllDamage')) amount = 0;
             const hasWard = target.currentKeywords?.includes('Ward');
             if (hasWard && amount > 0) {
               target.currentKeywords = target.currentKeywords?.filter(k => k !== 'Ward');
@@ -4383,11 +5410,11 @@ export class GameService {
             } else {
               if (amount > (target.currentHealth ?? 0)) {
                 const excess = amount - (target.currentHealth ?? 0);
-                if (outputLogs) console.log(`checking excess. is breakthrough? ${this.hasBreakthroughAura(owner)}`);
-                if (sourceCard.type === 'Action' && this.hasBreakthroughAura(owner) &&
+                if (sourceCard.type === 'Action' && this.hasKeywordAura(owner,'Breakthrough') &&
                   target.isOpponent !== sourceCard.isOpponent) {
                     const ownerTarget = target.isOpponent ? game.opponent : game.player;
                     ownerTarget.health = Math.max(0,ownerTarget.health - excess);
+                    if (sourceCard.laneIndex !== undefined) owner.damageLane[sourceCard.laneIndex] += amount;
                     if (outputLogs) console.log(`dealt ${excess} excess damage to face`);
                 }
               }
@@ -4397,6 +5424,7 @@ export class GameService {
                 game.lastCardReceivingDamage = target;
                 sourceCard.totalDamageDealt = (sourceCard.totalDamageDealt ?? 0) + amount;                
                 game.lastDamageTaken = amount;
+                this.runEffects('FriendlyDamageTaken',target.isOpponent ? game.opponent : game.player,game);
                 target.effects?.forEach(effect2 => {
                 if (effect2.trigger !== 'DamageTaken') return;
                   this.queuePendingAction(game, {
@@ -4417,20 +5445,37 @@ export class GameService {
               }
             }
           } else if (target) {
-            if (amount > 0 && this.hasActionImmunityAura(target) && sourceCard.type === 'Action') amount = 0;
-            if (amount > 0 && this.hasSupportImmunityAura(target) && sourceCard.type === 'Support') amount = 0;
+            if (amount > 0 && this.hasImmunityAura(target,'ActionDamage') && sourceCard.type === 'Action') amount = 0;
+            if (amount > 0 && this.hasImmunityAura(target,'SupportDamage') && sourceCard.type === 'Support') amount = 0;
             if (amount > 0) {
-              target.damageTaken += amount;
-              sourceCard.totalDamageDealt = (sourceCard.totalDamageDealt ?? 0) + amount;
-              game.lastCardReceivingDamage = null;
-              sourceCard.effects?.forEach(effect2 => {
-              if (effect2.trigger !== 'DamageDealt') return;
-                this.executeEffect(effect2, sourceCard, game);
-              });
-              game.healthJustGained = 0;
-              if (outputLogs) console.log(`Dealt ${amount} damage to ${target === game.opponent ? 'opponent' : 'player'}`);
+              if (target.hasWard) {
+                if (outputLogs) console.log(`Player ward blocked ${amount} damage from ${sourceCard.name}`);
+                amount = 0;
+                target.hasWard = false;
+              } else {
+                target.damageTaken += amount;
+                if (sourceCard.laneIndex !== undefined) owner.damageLane[sourceCard.laneIndex] += amount;
+                sourceCard.totalDamageDealt = (sourceCard.totalDamageDealt ?? 0) + amount;
+                game.lastCardReceivingDamage = null;
+                sourceCard.effects?.forEach(effect2 => {
+                if (effect2.trigger !== 'DamageDealt') return;
+                  this.executeEffect(effect2, sourceCard, game);
+                });
+                if (sourceCard.type === 'Creature') {
+                  game.lastCardDealingDamage = sourceCard;
+                  this.runEffects('DamagedByCreature',target,game);
+                }
+                game.healthJustGained = 0;
+                if (outputLogs) console.log(`Dealt ${amount} damage to ${target === game.opponent ? 'opponent' : 'player'}`);
+              }
             } else {
-              if (outputLogs) console.log(`Healed ${amount} damage to ${target === game.opponent ? 'opponent' : 'player'}`);
+              if (this.hasCertainImmunity((target === game.opponent ? game.player : game.opponent),'OppHealthGain')) {
+                amount = 0;
+                if (outputLogs) console.log(`opponent blocked health gain with effect`);
+              } else if (this.hasKeywordAura(target,'DoubleHeal')) {
+                amount *= 2;
+              }
+              if (outputLogs) console.log(`Healed ${amount} damage to ${target === game.opponent ? 'opponent' : 'player'}`);              
               game.healthJustGained = -amount;
             }
             target.health = Math.min(99,Math.max(0, target.health - amount));
@@ -4443,6 +5488,19 @@ export class GameService {
           const deathsAfter = this.currentDeathTotalThisTurn;
           if (deathsAfter !== deathsBefore) {
             this.checkCreatureDeath(game);
+          }
+          break;
+        }
+
+        case 'thaw': {
+          if (!this.isCard(target)) {
+            [...target.board[0],...target.board[1]].forEach(c => {
+              if (c.frozen) {
+                c.frozen = false;
+                c.shackled = false;
+                if (outputLogs) console.log(`${c.name} thawed from ${sourceCard.name}`);
+              }
+            });
           }
           break;
         }
@@ -4476,8 +5534,9 @@ export class GameService {
           break;   
 
         case 'unsummon':
-        case 'silence':
+        case 'silence':          
           if (this.isCard(target) && target.type === 'Creature') {
+            game.lastCreatureTargeted = target;
             const ownerTarget = target.isOpponent ? game.opponent : game.player;
             //console.log(`${target.name} immunity is ${target.immunity ?? []}`);
             if (effect.type === 'silence' && 
@@ -4538,7 +5597,6 @@ export class GameService {
                 return;
               } else {
                 ownerTarget.hand.push(clonedToAdd);
-                //this.handVersion++;
                 this.reapplyHandAuras(ownerTarget);
               }
               const location = this.findCardLocation(game, target);
@@ -4590,12 +5648,28 @@ export class GameService {
           break;
         }
 
+        case 'drawMagicka': {
+          let drawAmount = effect.amount ?? 1;
+          let drawScalar = 1;
+          if (effect.amountPer) {
+            drawScalar = this.getAmountPer(game, effect.amountPer, sourceCard, targetLane);
+            if (outputLogs) console.log('effect type: ', effect.type, ' triggered ', drawScalar, 'x');
+          }
+          drawAmount *= drawScalar;
+
+          if (!this.isCard(target)) this.drawFilteredCards(target, drawAmount, game,
+              target.currentMagicka, effect.subtypes ?? undefined);
+          break;
+        }
+
         case 'drawFilteredPower':
         case 'drawFiltered':
+        case 'drawMultiAttr':
         case 'drawCards':
         case 'drawFull':
+        case 'drawTreasure':
         case 'drawAndReduceCost':
-        case 'discardTopDeck':
+        case 'discardTopDeck':          
           let drawAmount = effect.amount ?? 1;
           let drawScalar = 1;
           if (effect.amountPer) {
@@ -4621,10 +5695,41 @@ export class GameService {
           } else if (effect.type === 'drawFiltered') {
             if (!this.isCard(target)) this.drawFilteredCards(target, drawAmount, game,
               effect.cost ?? undefined, effect.subtypes ?? undefined);
+          } else if (effect.type === 'drawMultiAttr') {
+            if (!this.isCard(target)) this.drawFilteredCards(target, drawAmount, game,
+              effect.cost ?? undefined, effect.subtypes ?? undefined,['X']);
           } else if (effect.type === 'drawFilteredPower') {
             //console.log(`source power for attack is ${sourceCard.currentAttack}`);
             if (!this.isCard(target)) this.drawFilteredCards(target, drawAmount, game,
               sourceCard.currentAttack ?? undefined, effect.subtypes ?? undefined);
+          } else if (effect.type === 'drawTreasure') {
+            if (this.isCard(target)) return;
+            const wielder = this.findWielderOfItem(game,sourceCard);
+            if (wielder && wielder.treasureHunt && !wielder.treasureHunt.completed) {
+              const firstReq = wielder.treasureHunt.requirements[0].type;
+              let treasureType = 'type';
+              if (this.keywordList.includes(firstReq)) treasureType = 'keyword';
+              if (firstReq.startsWith('Cost')) treasureType = 'cost';
+              if (['N','B','R','Y','P','G'].includes(firstReq)) treasureType = 'attribute';
+              if (treasureType === 'cost') {
+                const filterCost = parseInt(firstReq.substring(5),10);
+                console.log(`drawing looking for cost: ${filterCost}`);
+                this.drawFilteredCards(target, drawAmount, game, filterCost);
+              } else {
+                const filterList: string[] = [];
+                wielder.treasureHunt.requirements.forEach(r => {
+                  if (r.found < r.required) filterList.push(r.type);
+                });
+                console.log(`drawing looking for types: ${filterList}`);
+                this.drawFilteredCards(target, drawAmount, game, undefined, 
+                  treasureType === 'type' ? filterList : undefined,
+                  treasureType === 'attribute' ? filterList: undefined,
+                  treasureType === 'keyword' ? filterList : undefined
+                );
+              }
+            } else {
+              this.drawCards(target,drawAmount, game);
+            }
           }
           break; 
         
@@ -4639,7 +5744,6 @@ export class GameService {
             game.lastCardDrawn = drawnCard;
             if (target.hand.length >= 10) {
               if (outputLogs) console.log(`Drew ${drawnCard.name} from discard, but hand full!`);
-              //this.showBurnHint(drawnCard, target === game.opponent);
 
                 this.queuePendingAction(game, {
                     type: 'burn',
@@ -4648,18 +5752,41 @@ export class GameService {
                 });
               break;
             } else {
-              //this.handVersion++;
               target.hand.push(drawnCard);
 
               this.reapplyHandAuras(target);
               if (outputLogs) console.log(`Drew ${drawnCard.name} from discard to hand`);
+              this.checkTreasureHunt(game,game.lastCardDrawn);
             }
-            /*this.logHistory(game,{
-              player: target === game.player ? 'You' : 'Opponent',
-              actionType: 'draw-effect',
-              description: `${target === game.player ? 'You' : 'Opponent'} drew ${drawnCard.name} from discard`,
-              details: []
-            });*/
+          }
+          break;
+        }
+
+        case 'drawFromDeck': {
+          if (!this.isCard(target)) {
+            const gyIndex = target.deck.findIndex(c => c.instanceId === sourceCard.instanceId);
+            if (gyIndex === -1) {
+              if (outputLogs) console.log(`drawFromDeck: ${sourceCard.id} not found in deck`);
+              break;
+            }
+            const drawnCard = target.deck.splice(gyIndex, 1)[0];
+            game.lastCardDrawn = drawnCard;
+            if (target.hand.length >= 10) {
+              if (outputLogs) console.log(`Drew ${drawnCard.name} from deck, but hand full!`);
+
+                this.queuePendingAction(game, {
+                    type: 'burn',
+                    sourceCard: drawnCard,
+                    opponentTarget: target === game.opponent
+                });
+              break;
+            } else {
+              target.hand.push(drawnCard);
+
+              this.reapplyHandAuras(target);
+              if (outputLogs) console.log(`Drew ${drawnCard.name} from deck to hand`);
+              this.checkTreasureHunt(game,game.lastCardDrawn);
+            }
           }
           break;
         }
@@ -4689,24 +5816,35 @@ export class GameService {
               owner.deck.push(target);
               owner.deck = this.utilityService.shuffle(owner.deck);
               return;
-            }
-            const clonedCreature = this.deckService.cloneCardForGame(target, oppBool);
+            }            
             if (effect.type === 'addToHand') {
-                clonedCreature.currentCost! += owner.tempCost;
-                game.lastCardDrawn = clonedCreature;
-                if (owner.hand.length < 10) {
-                    owner.hand.push(clonedCreature);
-                    //this.handVersion++;
-                    this.reapplyHandAuras(owner);
-                } else {
-                    //this.showBurnHint(clonedCreature, owner === game.opponent);
-
-                    this.queuePendingAction(game, {
-                        type: 'burn',
-                        sourceCard: clonedCreature,
-                        opponentTarget: owner === game.opponent
-                    });
+              const clonedCreature = this.deckService.cloneCardForGame(target, oppBool);
+              clonedCreature.currentCost! += owner.tempCost;
+              game.lastCardDrawn = clonedCreature;
+              if (owner.hand.length < 10) {
+                  owner.hand.push(clonedCreature);
+                  this.reapplyHandAuras(owner);
+                  this.checkTreasureHunt(game,game.lastCardDrawn);
+              } else {
+                  this.queuePendingAction(game, {
+                      type: 'burn',
+                      sourceCard: clonedCreature,
+                      opponentTarget: owner === game.opponent
+                  });
+              }
+            } else if (effect.type === 'shuffleIntoDeck') {
+              const numToShuffle = effect.amount ?? 1;
+              for (let i = 0; i < numToShuffle; i++) {
+                const clonedCreature = this.deckService.cloneCardForGame(target, oppBool);
+                if (effect.modAttack) clonedCreature.currentAttack = (clonedCreature.currentAttack ?? clonedCreature.attack!) + effect.modAttack;
+                if (effect.modHealth) {
+                  clonedCreature.currentHealth = (clonedCreature.currentHealth ?? clonedCreature.health!) + effect.modHealth;
+                  clonedCreature.maxHealth = (clonedCreature.maxHealth ?? clonedCreature.health!) + effect.modHealth;
                 }
+                if (effect.cost !== undefined) clonedCreature.currentCost = effect.cost;
+                owner.deck.push(clonedCreature);                
+              }  
+              owner.deck = this.utilityService.shuffle(owner.deck);                     
             }
             return;
           }
@@ -4730,7 +5868,8 @@ export class GameService {
               } else {
                 // Filter by subtypes
                 candidates = candidates.filter(c => 
-                  c.subtypes?.some(sub => effect.subtypes!.includes(sub))
+                  c.subtypes?.some(sub => effect.subtypes!.includes(sub)) ||
+                  c.subtypes.includes('All')
                 );
               }
             }
@@ -4763,7 +5902,7 @@ export class GameService {
             return;
           }
           const numToAdd = effect.amount ?? 1;
-          oppBool = target === game.opponent;
+          oppBool = (target === game.opponent);
           for (let i = 0; i < numToAdd; i++) {
             const cloned = this.deckService.cloneCardForGame(cardToAdd, oppBool);
             this.applyCardUpgrades(owner,cloned);
@@ -4773,12 +5912,10 @@ export class GameService {
                 game.lastCardDrawn = cloned;
                 if (target.hand.length < 10) {
                     target.hand.push(cloned);
-                    //this.handVersion++;
                     this.reapplyHandAuras(target);
-                    this.executeEffectsForCard('AddToHand',cloned, target, game);
+                    this.executeEffectsForCard('AddToHand',cloned, game);
+                    this.checkTreasureHunt(game,game.lastCardDrawn);
                 } else {
-                    //this.showBurnHint(cloned, target === game.opponent);
-
                     this.queuePendingAction(game, {
                         type: 'burn',
                         sourceCard: cloned,
@@ -4861,7 +5998,7 @@ export class GameService {
             // Re-apply any lane-specific effects (auras, cover, etc.)
             if (!creature.covered) creature.covered = game.laneTypes[creature.laneIndex!] === 'Shadow' && 
               !creature.currentKeywords?.includes('Guard') &&
-              !creature.immunity?.includes('Cover');
+              !creature.immunity?.includes('GainCover');
             const afterCovered = creature.covered;
             if (!beforeCovered && afterCovered) {
               creature.effects?.forEach(effect2 => {
@@ -4927,7 +6064,7 @@ export class GameService {
             // Re-apply any lane-specific effects (auras, cover, etc.)
             if (!target.covered) target.covered = game.laneTypes[targetLane] === 'Shadow' && 
               !target.currentKeywords?.includes('Guard') &&
-              !target.immunity?.includes('Cover');
+              !target.immunity?.includes('GainCover');
             const afterCovered = target.covered;
             // Add to new lane
             owner.board[targetLane].push(target);
@@ -5019,22 +6156,13 @@ export class GameService {
             toEquip.forEach(item => {
               // Equip logic (same as normal item equip)
               if (!this.isCard(target)) return;
+              const clonedItem = this.deckService.cloneCardForGame(item,target.isOpponent!);
               target.currentAttack = (target.currentAttack ?? 0) + (item.currentAttack ?? item.attack ?? 0);
               target.currentHealth = (target.currentHealth ?? 0) + (item.currentHealth ?? item.health ?? 0);
               target.maxHealth = (target.maxHealth ?? 0) + (item.currentHealth ?? item.health ?? 0);
 
               this.addUniqueKeywords(target, game, item.keywords ?? []);
-              const tempKeywordsToAdd = item.tempKeywords ?? [];
-              this.addUniqueKeywords(target, game, tempKeywordsToAdd);
-
-              if (item.tempKeywords) {
-                target.tempKeywords = Array.from(
-                  new Set([
-                    ...(target.tempKeywords ?? []),
-                    ...(tempKeywordsToAdd)
-                  ])
-                );
-              }
+              this.handleTempKeywords(game, target, item.tempKeywords ?? []);
               if (item.immunity) {
                 target.immunity = Array.from(
                   new Set([
@@ -5045,9 +6173,9 @@ export class GameService {
               }
 
               target.attachedItems = target.attachedItems || [];
-              target.attachedItems.push({ ...item });
+              target.attachedItems.push({ ...clonedItem });
               if (effect.type !== 'equipCopy') {
-                game.lastCardEquipped = item;
+                game.lastCardEquipped = clonedItem;
                 this.runEffects('EquipFriendly',owner,game);
               }
 
@@ -5062,7 +6190,7 @@ export class GameService {
                 }
               });
 
-              item.effects?.forEach(effect2 => {
+              clonedItem.effects?.forEach(effect2 => {
                 if (effect2.trigger !== 'Summon') return;
 
                 if (this.isAutoTarget(effect2.target)) {
@@ -5080,10 +6208,37 @@ export class GameService {
           }
           //console.log(`Master of Arms equipped ${toEquip.length} items from discard`);
           break;
+
+        case 'secretDeath': {
+          if (this.isCard(target)) {
+            const tempEffect: CardEffect = {
+              "trigger": "LastGasp",
+              "type": "destroy",
+              "cardId": target.instanceId,
+              "target": "instanceId"
+            }
+            sourceCard.effects?.push(tempEffect);
+          }
+          break;
+        }
         
         case 'allLastGasp': {
           if (!this.isCard(target)) {
             this.runEffects('LastGasp',target, game);
+          }
+          break;
+        }
+
+        case 'allExalt': {
+          if (!this.isCard(target)) {
+            this.runEffects('Exalt',target, game);
+          }
+          break;
+        }
+
+        case 'removeEffects': {
+          if (this.isCard(target)) {
+            target.effects = [];
           }
           break;
         }
@@ -5097,8 +6252,18 @@ export class GameService {
 
         case 'healDamageTaken':
           if (!this.isCard(target)) {
-            const amountToHeal = game.lastDamageTaken;
+            let amountToHeal = game.lastDamageTaken;
+            if (this.hasCertainImmunity((target === game.opponent ? game.player : game.opponent),'OppHealthGain')) {
+                amountToHeal = 0;
+                if (outputLogs) console.log(`opponent blocked health gain with effect`);
+              }
             if (amountToHeal > 0) {
+              if (this.hasCertainImmunity((target === game.opponent ? game.player : game.opponent),'OppHealthGain')) {
+                amountToHeal = 0;
+                if (outputLogs) console.log(`opponent blocked health gain with effect`);
+              } else if (this.hasKeywordAura(target,'DoubleHeal')) {
+                amountToHeal *= 2;
+              }
               target.health = Math.min(99,target.health + amountToHeal);
               if (outputLogs) console.log(`healed ${amountToHeal} from ${sourceCard.name} effect`);
               game.healthJustGained = amountToHeal;
@@ -5125,6 +6290,7 @@ export class GameService {
         case 'banish':
           if (this.isCard(target)) {
             target.banished = true;
+            if ((target.currentHealth ?? target.health!) > 0) this.destroyCard(game,target,sourceCard);
             if (outputLogs) console.log(`Banish: Removed ${target.name} from discard`);            
           }else {
             if (outputLogs) console.warn('Banish target is not a valid card');
@@ -5288,6 +6454,7 @@ export class GameService {
           break;
 
         case 'drawDiscard':
+          game.lastCardDrawn = null;
           if (this.isCard(target)) return;
           const gy = target.discard;
           if (gy.length === 0) {
@@ -5301,11 +6468,12 @@ export class GameService {
               gyCandidates = gyCandidates.filter(c => effect.subtypes!.includes(c.type));
             } else {
               gyCandidates = gyCandidates.filter(c => 
-                c.subtypes?.some(s => effect.subtypes!.includes(s))
+                c.subtypes?.some(s => effect.subtypes!.includes(s)) ||
+                c.subtypes?.includes('All')
               );
             }
           }
-          gyCandidates = gyCandidates.filter(c => c.id !== sourceCard.id);
+          gyCandidates = gyCandidates.filter(c => c.instanceId !== sourceCard.instanceId);
           if (gyCandidates.length === 0) {
             if (outputLogs) console.log('No matching cards in discard');
             break;
@@ -5316,6 +6484,7 @@ export class GameService {
           game.lastCardDrawn = drawn;
           if (target.hand.length < 10) {
             target.hand.push(drawn);
+            this.checkTreasureHunt(game,game.lastCardDrawn);
           } else {
             //this.showBurnHint(drawn, target === game.opponent);
 
@@ -5332,14 +6501,24 @@ export class GameService {
         case 'transform':
           if (outputLogs) console.log('trying transform');
           if (!this.isCard(target)) return;
-          const ownerT = target.isOpponent ? game.opponent : game.player;
+          let ownerT = target.isOpponent ? game.opponent : game.player;
           if (effect.cardId && !effect.target?.includes('Hand') && effect.target !== 'drawnCard') {
             if (outputLogs) console.log('using cardid)');
             let newCardId = effect.cardId;
-            if (effect.cardId === 'revealedCreature') newCardId = game.creatureRevealed!.id;        
+            let transformTarget = target;
+            if (effect.cardId === 'revealedCreature') newCardId = game.creatureRevealed!.id;      
+            if (effect.cardId === 'targetedCreature') {
+              if (sourceCard.type !== 'Creature') return;
+              if (sourceCard.laneIndex === undefined) return;
+              newCardId = target.id; 
+              transformTarget = sourceCard;
+              ownerT = sourceCard.isOpponent ? game.opponent : game.player;
+            }
             let newTemplate: Card | null;
             if (effect.cardId === 'legendary') {
               newTemplate = this.deckService.getRandomCreatureByCost(20,'max','4Legendary')!;
+            } else if (effect.cardId === 'randomCost') {
+              newTemplate = this.deckService.getRandomCreatureByCost((target.currentCost ?? target.cost)+(effect.increment ?? 0),'equal')!;
             } else {
               newTemplate = this.deckService.getCardById(newCardId)!;
             }
@@ -5347,20 +6526,20 @@ export class GameService {
               if (outputLogs) console.log('didnt find card');
               return;
             }
-            const newCopy = this.deckService.cloneCardForGame(newTemplate, target.isOpponent!);
+            const newCopy = this.deckService.cloneCardForGame(newTemplate, transformTarget.isOpponent!);
             const newCreature = {
               ...newCopy,
-              laneIndex: target.laneIndex,
+              laneIndex: transformTarget.laneIndex,
               currentAttack: newCopy.attack ?? 0,
               currentHealth: newCopy.health ?? 0,
               maxHealth: newCopy.health ?? 0,
               // ... other init
             };
             // Remove old auras
-            this.reverseAurasOnTarget(game,target);
+            this.reverseAurasOnTarget(game,transformTarget);
             // Replace in lane
-            const lane = ownerT.board[target.laneIndex!];
-            const pos = lane.indexOf(target);
+            const lane = ownerT.board[transformTarget.laneIndex!];
+            const pos = lane.indexOf(transformTarget);
             if (pos !== -1) {
               lane[pos] = newCreature;
             }
@@ -5377,7 +6556,7 @@ export class GameService {
             });
             this.applyCardAuras(game, newCreature, ownerT);
             this.checkCreatureDeath(game);
-            if (outputLogs) console.log(`${target.name} transformed into ${newCreature.name}`);
+            if (outputLogs) console.log(`${transformTarget.name} transformed into ${newCreature.name}`);
           } else if (effect.subtypes && effect.target === 'deck') {
             const newCardTemplate = this.deckService.getRandomCardBySubtypes(effect.subtypes);
             const newCopy = this.deckService.cloneCardForGame(newCardTemplate!,sourceCard.isOpponent!);
@@ -5386,11 +6565,21 @@ export class GameService {
             //console.log(`added ${newCardTemplate.name} to deck`);
           } else if (effect.target === 'playerHand') {
             if (outputLogs) console.log(`trying to transform ${target.name}`);
-            const newCardTemplate = this.deckService.getRandomCardByCost(20,'max');
+            let newCardTemplate: Card | undefined = undefined;
+            if (effect.subtypes) {
+              newCardTemplate = this.deckService.getRandomCardBySubtypes(effect.subtypes);
+            } else {
+              newCardTemplate = this.deckService.getRandomCardByCost(20,'max');
+            }
             const newCopy = this.deckService.cloneCardForGame(newCardTemplate!,sourceCard.isOpponent!);
-            owner.hand.shift();
-            owner.hand.push(newCopy);
-          } else if (effect.target === 'creaturePlayerHand' || effect.target === 'drawnCard') {
+            const handIndex = owner.hand.indexOf(target);
+            if (handIndex !== -1) {
+              owner.hand.splice(handIndex,1);
+              //owner.hand.shift();
+              owner.hand.push(newCopy);
+            }
+          } else if (effect.target && ['cardPlayerHand','drawnCard','maxCostOppHand'].includes(effect.target)) {
+            const targetPlayer = target.isOpponent ? game.opponent : game.player;
             if (effect.cardId) {
               let newCardId = effect.cardId;
               if (effect.cardId === 'revealedCreature') newCardId = game.creatureRevealed!.id;        
@@ -5398,22 +6587,23 @@ export class GameService {
               if (effect.cardId === 'legendary') {
                 newTemplate = this.deckService.getRandomCreatureByCost(20,'max','4Legendary')!;
               } else if (effect.cardId === 'maxMagicka') {
-                newTemplate = this.deckService.getRandomCardByCost(owner.maxMagicka,'equal')!;
+                newTemplate = this.deckService.getRandomCardByCost(targetPlayer.maxMagicka,'equal')!;
               } else {
                 newTemplate = this.deckService.getCardById(newCardId)!;
               }
               const newCopy = this.deckService.cloneCardForGame(newTemplate, target.isOpponent!);
-              const handIndex = owner.hand.indexOf(target);
+              const handIndex = targetPlayer.hand.indexOf(target);
               if (handIndex !== -1) {
-                owner.hand.splice(handIndex,1);
-                owner.hand.push(newCopy);
+                targetPlayer.hand.splice(handIndex,1);
+                targetPlayer.hand.push(newCopy);
               }
               
             }
           }
           break;
 
-        case 'steal':
+        case 'beckon':
+        case 'steal': {
           if (!this.isCard(target) || target.type !== 'Creature') return;
           const stealOwner = target.isOpponent ? game.player : game.opponent;
           const stealLane = target.laneIndex!;
@@ -5434,8 +6624,20 @@ export class GameService {
           stealOwner.board[stealLane].push(target);
           // Apply new owner's auras
           this.applyCardAuras(game, target, stealOwner);
+          target.sick = true;
+          if ((target.currentKeywords || []).includes('Charge')) {
+            target.sick = false;
+            target.attacks = target.attacksPerTurn ?? 1;
+          }
           if (outputLogs) console.log(`${sourceCard.name} stole ${target.name}`);
+          if (effect.type === 'beckon') {
+            this.addUniqueKeywords(target,game,['Charge']);
+            target.endOfTurn = 'swapOwner';
+            target.attacks = target.attacksPerTurn ?? 1;
+            target.sick = false;
+          }
           break;
+        }
 
         case 'shuffleProphecy':
           if (this.isCard(target)) return;
@@ -5456,7 +6658,6 @@ export class GameService {
 
           // 3. Hand now contains only non-Prophecy cards
           p.hand = nonProphecyCards;
-          //this.handVersion++;
 
           // 4. Redraw the same number of Prophecy cards that were shuffled back
           this.drawCards(p, prophecyCount, game);
@@ -5527,11 +6728,13 @@ export class GameService {
       'creatureThisLaneAll',
       'creatureDiscardAll',
       'supportFriendlyAll',
+      'creaturesTopDeck',
       'enemyAll',
       'players',
       'playerHand',
       'allHands',
       'opponentHand',
+      'factotum',
       'deck'
       // add more as needed: 'allCreaturesInLane', etc.
     ];
@@ -5586,12 +6789,19 @@ export class GameService {
     if (targetLane !== undefined) {
       sourceLane = targetLane;
     }
-    console.log('mass summon lane: ', sourceLane);
+    //console.log('mass summon lane: ', sourceLane);
     let baseTargets: (Card | PlayerState)[] = [];
     switch (targetType) {
       case 'deck':
         baseTargets = [...owner.deck];
         break;
+      case 'creaturesTopDeck': {
+        const topCreatures = owner.deck
+          .filter(card => card.type === 'Creature')
+          .slice(0, 3);
+        baseTargets = topCreatures;
+        break;
+      }
       case 'playerHand':
         baseTargets = [...owner.hand];
         break;
@@ -5601,6 +6811,12 @@ export class GameService {
       case 'allHands':
         baseTargets = [...owner.hand, ...enemy.hand];
         break;
+      case 'factotum': {
+        baseTargets = [...owner.hand, ...owner.deck, source].filter(c =>
+          c.subtypes?.includes('Factotum') || c.subtypes?.includes('All')
+        );
+        break;
+      }
       case 'creatureAll':
         baseTargets = [...game.player.board[0], ...game.player.board[1], ...game.opponent.board[0], ...game.opponent.board[1]];
         break;
@@ -5676,7 +6892,7 @@ export class GameService {
     //filter for targetCondition
     if (effect.targetCondition) {
       baseTargets = baseTargets.filter(t => 
-        this.isCard(t) && this.deckService.isTargetConditionMet(t, effect.targetCondition, undefined)
+        this.isCard(t) && this.deckService.isTargetConditionMet(t, effect.targetCondition, source)
       );
     }
     return baseTargets;
@@ -5684,15 +6900,8 @@ export class GameService {
 
   // Check if a card/player is valid for the staged summon effect
     
-
-  private hasActivationLimitImmunity(player: PlayerState): boolean {
-      const board0Bool = player.board[0].some(creature =>
-        creature.immunity?.includes('ActivationLimit')
-      );
-      const board1Bool = player.board[1].some(creature =>
-        creature.immunity?.includes('ActivationLimit')
-      );
-      return (board0Bool || board1Bool);
+    private hasCertainImmunity(player: PlayerState, immType: string): boolean {
+      return [...player.board[0],...player.board[1]].some(c => c.immunity?.includes(immType));
     }
   
     addUniqueKeywords(target: Card, game: GameState, keywords?: string[]) {
@@ -5705,7 +6914,7 @@ export class GameService {
       const beforeCovered = target.covered;
       if (target.currentKeywords.includes('Cover')) target.covered = true;
       if (target.currentKeywords.includes('Stealth')) target.covered = true;
-      if (target.immunity?.includes('Cover')) {
+      if (target.immunity?.includes('GainCover')) {
         target.currentKeywords.filter(k => k !== 'Cover');
         target.currentKeywords.filter(k => k !== 'Stealth');
         target.covered = false;
@@ -5727,15 +6936,19 @@ export class GameService {
       }
     }  
   
-    opponentPlayCard(game: GameState, card: Card, laneIndex?: number, target?: Card | PlayerState, freePlay: boolean = false) {
-      if (!freePlay) {
+    opponentPlayCard(game: GameState, card: Card, laneIndex?: number, target?: Card | PlayerState, freePlay: boolean = false, betrayPlay: boolean = false) {
+      if (!freePlay && !betrayPlay) {
         if (game.opponent.currentMagicka < (card.currentCost ?? card.cost)) return;
         const handIndex = game.opponent.hand.indexOf(card);
         if (handIndex === -1) return;
         game.opponent.hand.splice(handIndex, 1);
         if ((card.currentCost ?? card.cost) > 0) game.opponent.currentMagicka -= (card.currentCost ?? card.cost);
       } else {
-        console.log(`Free Prophecy play: ${card.name} (no cost)`);
+        if (freePlay) {
+          console.log(`Free Prophecy play: ${card.name} (no cost)`);
+        } else if (betrayPlay) {
+          console.log(`Free Betray play: ${card.name} (no cost)`);
+        }
       }
       if (game.tempCostAdjustment !== 0) {
         game.opponent.hand.forEach(cardInHand => {
@@ -5743,7 +6956,7 @@ export class GameService {
         });
         game.tempCostAdjustment = 0;
       }
-      if (!card.effects?.some(e => e.type === 'modCost' && e.target === 'self')) card.currentCost = card.cost;
+      if (!card.effects?.some(e => e.type === 'modCost' && e.target === 'self') && !['custom-fabricant','abomination'].includes(card.id)) card.currentCost = card.cost;
       game.lastCardPlayed = card;
   
       // In playCard or opponentPlayCard
@@ -5753,6 +6966,11 @@ export class GameService {
         description: `${card.isOpponent ? 'Opponent' : 'You'} played ${card.name}`,
         details: card.type === 'Creature' ? [`To lane ${game.laneTypes[laneIndex!]}`] : []
       });
+
+      game.betrayAvailable = false;
+      game.opponent.cardsPlayed++;
+      const cardId = card.id;
+      game.opponent.playCounts[cardId] = (game.opponent.playCounts[cardId] || 0) + 1;
       const refType = this.deckService.getEffectiveType(card);
   
       switch (refType) {
@@ -5766,7 +6984,7 @@ export class GameService {
             sick: hasCharge ? false: true, //charge gets 1 attack immediately
             attacks: 1, 
             covered: game.laneTypes[laneIndex!] === 'Shadow' && !hasGuard &&
-                !card.immunity?.includes('Cover')  // true in shadow lane unless Guard
+                !card.immunity?.includes('GainCover')  // true in shadow lane unless Guard
           };
           const spendAll = card.effects?.some(e => 
             e.trigger === 'Play' && e.type === 'spendAllForStats'
@@ -5781,6 +6999,7 @@ export class GameService {
           game.opponent.board[laneIndex!].push(creature);
           game.lastCardSummoned2 = game.lastCardSummoned;
           game.lastCardSummoned = creature;
+          game.opponent.summonCounts[creature.id] = (game.opponent.summonCounts[creature.id] || 0) + 1;
           if (creature.covered) {
             creature.effects?.forEach(effect => {
               if (effect.trigger !== 'GainCover') return;
@@ -5805,6 +7024,8 @@ export class GameService {
           }
           if (game.opponent.numSummon == 0) {
             this.runEffects('SummonFirst',game.opponent, game);
+          } else if (game.opponent.numSummon == 1) {
+            this.runEffects('SummonSecond',game.opponent, game);
           }
           game.opponent.numSummon++;
           this.runEffects('SummonCreature',game.opponent, game);
@@ -5813,7 +7034,9 @@ export class GameService {
   
           let creatureTarget: Card | PlayerState;
           creature.effects?.forEach(effect => {
-            if (effect.trigger !== 'Summon') return;
+            if (effect.trigger !== 'Summon' && effect.trigger !== 'Play' &&
+              (effect.trigger !== 'Plot' || game.opponent.cardsPlayed < 2)
+            ) return;
   
             if (this.isAutoTarget(effect.target)) {
               this.executeEffect(effect, creature, game);
@@ -5841,21 +7064,12 @@ export class GameService {
           target.maxHealth! += card.currentHealth ?? card.health ?? 0;
   
           this.addUniqueKeywords(target,game, card.currentKeywords ?? card.keywords ?? []);
-          const tempKeywordsToAdd = card.tempKeywords ?? [];
-          this.addUniqueKeywords(target,game, tempKeywordsToAdd);
+          this.handleTempKeywords(game, target, card.tempKeywords ?? []);
           if (card.immunity) {
             target.immunity = Array.from(
               new Set([
                 ...(target.immunity ?? []),
                 ...(card.immunity ?? [])
-              ])
-            );
-          }
-          if (card.tempKeywords) {
-            target.tempKeywords = Array.from(
-              new Set([
-                ...(target.tempKeywords ?? []),
-                ...(tempKeywordsToAdd)
               ])
             );
           }
@@ -5876,7 +7090,8 @@ export class GameService {
               });
   
           card.effects?.forEach(effect => {
-            if (effect.trigger !== 'Summon') return;
+            if (effect.trigger !== 'Summon' && 
+              (effect.trigger !== 'Plot' || game.opponent.cardsPlayed < 2)) return;
             
             if (this.isAutoTarget(effect.target)) {
               this.executeEffect(effect, card, game);
@@ -5916,12 +7131,17 @@ export class GameService {
         }
   
         case 'Action': {
-          const originalCard = this.deckService.getCardById(card.id);
-          const freshCopy = this.deckService.cloneCardForGame(originalCard!, true);
-          game.opponent.discard.push(freshCopy);
+          if (!betrayPlay) {
+            if (card.currentKeywords?.includes('Betray') || 
+              this.hasKeywordAura(game.opponent,'Betray')) game.betrayAvailable = true;
+            const originalCard = this.deckService.getCardById(card.id);
+            const freshCopy = this.deckService.cloneCardForGame(originalCard!, true);
+            game.opponent.discard.push(freshCopy);
+          }
           // Resolve Play effects
           card.effects?.forEach(effect => {
-            if (effect.trigger !== 'Play') return;
+            if (effect.trigger !== 'Play' && 
+              (effect.trigger !== 'Plot' || game.opponent.cardsPlayed < 2)) return;
             console.log(`${card.name}: ${effect.type}, lane: ${laneIndex}`);
             // Auto effects
             if (this.isAutoTarget(effect.target)) {
@@ -5949,9 +7169,6 @@ export class GameService {
           break;
         }
       }
-      game.opponent.cardsPlayed++;
-      const cardId = card.id;
-      game.opponent.playCounts[cardId] = (game.opponent.playCounts[cardId] || 0) + 1;
       //console.log(`Opponent' played ${card.name} (${cardId}) — now played ${game.opponent.playCounts[cardId]} times`);
       this.runEffects('PlayCard',game.opponent, game);
       this.updateStaticBuffs(game,game.opponent);
@@ -5999,6 +7216,12 @@ export class GameService {
                   target.type === 'Creature';
           });
         }
+        if (effect.targetCondition) {
+          filteredTargets = filteredTargets.filter(c => 
+            this.isCard(c) &&
+            this.deckService.isTargetConditionMet(c,effect.targetCondition, source)
+          );
+        }
       } 
       else if (effectType === 'destroy' || effectType === 'damage' || 
           effectType === 'silence' || effectType === 'unsummon' || effectType === 'shackle') {
@@ -6017,6 +7240,13 @@ export class GameService {
           // Or the enemy face
           return target === game.player;
         });
+        if (effect.targetCondition) {
+          console.log('filtering for target condition');
+          filteredTargets = filteredTargets.filter(c => 
+            this.isCard(c) &&
+            this.deckService.isTargetConditionMet(c,effect.targetCondition, source, true)
+          );
+        }
         if (filteredTargets.length === 0 && source.type === 'Creature' && source.targetReq) {
           filteredTargets = [source];
         }
@@ -6049,8 +7279,8 @@ export class GameService {
         if (attacker.currentHealth! > 0 && !attacker.shackled && attacker.currentAttack! > 0) {
           if (game.waitingOnAnimation) return;
           if (attacker.attackCondition && 
-            !this.isAttackConditionMet(attacker.attackCondition,attacker.laneIndex,
-              game.opponent)) {
+            !this.isAttackConditionMet(attacker.attackCondition,game.opponent,attacker.laneIndex
+              )) {
             return false;
           }
           if (!game.gameRunning) return;
@@ -6169,10 +7399,11 @@ export class GameService {
       // Decrease activation counters
       support.attacks = Math.max(0, (support.attacks ?? 1) - 1);
       if (support.uses !== undefined) {
-          const owner = support.isOpponent ? game.opponent : game.player;
-          if (!this.hasActivationLimitImmunity(owner)) {
+        const owner = support.isOpponent ? game.opponent : game.player;
+        if (!this.hasCertainImmunity(owner,'ActivationLimit')) {
           support.uses = Math.max(0, support.uses - 1);
-          }
+          if (support.uses === 0) this.destroyCard(game,support);
+        }
       }
 
       // Log
@@ -6234,7 +7465,7 @@ export class GameService {
       });
     }
 
-    if (!laneHasGuard && !otherLaneHasSuperGuard) {
+    if (!laneHasGuard && !otherLaneHasSuperGuard && !attacker.immunity?.includes('AttackPlayer')) {
       targets.push(game.player);
     }
 
@@ -6292,41 +7523,61 @@ export class GameService {
   }
   
 resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBattle: boolean = false) {
-  if (!attacker || (attacker.attacks ?? 0) <= 0 || attacker.currentAttack! <= 0) return;
+  if (!attacker || ((attacker.attacks ?? 0) <= 0 && !isBattle) || attacker.currentAttack! <= 0) return;
   const outputLogs = game.simulating ? false : true;
   let attackerKeywords = attacker.currentKeywords || [];
-  const isPilfer = attackerKeywords.includes('Pilfer');
   const isRally = attackerKeywords.includes('Rally');
+  const isImmuneToCliffs = attacker.immunity?.includes('Cliffs');
   const isImmuneToDragons = attacker.immunity?.includes('Dragons');
-  const isImmuneToLethal = attacker.immunity?.includes('Lethal');
-  const isDragon = attacker.subtypes.includes('Dragon');
+  const isImmuneToLethal = attacker.immunity?.includes('LethalDamage');
+  const isImmuneToDamage = attacker.immunity?.includes('AllDamage');
+  const isDragon = attacker.subtypes.includes('Dragon') || attacker.subtypes.includes('All');
+  const isCliff = attacker.id.startsWith('cliff');
 
-  
-  const owner = attacker.isOpponent ? game.opponent : game.player;
-
-  // 0. Rally
-  if (isRally) {
-    const handCreatures = owner.hand.filter(c => c.type === 'Creature');
-    if (handCreatures.length === 0) {
-      if (outputLogs) console.log(`${attacker.name} Rally: no creatures in hand`);
-      return;
-    }
-    const randomCreatureInHand = this.utilityService.random(handCreatures);
-    // Apply +1/+1
-    randomCreatureInHand.currentAttack = (randomCreatureInHand.currentAttack ?? randomCreatureInHand.attack ?? 0) + 1;
-    randomCreatureInHand.currentHealth = (randomCreatureInHand.currentHealth ?? randomCreatureInHand.health ?? 0) + 1;
-    if (outputLogs) console.log(
-      `${attacker.name} Rally → gave +1/+1 to random hand creature: ${randomCreatureInHand.name}`
-    );
-  }
+  const owner = attacker.isOpponent ? game.opponent : game.player;  
 
   if (!isBattle) {
+
     if (attacker.covered) {
       attacker.covered = false;
       attacker.currentKeywords = attacker.currentKeywords?.filter(k => k !== 'Cover');
       attacker.currentKeywords = attacker.currentKeywords?.filter(k => k !== 'Stealth');
       if (outputLogs) console.log(`${attacker.name} lost Cover status`);
     }
+
+    // 0. Rally
+    if (isRally) {
+      let handCreatures = owner.hand.filter(c => c.type === 'Creature');
+      if (handCreatures.length === 0) {
+        this.runEffects('FailRally',owner,game);
+        handCreatures = owner.hand.filter(c => c.type === 'Creature');
+      }
+      if (handCreatures.length === 0) {
+        if (outputLogs) console.log(`${attacker.name} Rally: no creatures in hand`);
+      } else {
+        const randomCreatureInHand = this.utilityService.random(handCreatures);
+        game.rallyist = randomCreatureInHand;
+        // Apply +1/+1
+        randomCreatureInHand.currentAttack = (randomCreatureInHand.currentAttack ?? randomCreatureInHand.attack ?? 0) + 1;
+        randomCreatureInHand.currentHealth = (randomCreatureInHand.currentHealth ?? randomCreatureInHand.health ?? 0) + 1;
+        if (outputLogs) console.log(
+          `${attacker.name} Rally → gave +1/+1 to random hand creature: ${randomCreatureInHand.name}`
+        );
+        this.logHistory(game,{
+          player: attacker.isOpponent ? 'Opponent' : 'You',
+          actionType: 'attack',
+          description: `${attacker.name} rallied ${randomCreatureInHand.name}`,
+          details: [`Buffed +1/+1`]
+        });
+        attacker.effects?.forEach(effect => {
+        if (effect.trigger !== 'Rally') return;
+          this.executeEffect(effect, attacker, game);
+        });
+        this.runEffects('FriendlyRally',owner,game);
+      }
+    }
+
+    
 
     // ── 1. Trigger "When attacks" effects from the attacker ──────────────────
     this.runEffects('FriendlyAttack',owner,game);
@@ -6358,78 +7609,97 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
     const defenderKeywords = target.currentKeywords || [];
     const hasWard = defenderKeywords.includes('Ward');
     const hasLethal = defenderKeywords.includes('Lethal');
+    const defenderImmuneCliff = target.immunity?.includes('Cliffs');
     const defenderImmuneDragon = target.immunity?.includes('Dragons');
-    const defenderImmuneLethal = target.immunity?.includes('Lethal');
-    const defenderIsDragon = target.subtypes?.includes('Dragon');
-    // Creature vs Creature
-    if (hasWard) {
-      // Ward breaks — no damage goes through this time
-      target.currentKeywords = target.currentKeywords?.filter(k => k !== 'Ward');
-      damageDealt = 0; // no damage this attack
-      if (outputLogs) console.log(`${target.name} Ward blocked all damage`);
-      target.effects?.forEach(effect => {
-      if (effect.trigger !== 'WardBroken') return;
-        this.executeEffect(effect, target, game);
-      });
-    } else if (isDragon && defenderImmuneDragon) {
+    const defenderImmuneLethal = target.immunity?.includes('LethalDamage');
+    const defenderImmuneDamage = target.immunity?.includes('AllDamage');
+    const defenderIsDragon = target.subtypes?.includes('Dragon') || target.subtypes?.includes('All');
+    const defenderIsCliff = target.id.startsWith('cliff');
+    if (isDragon && defenderImmuneDragon) {
       damageDealt = 0;
       if (outputLogs) console.log('target immune to dragons');
-    } else {
-      const oldTargetHealth = target.currentHealth ?? 0;
-      target.currentHealth = Math.max(0, oldTargetHealth - damageDealt);
-      // Breakthrough: excess damage goes to face
-      if (isBreakthrough && target.currentHealth === 0) {
-        const excess = damageDealt - oldTargetHealth;
-        if (excess > 0) {
-          const opponent = attacker.isOpponent ? game.player : game.opponent;
-          opponent.damageTaken += excess;
-          opponent.health = Math.min(99,Math.max(0, opponent.health - excess));
-          game.lastCardDealingDamage = attacker;
-          this.breakRunesIfNeeded(game, opponent);
-          if (outputLogs) console.log(`Breakthrough: ${excess} excess damage to face`);
-          // Pilfer effect on breakthrough excess
-          game.thief = attacker;
-          attacker.effects?.forEach(effect => {
-            if (effect.trigger !== 'Pilfer') return;
-            // Auto-target effects → resolve immediately
-            if (this.isAutoTarget(effect.target)) {
-              if (outputLogs) console.log('Pilfer triggered for: ', attacker.name)
-              this.executeEffect(effect, attacker, game);
-            } else {
-              if (outputLogs) console.log('no auto target for pilfer target: ', effect.target)
-            }
-          });
-          this.runEffects('FriendlyPilfer',owner, game);
+    } else if (isCliff && defenderImmuneCliff) {
+      damageDealt = 0;
+      if (outputLogs) console.log('target immune to cliffs');
+    } else if (defenderImmuneDamage) {
+      damageDealt = 0;
+      if (outputLogs) console.log('target immune to damage');
+    }
+    // Creature vs Creature
+    if (damageDealt > 0) {
+      if (hasWard) {
+        // Ward breaks — no damage goes through this time
+        target.currentKeywords = target.currentKeywords?.filter(k => k !== 'Ward');
+        damageDealt = 0; // no damage this attack
+        if (outputLogs) console.log(`${target.name} Ward blocked all damage`);
+        target.effects?.forEach(effect => {
+        if (effect.trigger !== 'WardBroken') return;
+          this.executeEffect(effect, target, game);
+        });
+      } else {
+        const oldTargetHealth = target.currentHealth ?? 0;
+        target.currentHealth = Math.max(0, oldTargetHealth - damageDealt);
+        // Breakthrough: excess damage goes to face
+        if (isBreakthrough && target.currentHealth === 0) {
+          const excess = damageDealt - oldTargetHealth;
+          if (excess > 0) {
+            const opponent = attacker.isOpponent ? game.player : game.opponent;
+            opponent.damageTaken += excess;
+            owner.damageLane[attacker.laneIndex!] += excess;
+            opponent.health = Math.min(99,Math.max(0, opponent.health - excess));
+            game.lastCardDealingDamage = attacker;
+            this.breakRunesIfNeeded(game, opponent);
+            if (outputLogs) console.log(`Breakthrough: ${excess} excess damage to face`);
+            // Pilfer effect on breakthrough excess
+            game.thief = attacker;
+            attacker.effects?.forEach(effect => {
+              if (effect.trigger !== 'Pilfer') return;
+              // Auto-target effects → resolve immediately
+              if (this.isAutoTarget(effect.target)) {
+                if (outputLogs) console.log('Pilfer triggered for: ', attacker.name)
+                this.executeEffect(effect, attacker, game);
+              } else {
+                if (outputLogs) console.log('no auto target for pilfer target: ', effect.target)
+              }
+            });
+            this.runEffects('FriendlyPilfer',owner, game);
+          }
         }
+        // Lethal: target dies
+        if (isLethal && !defenderImmuneLethal && target.currentHealth > 0) {
+          target.currentHealth = 0; // target dies
+          if (outputLogs) console.log(`${target.name} was killed by Lethal`);
+        }
+        game.lastCardReceivingDamage = target;
+        attacker.totalDamageDealt = (attacker.totalDamageDealt ?? 0) + damageDealt;
+        attacker.effects?.forEach(effect => {
+          if (effect.trigger !== 'DamageDealt') return;
+          this.executeEffect(effect, attacker, game);
+        });
+        game.lastDamageTaken = damageDealt;
+        game.lastCardReceivingDamage = target; //in case effects above change this
+        this.runEffects('FriendlyDamageTaken',target.isOpponent ? game.opponent : game.player,game);
+        target.effects?.forEach(effect => {
+            if (effect.trigger !== 'DamageTaken') return;
+                
+            this.queuePendingAction(game, {
+                type: 'audio',
+                sourceCard: target,
+                prompt: 'hit'
+            });
+          this.executeEffect(effect, target, game);
+        });
       }
-      // Lethal: target dies
-      if (isLethal && !defenderImmuneLethal && target.currentHealth > 0) {
-        target.currentHealth = 0; // target dies
-        if (outputLogs) console.log(`${target.name} was killed by Lethal`);
-      }
-      game.lastCardReceivingDamage = target;
-      attacker.totalDamageDealt = (attacker.totalDamageDealt ?? 0) + damageDealt;
-      attacker.effects?.forEach(effect => {
-        if (effect.trigger !== 'DamageDealt') return;
-        this.executeEffect(effect, attacker, game);
-      });
-      game.lastDamageTaken = damageDealt;
-      target.effects?.forEach(effect => {
-          if (effect.trigger !== 'DamageTaken') return;
-              
-          this.queuePendingAction(game, {
-              type: 'audio',
-              sourceCard: target,
-              prompt: 'hit'
-          });
-        this.executeEffect(effect, target, game);
-      });
     }
 
     // Attacker takes retaliation damage (unless target died to Ward or lethal)
     if (target.currentAttack! > 0) {
       if (isImmuneToDragons && defenderIsDragon) {
         if (outputLogs) console.log('attacker immune to dragons');
+      } else if (isImmuneToCliffs && defenderIsCliff) {
+        if (outputLogs) console.log('attacker immune to cliffs');
+      } else if (isImmuneToDamage) {
+        if (outputLogs) console.log('attacker immune to damage');
       } else {
         if (outputLogs) console.log(`${target.name} retaliates for ${target.currentAttack} damage`);
         if (isWard) {
@@ -6450,7 +7720,10 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
           );
         }
         if (!isWard) {
-          game.lastDamageTaken = target.currentAttack!;        
+          game.lastDamageTaken = target.currentAttack!; 
+          game.lastCardReceivingDamage = attacker;
+          target.totalDamageDealt = (target.totalDamageDealt ?? 0) + target.currentAttack!;
+          this.runEffects('FriendlyDamageTaken',owner,game);       
           attacker.effects?.forEach(effect => {
           if (effect.trigger !== 'DamageTaken') return;
             
@@ -6461,8 +7734,6 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
             });
             this.executeEffect(effect, attacker, game);
           });
-          game.lastCardReceivingDamage = attacker;
-          target.totalDamageDealt = (target.totalDamageDealt ?? 0) + target.currentAttack!;
           target.effects?.forEach(effect => {
             if (effect.trigger !== 'DamageDealt') return;
             this.executeEffect(effect, target, game);
@@ -6474,75 +7745,62 @@ resolveAttack(game: GameState, attacker: Card, target: Card | PlayerState, isBat
       // Slay effect
       game.creatureSlain = target;
       game.creatureSlayer = attacker;
-      attacker.effects?.forEach(effect => {
-        if (effect.trigger !== 'Slay') return;
-        // Auto-target effects → resolve immediately
-        if (this.isAutoTarget(effect.target)) {
-          if (outputLogs) console.log('Slay triggered for: ', attacker.name)
-          this.executeEffect(effect, attacker, game);
-        } else {
-          if (outputLogs) console.log('no auto target for slay target: ', effect.target)
-        }
-      });
-      if (this.hasPilferSlayAura(owner)) {
-        attacker.effects?.forEach(effect => {
-          if (effect.trigger !== 'Pilfer') return;
-          // Auto-target effects → resolve immediately
-          if (this.isAutoTarget(effect.target)) {
-            if (outputLogs) console.log('Pilfer=>Slay triggered for: ', attacker.name)
-            this.executeEffect(effect, attacker, game);
-          } else {
-            if (outputLogs) console.log('no auto target for slay target: ', effect.target)
-          }
-        });
+      this.executeEffectsForCard('Slay',game.creatureSlayer,game);
+      if (this.hasTypeAura(owner,'pilferSlay')) {
+        this.executeEffectsForCard('Pilfer',game.creatureSlayer,game);
       }
       this.runEffects('FriendlySlay',owner, game);
       if (isLethal) this.runEffects('FriendlyLethalSlay', owner,game);
       attacker.attachedItems?.forEach(item => {
-        item.effects?.forEach(itemEffect => {
-          if (itemEffect.trigger !== 'Slay') return;
-          // Auto-target effects → resolve immediately
-          if (this.isAutoTarget(itemEffect.target)) {
-            if (outputLogs) console.log('Slay triggered for: ', attacker.name)
-            this.executeEffect(itemEffect, attacker, game);
-          } else {
-            if (outputLogs) console.log('no auto target for slay target: ', itemEffect.target)
-          }
-        });
+        this.executeEffectsForCard('Slay',item,game);
       });
     }
   } else {
     // Creature vs face
-    target.health = Math.max(0, target.health - damageDealt);
-    target.damageTaken += damageDealt;
-    game.lastCardDealingDamage = attacker;
-    attacker.totalDamageDealt = (attacker.totalDamageDealt ?? 0) + damageDealt;
-    attacker.effects?.forEach(effect => {
-      if (effect.trigger !== 'DamageDealt') return;
-      this.executeEffect(effect, attacker, game);
-    });
-    this.breakRunesIfNeeded(game, target as PlayerState);
-    // Pilfer effect
-    game.thief = attacker;
-    attacker.effects?.forEach(effect => {
-      if (effect.trigger !== 'Pilfer') return;
-      // Auto-target effects → resolve immediately
-      if (this.isAutoTarget(effect.target)) {
-        if (outputLogs) console.log('Pilfer triggered for: ', attacker.name)
+    if (target.hasWard) {
+      damageDealt = 0;
+      target.hasWard = false;
+    } else {
+      target.health = Math.max(0, target.health - damageDealt);
+      target.damageTaken += damageDealt;
+      owner.damageLane[attacker.laneIndex!] += damageDealt;
+      game.lastCardDealingDamage = attacker;
+      attacker.totalDamageDealt = (attacker.totalDamageDealt ?? 0) + damageDealt;
+      attacker.effects?.forEach(effect => {
+        if (effect.trigger !== 'DamageDealt') return;
         this.executeEffect(effect, attacker, game);
-      } else {
-        if (outputLogs) console.log('no auto target for pilfer target: ', effect.target)
-      }
-    });
-    if (attacker.effects?.some(e => e.trigger === 'Pilfer')) this.runEffects('FriendlyPilfer',owner, game);
+      });
+      this.breakRunesIfNeeded(game, target as PlayerState);
+      this.runEffects('DamagedByCreature',target,game);
+      // Pilfer effect
+      game.thief = attacker;
+      attacker.effects?.forEach(effect => {
+        if (effect.trigger !== 'Pilfer') return;
+        // Auto-target effects → resolve immediately
+        if (this.isAutoTarget(effect.target)) {
+          if (outputLogs) console.log('Pilfer triggered for: ', attacker.name)
+          this.executeEffect(effect, attacker, game);
+        } else {
+          if (outputLogs) console.log('no auto target for pilfer target: ', effect.target)
+        }
+      });
+      if (attacker.effects?.some(e => e.trigger === 'Pilfer')) this.runEffects('FriendlyPilfer',owner, game);
+    }
   }
-  if (damageDealt > 0) {
-    
+  if (damageDealt > 0) {    
     if (isDrain) {
       const owner = attacker.isOpponent ? game.opponent : game.player;
-      owner.health = Math.min(99,owner.health + damageDealt);
-      if (outputLogs) console.log(`${attacker.name} drained ${damageDealt} health`);
-      game.healthJustGained = damageDealt;
+      let scalar = 1;
+      if (this.hasCertainImmunity((owner === game.opponent ? game.player : game.opponent),'OppHealthGain')) {
+        scalar = 0;
+        if (outputLogs) console.log(`opponent blocked health gain with effect`);
+      } else if (this.hasKeywordAura(owner,'DoubleHeal')) {
+        scalar *= 2;
+      }
+      
+      owner.health = Math.min(99,owner.health + damageDealt*scalar);
+      if (outputLogs) console.log(`${attacker.name} drained ${damageDealt*scalar} health`);
+      game.healthJustGained = damageDealt*scalar;      
       this.runEffects('HealPlayer',owner, game);
       this.runEffects('FriendlyDrain',owner, game);
     }
@@ -6609,6 +7867,35 @@ breakRunesIfNeeded(game: GameState, player: PlayerState) {
   }
 }
 
+restoreRunes(player: PlayerState, amount: number) {
+  if (amount <= 0) return;
+
+  const maxRunes = 5;
+  let restored = 0;
+
+  // Iterate from right to left (reverse order)
+  for (let i = player.runes.length - 1; i >= 0; i--) {
+    if (!player.runes[i]) { // broken rune
+      player.runes[i] = true;
+      restored++;
+      if (restored >= amount) break;
+    }
+  }
+
+  // Safety: ensure we never exceed max runes (in case of bad state)
+  const totalRunes = player.runes.filter(r => r).length;
+  if (totalRunes > maxRunes) {
+    let overflow = totalRunes - maxRunes;
+
+    for (let i = 0; i < player.runes.length && overflow > 0; i++) {
+      if (player.runes[i]) {
+        player.runes[i] = false;
+        overflow--;
+      }
+    }
+  }
+}
+
 private drawForProphecy(game: GameState, player: PlayerState) {
   if (player.deck.length === 0) {
     console.log('no cards left to draw for prophecy');
@@ -6630,7 +7917,7 @@ private drawForProphecy(game: GameState, player: PlayerState) {
     if (player === game.player || !game.cpuPlaying) {
       this.offerProphecyPlay(game, topCard);
     } else {
-      const played = game.opponent.deck.shift()!;
+      game.opponent.deck.shift()!;
       //this.triggerProphecyFlash();
       this.queuePendingAction(game, {
           type: 'prophecy'
@@ -6727,8 +8014,7 @@ private checkCreatureDeath(game: GameState) {
       // Phase 1: Collect all dead creatures (don't remove yet)
       [game.player, game.opponent].forEach(p => {
         p.board.forEach((lane, laneIndex) => {
-          lane.forEach((creature, pos) => {
-            //console.log(`${creature.name}, ${creature.isOpponent}, ${creature.laneIndex}, ${creature.currentHealth}`);
+          lane.forEach((creature, pos) => {            
             if ((creature.currentHealth ?? 0) <= 0) {
               deaths.push({ player: p, creature, laneIndex });
             }
@@ -6754,7 +8040,6 @@ private checkCreatureDeath(game: GameState) {
                 this.executeEffect(effect, creature, game);
               } else {
                 if (useLogs) console.log('No auto target for CreatureDeathThisLane:', effect.target);
-                // TODO: handle manual target selection for Last Gasp (rare)
               }
             });
           });
@@ -6762,10 +8047,12 @@ private checkCreatureDeath(game: GameState) {
         // Move to discard (fresh copy)
         const lastGaspShuffle = creature.effects?.some(e => e.trigger === 'LastGasp' && 
           e.type === 'shuffleIntoDeck' && e.target === 'self');
+        const lastGaspReturn = creature.effects?.some(e => e.trigger === 'LastGasp' &&
+            e.type === 'addToHand' && e.cardId === creature.id);
         if (creature.banished) {
           if (useLogs) console.log('skipping putting creature in discard for banish tag');
-        } else if (lastGaspShuffle) {
-          if (useLogs) console.log('skipping putting creature in discard for shuffle effect');
+        } else if (lastGaspShuffle || lastGaspReturn) {
+          if (useLogs) console.log('skipping putting creature in discard for effect');
         } else {
           const original = this.deckService.getCardById(creature.id);
           if (original) {
@@ -6775,12 +8062,18 @@ private checkCreatureDeath(game: GameState) {
         }
 
         // Move attached items to discard
-        creature.attachedItems?.forEach(item => {
-          const origItem = this.deckService.getCardById(item.id);
-          if (origItem) {
-            player.discard.push(this.deckService.cloneCardForGame(origItem, item.isOpponent || false));
-          }
-        });
+        if (!creature.banished) {
+          creature.attachedItems?.forEach(item => {
+            const itemLastGaspReturn = item.effects?.some(e => e.trigger === 'LastGasp' &&
+            e.type === 'addToHand' && e.cardId === item.id);
+            if (!itemLastGaspReturn) {
+              const origItem = this.deckService.getCardById(item.id);
+              if (origItem) {
+                player.discard.push(this.deckService.cloneCardForGame(origItem, item.isOpponent || false));
+              }
+            }
+          });
+        }
 
         // Log death
         this.logHistory(game,{
@@ -6796,7 +8089,8 @@ private checkCreatureDeath(game: GameState) {
       });
 
       // Phase 3: Now trigger Last Gasp on all dead creatures (after removal)
-      deaths.forEach(({ player, creature }) => {
+      deaths.forEach(({ creature }) => {
+        if (creature.banished) return; //no last gasp triggers
         this.queuePendingAction(game, {
           type: 'audio',
           sourceCard: creature,
@@ -6812,7 +8106,6 @@ private checkCreatureDeath(game: GameState) {
             this.executeEffect(effect, creature, game);
           } else {
             if (useLogs) console.log('No auto target for Last Gasp:', effect.target);
-            // TODO: handle manual target selection for Last Gasp (rare)
           }
         });
 
@@ -6837,12 +8130,20 @@ private checkCreatureDeath(game: GameState) {
     // NEW: Check if either player is at 0 or below health
 
     if (game.player.health <= 0) {
-      this.handleGameOver(game, true);
+      if (!game.isProcessingPlayerDead) {
+        game.isProcessingPlayerDead = true;
+        this.runEffects('PlayerDead', game.player, game);
+        if (game.player.health <= 0) this.handleGameOver(game, true);
+      }
       return;
     }
 
     if (game.opponent.health <= 0) {
-      this.handleGameOver(game, false);
+      if (!game.isProcessingPlayerDead) {
+        game.isProcessingPlayerDead = true;
+        this.runEffects('PlayerDead', game.opponent, game);
+        if (game.opponent.health <= 0) this.handleGameOver(game, false);
+      }
     }
   }   
 
@@ -6916,6 +8217,16 @@ private checkCreatureDeath(game: GameState) {
             }
           }
           return [];
+        
+        case 'creatureEnemyOtherLane':
+          if (sourceLane !== undefined) {
+            if (sourceCard.isOpponent) {
+              return game.player.board[1-sourceLane];
+            } else {
+              return game.opponent.board[1-sourceLane];
+            }
+          }
+          return [];
 
         case 'creatureThisLane':
           if (sourceLane !== undefined) {
@@ -6943,9 +8254,22 @@ private checkCreatureDeath(game: GameState) {
             });
           }
           break;
+
+        case 'creatureFriendlyOtherLane':
+          if (sourceLane !== undefined) {
+            if (sourceCard.isOpponent) {
+              game.opponent.board[1-sourceLane].forEach(c => {
+                targets.push(c);
+              });
+            } else {
+              game.player.board[1-sourceLane].forEach(c => {
+                targets.push(c);
+              });
+            }
+          }
+          break;
   
         case 'creatureFriendlyOtherThisLane':
-          //console.log('checking creatureFriendlyOtherThisLane');
           if (sourceLane !== undefined) {
             if (sourceCard.isOpponent) {
               game.opponent.board[sourceLane].forEach(c => {
@@ -6953,7 +8277,6 @@ private checkCreatureDeath(game: GameState) {
               });
             } else {
               game.player.board[sourceLane].forEach(c => {
-                console.log('checking creature: ',c.name);
                 if (c !== sourceCard) targets.push(c);
               });
             }
@@ -6979,13 +8302,6 @@ private checkCreatureDeath(game: GameState) {
             return game.player.hand;
           } else {
             return game.opponent.hand;
-          }
-
-        case 'creaturePlayerHand':
-          if (!sourceCard.isOpponent) {
-            return game.player.hand.filter(c => c.type === 'Creature');
-          } else {
-            return game.opponent.hand.filter(c => c.type === 'Creature');
           }
 
         case 'deck':
@@ -7042,12 +8358,13 @@ private checkCreatureDeath(game: GameState) {
         details: []
       });
       const owner = support.isOpponent ? game.opponent : game.player;
-      if (!this.hasActivationLimitImmunity(owner)) {
+      if (!this.hasCertainImmunity(owner,'ActivationLimit')) {
         support.uses!--;
       }
       support.attacks!--;
       this.runEffects('ActivateSupport',owner,game);
       game.stagedSupportActivation = null;
+      if (support.uses! <= 0) this.destroyCard(game,support);
       //this.cancelButtonActive = false;
   }
 
@@ -7255,7 +8572,8 @@ private checkCreatureDeath(game: GameState) {
       break;
 
       case 'maxMagicka':
-      shouldApply = player.maxMagicka >= (creature.static.condition.min ?? 0) ? 1 : 0;
+      shouldApply = (player.maxMagicka >= (creature.static.condition.min ?? 0) &&
+        player.maxMagicka <= (creature.static.condition.max ?? 99)) ? 1 : 0;
       break;
 
       // Add more condition types here
@@ -7325,7 +8643,16 @@ private checkCreatureDeath(game: GameState) {
     if (!game.gameRunning) {
       console.log(`extra game over ignored`);
       return;
+    }    
+    let lossPrevented = false;
+    const losingPlayer = isOpponent ? game.player : game.opponent;
+    lossPrevented = this.hasCertainImmunity(losingPlayer,'UnbeatableExalted') && 
+      [...losingPlayer.board[0],...losingPlayer.board[1]].some(c => c.exalted === true);
+    if (lossPrevented) {
+      console.log(`player prevented losing game from effect`);
+      return;
     }
+    
     this.logHistory(game,{
       player: isOpponent ? 'Opponent' : 'You',
       actionType: 'defeat',
@@ -7504,8 +8831,8 @@ private checkCreatureDeath(game: GameState) {
       !c.sick &&
       (c.currentAttack ?? 0) > 0 && 
       (!c.attackCondition ||
-      this.isAttackConditionMet(c.attackCondition,c.laneIndex,
-        c.isOpponent ? game.opponent : game.player))
+      this.isAttackConditionMet(c.attackCondition,
+        c.isOpponent ? game.opponent : game.player,c.laneIndex))
     );
   }
 
@@ -7530,8 +8857,10 @@ private checkCreatureDeath(game: GameState) {
     score -= (user.health * 15); // Pressure the user more than protecting self
 
     // 3. Material & Board Value
-    score += this.calculateSideValue(cpu.board);
-    score -= this.calculateSideValue(user.board);
+    score += this.calculateSideValue(cpu.board[0]);
+    score += this.calculateSideValue(cpu.board[1]);
+    score -= this.calculateSideValue(user.board[0]);
+    score -= this.calculateSideValue(user.board[1]);
 
     // 4. Resource Advantage (Hand size & Magicka)
     score += (cpu.hand.length * 5);
@@ -7541,43 +8870,41 @@ private checkCreatureDeath(game: GameState) {
     return score;
   }
 
-  private calculateSideValue(lanes: Card[][]): number {
+  private calculateSideValue(lane: Card[]): number {
     let sideValue = 0;
-    lanes.forEach(lane => {
-      lane.forEach(card => {
-        if (card.type !== 'Creature') return;
+    lane.forEach(card => {
+      if (card.type !== 'Creature') return;
 
-        // Base Stats
-        const attackValue = card.currentAttack ?? 0;
-        const healthValue = card.currentKeywords?.includes('Regenerate') ? 
-          (card.maxHealth ?? card.health) : 
-          (card.currentHealth ?? card.health);
-        let cardValue = attackValue * 8;
-        cardValue += healthValue! * 6;
+      // Base Stats
+      const attackValue = card.currentAttack ?? 0;
+      const healthValue = card.currentKeywords?.includes('Regenerate') ? 
+        (card.maxHealth ?? card.health) : 
+        (card.currentHealth ?? card.health);
+      let cardValue = attackValue * 8;
+      cardValue += healthValue! * 6;
 
-        // Keyword Multipliers (Positioning)
-        if (card.currentKeywords?.includes('Guard')) cardValue += 20;
-        if (card.currentKeywords?.includes('Lethal')) cardValue += 35;
-        if (card.currentKeywords?.includes('Ward')) cardValue += attackValue* 4; // Ward on high attack is scary
-        if (card.currentKeywords?.includes('Drain')) cardValue += 10;
-        if (card.currentKeywords?.includes('Breakthrough')) cardValue += 15;
-        if (card.currentKeywords?.includes('Rally')) cardValue += 20;
+      // Keyword Multipliers (Positioning)
+      if (card.currentKeywords?.includes('Guard')) cardValue += 20;
+      if (card.currentKeywords?.includes('Lethal')) cardValue += 35;
+      if (card.currentKeywords?.includes('Ward')) cardValue += attackValue* 4; // Ward on high attack is scary
+      if (card.currentKeywords?.includes('Drain')) cardValue += 10;
+      if (card.currentKeywords?.includes('Breakthrough')) cardValue += 15;
+      if (card.currentKeywords?.includes('Rally')) cardValue += 20;
 
-        if (card.immunity && card.immunity.length > 0) cardValue += 20;
-        
-        card.effects?.forEach(e => {
-          if (e.trigger !== 'Summon') cardValue += 20;
-        });          
-        
-        // Negative value for shackled/sick cards (temporary uselessness)
-        if (card.frozen) {
-          cardValue *= 0.3;
-        } else if (card.shackled || card.sick) {
-          cardValue *= 0.7;
-        }
+      if (card.immunity && card.immunity.length > 0) cardValue += 20;
+      
+      card.effects?.forEach(e => {
+        if (e.trigger !== 'Summon') cardValue += 20;
+      });          
+      
+      // Negative value for shackled/sick cards (temporary uselessness)
+      if (card.frozen) {
+        cardValue *= 0.3;
+      } else if (card.shackled || card.sick) {
+        cardValue *= 0.7;
+      }
 
-        sideValue += cardValue;
-      });
+      sideValue += cardValue;
     });
     return sideValue;
   }
@@ -7621,6 +8948,15 @@ private checkCreatureDeath(game: GameState) {
       effects: card.effects ? card.effects.map(e => ({ ...e })) : [],
       attachedItems: card.attachedItems ? card.attachedItems.map(c => this.cloneCard(c)) : []
     };
+  }
+
+  private getWeakerLane(game: GameState, isOpponent: boolean): number {
+    let lane0Value = this.calculateSideValue(game.opponent.board[0]) - this.calculateSideValue(game.player.board[0]);
+    let lane1Value = this.calculateSideValue(game.opponent.board[1]) - this.calculateSideValue(game.player.board[1]);
+    if (!isOpponent) lane0Value = -lane0Value;
+    if (!isOpponent) lane1Value = -lane1Value;
+    lane0Value += 25; //bias field lane as being stronger to encourage playing shadow if both equal
+    return lane0Value <= lane1Value ? 0 : 1;  
   }
 
 

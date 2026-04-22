@@ -647,7 +647,7 @@
     "keywords": [
       "Slay"
     ],
-    "immunity": ["Lethal"],
+    "immunity": ["LethalDamage"],
     "set": "Dark Brotherhood",
     "deckCodeId": "qn",
     "tier": "A",

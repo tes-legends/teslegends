@@ -1,0 +1,349 @@
+[
+    {
+    "id": "bleakcoast-troll",
+    "name": "Bleakcoast Troll",
+    "type": "Creature",
+    "subtypes": ["Troll"],
+    "attributes": ["P"],
+    "cost": 4,
+    "attack": 5,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "Slay: +1/+1",
+    "keywords": ["Slay"],
+    "set": "Forgotten Hero Collection",
+    "tier": "S",
+    "deckCodeId": "bY",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1
+      }
+    ]
+  },
+  {
+    "id": "cast-into-time",
+    "name": "Cast Into Time",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Banish a creature.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "B",
+    "deckCodeId": "cO",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "banish",
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "cradlecrush-giant",
+    "name": "Cradlecrush Giant",
+    "type": "Creature",
+    "subtypes": ["Giant"],
+    "attributes": ["R"],
+    "cost": 6,
+    "attack": 6,
+    "health": 4,
+    "rarity": "2Rare",
+    "text": "Summon: Deal 2 damage to all other creatures in this lane.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "A",
+    "deckCodeId": "dE",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 2,
+        "target": "creatureOtherThisLaneAll"
+      }
+    ]
+  }, 
+  {
+    "id": "doppelganger",
+    "name": "Doppelganger",
+    "type": "Creature",
+    "subtypes": ["Daedra"],
+    "attributes": ["B"],
+    "cost": 5,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Summon: Transform Doppelganger into a copy of another friendly creature.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "B",
+    "deckCodeId": "eG",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "transform",
+        "cardId": "targetedCreature",
+        "target": "creatureFriendlyOther"
+      }
+    ]
+  }, 
+  {
+    "id": "morokei-the-deathless",
+    "name": "Morokei, the Deathless",
+    "type": "Creature",
+    "subtypes": ["Skeleton"],
+    "attributes": ["N"],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Summon: If you started the game with no duplicate cards in your deck, you gain 5 health and restore a rune.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "kP",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": -5,
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      },
+      {
+        "trigger": "Summon",
+        "type": "restoreRune",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      }
+    ]
+  }, 
+  {
+    "id": "namiras-shrine",
+    "name": "Namira's Shrine",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": ["N"],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Ongoing At the end of your turn, if you played four cards this turn, draw a card.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "E",
+    "deckCodeId": "lm",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "playedCards",
+          "min": 4
+        }
+      }
+    ]
+  }, 
+  {
+    "id": "sehts-masterwork",
+    "name": "Seht's Masterwork",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": ["N"],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Ongoing If you started the game with no duplicate cards in your deck, your cards cost 1 less.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "nF",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "modCost",
+        "target": "playerHand",
+        "amount": -1,
+        "condition": {
+            "type": "deckUnique"
+        }
+      }
+    ]
+  }, 
+  {
+    "id": "siege-of-stros-mkai",
+    "name": "Siege of Stros M'Kai",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["N"],
+    "cost": 10,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "If you started the game with no duplicate cards in your deck, play a random creature, item, support and action from your deck.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "oh",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "playRandomDeck",
+        "subtypes": ["Creature"],
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      },
+      {
+        "trigger": "Play",
+        "type": "playRandomDeck",
+        "subtypes": ["Item"],
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      },
+      {
+        "trigger": "Play",
+        "type": "playRandomDeck",
+        "subtypes": ["Support"],
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      },
+      {
+        "trigger": "Play",
+        "type": "playRandomDeck",
+        "subtypes": ["Action"],
+        "target": "player",
+        "condition": {
+            "type": "deckUnique"
+        }
+      }
+    ]
+  }, 
+  {
+    "id": "sly-marshblade",
+    "name": "Sly Marshblade",
+    "type": "Creature",
+    "subtypes": ["Argonian"],
+    "attributes": ["G"],
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Last Gasp: Draw a card if you have 7 or more max magicka.",
+    "keywords": ["LastGasp"],
+    "set": "Forgotten Hero Collection",
+    "tier": "C",
+    "deckCodeId": "oE",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+            "type": "maxMagicka",
+            "min": 7
+        }
+      }
+    ]
+  }, 
+  {
+    "id": "tullius-conscription",
+    "name": "Tullius' Conscription",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["N"],
+    "cost": 12,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Summon one of each creature from your deck that costs 2 or less.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "qT",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "oneOfEach",
+        "cost": 2,
+        "target": "player"
+      }
+    ]
+  }, 
+  {
+    "id": "ulfrics-uprising",
+    "name": "Ulfric's Uprising",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["N"],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Trigger the Summon of each friendly creature.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "rb",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "triggerSummon",
+        "target": "creatureFriendlyAll"
+      }
+    ]
+  }, 
+  {
+    "id": "voice-of-balance",
+    "name": "Voice of Balance",
+    "type": "Creature",
+    "subtypes": ["Nord"],
+    "attributes": ["N"],
+    "cost": 4,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Summon: +4/+4 and Guard if you have an action, item, and support in your discard pile or in play.",
+    "keywords": [],
+    "set": "Forgotten Hero Collection",
+    "tier": "U",
+    "deckCodeId": "rv",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 4,
+        "modHealth": 4,
+        "addKeywords": ["Guard"],
+        "condition": {
+            "type": "playedActionItemSupport"
+        }
+      }
+    ]
+  }
+  
+]

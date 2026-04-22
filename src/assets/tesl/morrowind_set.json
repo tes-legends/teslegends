@@ -1,0 +1,4817 @@
+[
+  {
+    "id": "aldruhn-arms-master",
+    "name": "Ald'ruhn Arms Master",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Charge , Rally",
+    "keywords": ["Charge", "Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "al"
+  },
+  {
+    "id": "ash-berserker",
+    "name": "Ash Berserker",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "At the end of your turn, if you have a creature with 5 power or more, draw a card.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "aU",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "ashlander-zealot",
+    "name": "Ashlander Zealot",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Summon : Battle an enemy creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "bc",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "battle",
+        "target": "creatureEnemy"
+      }
+    ]
+  },
+  {
+    "id": "aspect-of-hircine",
+    "name": "Aspect of Hircine",
+    "type": "Creature",
+    "subtypes": [
+      "Werewolf",
+      "Daedra"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 9,
+    "attack": 6,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Summon : Choose one: Strength: +6/+6 and Guard. Speed: Gains Charge.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "bd",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Strength: +6/+6 and Guard",
+            "effect": {
+              "type": "buffSelf",
+              "modAttack": 6,
+              "modHealth": 6,
+              "addKeywords": ["Guard"]
+            }
+          },
+          {
+            "text": "Speed: Gains Charge",
+            "effect" : {
+              "type": "buffSelf",
+              "addKeywords": ["Charge"]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bushwhack",
+    "name": "Bushwhack",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "A friendly creature ignores Guards and can attack creatures in any lane this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "cC",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "tempKeywords": ["AttackRestrictions"],
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "camonna-tong-heavy",
+    "name": "Camonna Tong Heavy",
+    "type": "Creature",
+    "subtypes": [
+      "Orc"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Plot : Unsummon a creature in this lane with less power than Camonna Tong Heavy.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "cK",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "unsummon",
+        "target": "creatureThisLane",
+        "targetCondition": {
+          "type": "hasLessAttack"
+        }
+      }
+    ]
+  },
+  {
+    "id": "cliff-hunter",
+    "name": "Cliff Hunter",
+    "type": "Creature",
+    "subtypes": [
+      "Reptile"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 6,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Prophecy Summon : Battle an enemy creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "dg",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "battle",
+        "target": "creatureEnemy"
+      }
+    ]
+  },
+  {
+    "id": "corprus-disease",
+    "name": "Corprus Disease",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Silence a creature, then give it +2/+0.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "dz",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "silence",
+        "target": "creatureOther"
+      },
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "target": "creatureOther"
+      }
+    ]
+  },
+  {
+    "id": "dagoth-dagger",
+    "name": "Dagoth Dagger",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": 2,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Breakthrough +2/+1",
+    "keywords": ["Breakthrough"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "dY"
+  },
+  {
+    "id": "dagoth-oathman",
+    "name": "Dagoth Oathman",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Summon : If you have a... [G] card in play, +1/+1. [B] card in play, +1/+1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "dZ",
+    "effects": [
+			{
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "G"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "B"
+        }
+			}
+		]
+  },
+  {
+    "id": "false-incarnate",
+    "name": "False Incarnate",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": 5,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Your opponent can't gain health.",
+    "keywords": [],
+    "immunity": ["OppHealthGain"],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "gc"
+  },
+  {
+    "id": "fetcherfly-golem",
+    "name": "Fetcherfly Golem",
+    "type": "Creature",
+    "subtypes": [
+      "Daedra",
+      "Atronach"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "When Fetcherfly Golem takes damage and survives, summon a 2/2 Fetcherfly Swarm.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "gm",
+    "effects": [
+      {
+        "trigger": "DamageTaken",
+        "type": "summon",
+        "amount": 1,
+        "cardId": "fetcherfly-swarm",
+        "target": "randomLane",
+        "condition": {
+          "type": "isAlive"
+        }
+      }
+    ]
+  },
+  {
+    "id": "fighters-guild-hall",
+    "name": "Fighters Guild Hall",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Ongoing When a friendly creature takes damage on your turn, give it +2/+0.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "gq",
+    "effects": [
+      {
+        "trigger": "FriendlyDamageTaken",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "target": "creatureDamaged",
+        "condition": {
+          "type": "isPlayerTurn"
+        }
+      }
+    ]
+  },
+  {
+    "id": "fighters-guild-steward",
+    "name": "Fighters Guild Steward",
+    "type": "Creature",
+    "subtypes": [
+      "Nord"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon : A friendly creature with 5 or more power Battles an enemy creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "gt",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "battleAttack",
+        "target": "creatureEnemy",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "hlaalu-sharpshooter",
+    "name": "Hlaalu Sharpshooter",
+    "type": "Creature",
+    "subtypes": [
+      "Nord"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "3Epic",
+    "text": "Plot : Silence a creature, then deal 1 damage to it.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "ir",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "silence",
+        "target": "creatureOther"
+      },
+      {
+        "trigger": "Plot",
+        "type": "damage",
+        "amount": 1,
+        "target": "creatureOther"
+      }
+    ]
+  },
+  {
+    "id": "imposters-mission",
+    "name": "Imposter's Mission",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Summon an Imposter with power and health equal to the power of your most powerful creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "iM",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summonMaxAttack",
+        "cardId": "imposter",
+        "target": "lane"
+      }
+    ]
+  },
+  {
+    "id": "lower-canton-smith",
+    "name": "Lower Canton Smith",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Plot : Equip a friendly creature with a +2/+2 Steel Scimitar .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "jN",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "equip",
+        "cardId": "steel-scimitar",
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "ornery-kagouti",
+    "name": "Ornery Kagouti",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Breakthrough",
+    "keywords": ["Breakthrough"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "lP"
+  },
+  {
+    "id": "redoran-battlespear",
+    "name": "Redoran Battlespear",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 3,
+    "attack": 1,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Rally +1/+3",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "mP"
+  },
+  {
+    "id": "sarethi-scion",
+    "name": "Sarethi Scion",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Rally",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "ny"
+  },
+  {
+    "id": "servant-of-dagoth",
+    "name": "Servant of Dagoth",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Summon : If you have a creature with 5 power or more, +2/+2 and Guard .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "nK",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "modHealth": 2,
+        "addKeywords": ["Guard"],
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "sharp-eyed-ashkhan",
+    "name": "Sharp-Eyed Ashkhan",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 6,
+    "attack": 6,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Plot : Discard your hand, then draw three cards.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "nU",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "discardHand",
+        "target": "player"
+      },
+      {
+        "trigger": "Plot",
+        "type": "drawCards",
+        "amount": 3,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "skar-drillmaster",
+    "name": "Skar Drillmaster",
+    "type": "Creature",
+    "subtypes": [
+      "Redguard"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Rally When Skar Drillmaster Rallies a creature, put a copy of the rallied creature into your hand with +1/+1.",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "on",
+    "effects": [
+      {
+        "trigger": "Rally",
+        "type": "addToHand",
+        "amount": 1,
+        "target": "cardRallied"
+      },
+      {
+        "trigger": "Rally",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "drawnCard"
+      }
+    ]
+  },
+  {
+    "id": "stendarrs-hammer",
+    "name": "Stendarr's Hammer",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 5,
+    "attack": 0,
+    "health": 0,
+    "rarity": "4Legendary",
+    "text": "Summon : Double the wielder's power and health. The wielder can only attack creatures.",
+    "keywords": [],
+    "immunity": ["AttackPlayer"],
+    "set": "Houses of Morrowind",
+    "tier": "E",
+    "deckCodeId": "pu",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "doubleStats",
+        "target": "wielder"
+      }
+    ]
+  },
+  {
+    "id": "the-red-year",
+    "name": "The Red Year",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "R"
+    ],
+    "cost": 10,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Deal 10 damage to each creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qr",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 10,
+        "target": "creatureAll"
+      }
+    ]
+  },
+  {
+    "id": "ash-piercer",
+    "name": "Ash Piercer",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 4,
+    "rarity": "2Rare",
+    "text": "Summon : Deal 3 damage to a creature if you have a creature with 5 power or more.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "aW",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 3,
+        "target": "creature",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "barilzars-tinkering",
+    "name": "Barilzar's Tinkering",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Betray Transform a creature into a random creature that costs 1 more.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "bB",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "transform",
+        "cardId": "randomCost",
+        "increment": 1,
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "burning-touch",
+    "name": "Burning Touch",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Deal 2 damage to a creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "cB",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 2,
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "clockwork-city-pilgrim",
+    "name": "Clockwork City Pilgrim",
+    "type": "Creature",
+    "subtypes": [
+      "High Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Guard Exalt 3 : +2/+2.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "dn",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "modHealth": 2
+      }
+    ]
+  },
+  {
+    "id": "enamors-keeper",
+    "name": "Enamor's Keeper",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 3,
+    "attack": 4,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Exalt 4 : Equip a +5/+0 Heirloom Greatsword to Enamor's Keeper.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "fQ",
+    "exalted": false,
+    "exaltCost": 4,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "equip",
+        "cardId": "heirloom-greatsword",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "falling-wizard",
+    "name": "Falling Wizard",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 5,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "Summon : Falling Wizard deals 5 damage to himself. Last Gasp : Put an Experimental Scroll into your hand.",
+    "keywords": ["LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "gb",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": 5,
+        "target": "self"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "addToHand",
+        "cardId": "experimental-scroll",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "genius-pathmage",
+    "name": "Genius Pathmage",
+    "type": "Creature",
+    "subtypes": [
+      "Breton"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 7,
+    "attack": 4,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Summon : Summon a random creature from your deck with cost equal to your current magicka.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "gW",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonRandomMagicka",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "ghostgate-defender",
+    "name": "Ghostgate Defender",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Guard Exalt 3 : Deal 2 damage to a creature.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "ha",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "damage",
+        "amount": 2,
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "hatchery-meddler",
+    "name": "Hatchery Meddler",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 4,
+    "attack": 5,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon : Swap a creature's power and health.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "hS",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "invertStats",
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "lame-corprus",
+    "name": "Lame Corprus",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 6,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "jw"
+  },
+  {
+    "id": "mages-guild-recruit",
+    "name": "Mages Guild Recruit",
+    "type": "Creature",
+    "subtypes": [
+      "Argonian"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Summon : Reduce the cost of an action in your hand by 2.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "kc",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "modCost",
+        "amount": -2,
+        "target": "cardPlayerHand",
+        "subtypes": [ "Action" ]
+      }
+    ]
+  },
+  {
+    "id": "mighty-conjuring",
+    "name": "Mighty Conjuring",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Summon a random Atronach. If you have a creature with 5 power or more, summon a Lava Atronach instead.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kA",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "lava-atronach",
+        "subtypes": [ "Atronach" ],
+        "target": "lane"
+      }
+    ]
+  },
+  {
+    "id": "poetic-armiger",
+    "name": "Poetic Armiger",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Exalt 1 : Gain a random Keyword.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "mh",
+    "exalted": false,
+    "exaltCost": 1,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "grantRandomKeyword",
+        "target": "self"        
+      }
+    ]
+  },
+  {
+    "id": "seyda-neen-courier",
+    "name": "Seyda Neen Courier",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : Equip a +3/+0 Steel Sword to a friendly creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "nL",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "equip",
+        "cardId": "steel-sword",
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "sixth-house-amulet",
+    "name": "Sixth House Amulet",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "+1/+1 Summon : If the wielder has 5 power or more, it gains a Ward .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "om",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "addKeywords": ["Ward"],
+        "target": "wielder",
+        "targetCondition": {
+          "type": "hasAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "sotha-sil",
+    "name": "Sotha Sil",
+    "type": "Creature",
+    "subtypes": [
+      "God"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 9,
+    "attack": 4,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Exalt 3 : +4/+4 At the end of your turn, if you have an Exalted creature in play, summon an Awakened Imperfect .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "S",
+    "deckCodeId": "oN",
+    "unique": true,
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 4,
+        "modHealth": 4     
+      },
+      {
+        "trigger": "EndOfTurn",
+        "type": "summon",
+        "cardId": "awakened-imperfect",
+        "amount": 1,
+        "target": "randomLane",
+        "condition": {
+          "type": "hasExaltedCreature"
+        }
+      }
+    ]
+  },
+  {
+    "id": "spirit-knife",
+    "name": "Spirit Knife",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Deal 7 damage to a creature. Draw a card.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "pb",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 7,
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "tel-vos-magister",
+    "name": "Tel Vos Magister",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Ward At the end of your turn, if Tel Vos Magister has a Ward, you gain a Ward.",
+    "keywords": ["Ward"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "qd",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "grantWard",
+        "target": "player",
+        "condition": {
+          "type": "hasKeyword",
+          "keyword": "Ward"
+        }
+      }
+    ]
+  },
+  {
+    "id": "temple-conjurer",
+    "name": "Temple Conjurer",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Exalt 3 : Summon a 5/3 Flame Atronach with Breakthrough .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qh",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "summon",
+        "cardId": "flame-atronach",
+        "amount": 1,
+        "target": "thisLane"
+      }
+    ]
+  },
+  {
+    "id": "therana",
+    "name": "Therana",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 8,
+    "rarity": "4Legendary",
+    "text": "After you play an action , shuffle three 0-cost copies of that action into your deck.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qt",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "shuffleIntoDeck",
+        "amount": 3,
+        "cost": 0,
+        "target": "playedCard",
+        "condition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Action" ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "theranas-lawman",
+    "name": "Therana's Lawman",
+    "type": "Creature",
+    "subtypes": [
+      "High Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 8,
+    "attack": 5,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Guard , Ward",
+    "keywords": ["Guard", "Ward"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "qu"
+  },
+  {
+    "id": "traitors-flames",
+    "name": "Traitor's Flames",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Betray Deal 2 damage to all enemy creatures in a lane.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qJ",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 2,
+        "target": "creatureEnemyThisLaneAll"
+      }
+    ]
+  },
+  {
+    "id": "tribunal-oathman",
+    "name": "Tribunal Oathman",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Summon : If you have a... [Y] card in play, you gain 4 health. [P] card in play, gain +1 max magicka.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "qQ",
+    "effects": [
+			{
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": -4,
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "Y"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "maxMagicka",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "P"
+        }
+			}
+		]
+  },
+  {
+    "id": "vigilant-ancestor",
+    "name": "Vigilant Ancestor",
+    "type": "Creature",
+    "subtypes": [
+      "Spirit"
+    ],
+    "attributes": [
+      "B"
+    ],
+    "cost": 3,
+    "attack": 5,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Guard Vigilant Ancestor is permanently Shackled .",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "rq",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "freeze",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "wild-clumsiness",
+    "name": "Wild Clumsiness",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Betray Shackle a random enemy creature in each lane.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "rM",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "shackle",
+        "target": "creatureEnemyRandomLeftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "shackle",
+        "target": "creatureEnemyRandomRightLane"
+      }
+    ]
+  },
+  {
+    "id": "ambitious-hireling",
+    "name": "Ambitious Hireling",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : Give another friendly creature power and health equal to Ambitious Hireling's power.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "ay",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "amountPer": "sourcePower",
+        "target": "creatureFriendlyOther"
+      }
+    ]
+  },
+  {
+    "id": "balmora-captain",
+    "name": "Balmora Captain",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Rally 2 Your other Rallies give an extra +1/+1.",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "bu",
+    "effects": [
+      {
+        "trigger": "FriendlyRally",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "cardRallied"
+      }
+    ]
+  },
+  {
+    "id": "chodalas-treachery",
+    "name": "Chodala's Treachery",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 9,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Destroy a creature. Plot : Steal the creature instead.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "dc",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "destroy",
+        "target": "creature",
+        "condition": {
+          "type": "playedCards",
+          "max": 1
+        }
+      },
+      {
+        "trigger": "Plot",
+        "type": "steal",
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "crassius-favor",
+    "name": "Crassius' Favor",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Summon two 1/1 Imperial Grunts to a lane. Plot : Gain 1 health for each friendly creature in that lane.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "dG",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "imperial-grunt",
+        "amount": 2,
+        "target": "lane"
+      },
+      {
+        "trigger": "Plot",
+        "type": "damage",
+        "amount": -1,
+        "amountPer": "creatureFriendlyLane",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "dren-bodyguard",
+    "name": "Dren Bodyguard",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "eV"
+  },
+  {
+    "id": "ebonheart-oracle",
+    "name": "Ebonheart Oracle",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Drain Double the amount of health you gain.",
+    "keywords": ["Drain"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "fy",
+    "effects": [      
+			{
+				"trigger": "Aura",
+				"type": "buffTarget",
+				"addKeywords": [ "DoubleHeal" ],
+				"target": "player"
+			}
+		]
+  },
+  {
+    "id": "feasting-hunger",
+    "name": "Feasting Hunger",
+    "type": "Creature",
+    "subtypes": [
+      "Daedra"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Guard Summon : You gain 1 health for each enemy creature.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "gh",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "damage",
+        "amount": -1,
+        "amountPer": "creatureEnemyAll",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "gavel-of-the-ordinator",
+    "name": "Gavel of the Ordinator",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 0,
+    "rarity": "2Rare",
+    "text": "+2/+0 Summon : The wielder is immune to damage this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "gT",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "tempKeywords": ["AllDamage"],
+        "target": "wielder"
+      }
+    ]
+  },
+  {
+    "id": "grand-inquisitor",
+    "name": "Grand Inquisitor",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 4,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Exalt 4 : +3/+3. Summon : Destroy a creature with less power than Grand Inquisitor.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "ht",
+    "exalted": false,
+    "exaltCost": 4,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 3,
+        "modHealth": 3        
+      },
+      {
+        "trigger": "Summon",
+        "type": "destroy",
+        "target": "creatureOther",
+        "targetCondition": {
+          "type": "hasLessAttack"
+        }
+      }
+    ]
+  },
+  {
+    "id": "hlaalu-oathman",
+    "name": "Hlaalu Oathman",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 3,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : If you have a... [G] card in play, gain 3 magicka this turn. [R] card in play, draw a card.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "iq",
+    "effects": [
+			{
+        "trigger": "Summon",
+        "type": "magicka",
+        "amount": 3,
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "G"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "R"
+        }
+			}
+		]
+  },
+  {
+    "id": "illusory-defenses",
+    "name": "Illusory Defenses",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Summon a 0/5 Illusory Wall with Guard in each lane. Sacrifice them at the start of your turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "E",
+    "deckCodeId": "iD",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "illusory-wall",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "illusory-wall",
+        "amount": 1,
+        "target": "rightLane"
+      }
+    ]
+  },
+  {
+    "id": "khuul-lawkeeper",
+    "name": "Khuul Lawkeeper",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 3,
+    "attack": 1,
+    "health": 6,
+    "rarity": "2Rare",
+    "text": "Guard , Rally",
+    "keywords": ["Guard", "Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "jm"
+  },
+  {
+    "id": "kwama-queen",
+    "name": "Kwama Queen",
+    "type": "Creature",
+    "subtypes": [
+      "Kwama"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Plot : Summon a 1/1 Kwama Forager in each lane. Other friendly Kwama have +1/+0.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "js",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "summon",
+        "cardId": "kwama-forager",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Plot",
+        "type": "summon",
+        "cardId": "kwama-forager",
+        "amount": 1,
+        "target": "rightLane"
+      },
+      {
+        "trigger": "Aura",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "target": "creatureFriendlyOtherAll",
+        "targetCondition": {
+          "types": "hasSubtype",
+          "subtypes": ["Kwama"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "light-of-the-three",
+    "name": "Light of the Three",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Exalt 2 : Give other friendly creatures in this lane +2/+2.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "jG",
+    "exalted": false,
+    "exaltCost": 2,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "modHealth": 2,
+        "target": "creatureFriendlyOtherThisLaneAll"
+      }
+    ]
+  },
+  {
+    "id": "moonmoth-castellan",
+    "name": "Moonmoth Castellan",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 4,
+    "attack": 4,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Guard Plot : Put a random Guard into your hand.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "kJ",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "addToHand",
+        "subtypes": ["Guard"],
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "morag-tong-nightblade",
+    "name": "Morag Tong Nightblade",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Summon : Summon a 0/1 Target with Guard for your opponent. Slay : Draw a card. If it's an action, reduce its cost to 0.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kM",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "thisLane"
+      },
+      {
+        "trigger": "Slay",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Slay",
+        "type": "modCost",
+        "amount": -20,
+        "target": "drawnCard",
+        "targetCondition": {
+          "type": "hasType",
+          "subtypes": ["Action"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "orvas-bargain",
+    "name": "Orvas' Bargain",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Give an enemy creature -1/-0 and a friendly creature +1/+0 this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "lQ",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": -1,
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "target": "creatureFriendlyRandom"
+      }
+    ]
+  },
+  {
+    "id": "prison-ship",
+    "name": "Prison Ship",
+    "type": "Creature",
+    "subtypes": [
+      "Defense"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 3,
+    "attack": 0,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "Summon : Shackle an enemy creature while you have Prison Ship.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "mq",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "freeze",
+        "target": "creatureEnemy"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "thaw",
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "shrine-guardian",
+    "name": "Shrine Guardian",
+    "type": "Creature",
+    "subtypes": [
+      "Daedra"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 8,
+    "attack": 8,
+    "health": 8,
+    "rarity": "3Epic",
+    "text": "Guard When your opponent summons a creature, reduce its power to 0 until the start of your turn.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "of",
+    "effects": [
+      {
+        "trigger": "SummonCreatureEnemy",
+        "type": "buffTarget",
+        "tempAttack": -20,
+        "target": "summon"
+      }
+    ]
+  },
+  {
+    "id": "stand-watch",
+    "name": "Stand Watch",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Give a creature Guard . Draw a card.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "pl",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "addKeywords": ["Guard"],
+        "target": "creature"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "umbra",
+    "name": "Umbra",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 6,
+    "attack": 3,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "+3/+5 At the start of your turn, the wielder Battles an enemy creature of Umbra's choosing.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "rd",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "battle",
+        "target": "wielder"
+      }
+    ]
+  },
+  {
+    "id": "vivec",
+    "name": "Vivec",
+    "type": "Creature",
+    "subtypes": [
+      "God"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Exalt 3 : +5/+5 While you have an Exalted creature in play, you can't lose the game.",
+    "keywords": [],
+    "immunity": ["UnbeatableExalted"],
+    "set": "Houses of Morrowind",
+    "tier": "S",
+    "deckCodeId": "rt",
+    "unique": true,
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 5,
+        "modHealth": 5
+      }
+    ]
+  },
+  {
+    "id": "vivec-city-pilgrim",
+    "name": "Vivec City Pilgrim",
+    "type": "Creature",
+    "subtypes": [
+      "Nord"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Drain Exalt 3 : +2/+2",
+    "keywords": ["Drain"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "ru",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "modHealth": 2
+      }
+    ]
+  },
+  {
+    "id": "warclaw-mercenary",
+    "name": "Warclaw Mercenary",
+    "type": "Creature",
+    "subtypes": [
+      "Khajiit"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Rally",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "rB"
+  },
+  {
+    "id": "writ-of-execution",
+    "name": "Writ of Execution",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Choose an enemy creature. At the start of your turn, destroy it and put a Completed Contract into your hand.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "se",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "grantEffect",
+        "target": "creatureEnemy",
+        "grantedEffect": {
+          "trigger": "EndOfTurn",
+          "type": "addToHand",
+          "cardId": "completed-contract",
+          "amount": 1,
+          "target": "opponent"
+        }
+      },
+      {
+        "trigger": "Play",
+        "type": "grantEffect",
+        "target": "creatureEnemy",
+        "grantedEffect": {
+          "trigger": "EndOfTurn",
+          "type": "destroy",
+          "target": "self"
+        }
+      }
+    ]
+  },
+  {
+    "id": "ash-oppressor",
+    "name": "Ash Oppressor",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 4,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Summon : If you have a creature with 5 power or more, Shackle an enemy creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "aV",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "creatureEnemy",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "awakened-dreamer",
+    "name": "Awakened Dreamer",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "At the end of your turn, if you have a creature with 5 power or more, Awakened Dreamer gains +1/+1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "bo",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "berne-clan-nightstalker",
+    "name": "Berne Clan Nightstalker",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Summon : Secretly choose an enemy creature. Last Gasp : Destroy the chosen creature.",
+    "keywords": ["LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "bL",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "secretDeath",
+        "target": "creatureEnemy"
+      }
+    ]
+  },
+  {
+    "id": "blighted-werebat",
+    "name": "Blighted Werebat",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Drain At the end of your turn, if you have a creature with 5 power or more, deal 2 damage to your opponent.",
+    "keywords": ["Drain"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "cb",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "damage",
+        "amount": 2,
+        "target": "opponent",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "blood-sacrament",
+    "name": "Blood Sacrament",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Betray Deal 2 damage to your opponent and gain 2 health.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "cf",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": 2,
+        "target": "opponent"
+      },
+      {
+        "trigger": "Play",
+        "type": "damage",
+        "amount": -2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "cliff-racer-onslaught",
+    "name": "Cliff Racer Onslaught",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 9,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Summon a 4/4 Cliff Racer with Charge in each lane. Your opponent summons a 0/1 Target with Guard in each lane.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "di",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "cliff-racer",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "cliff-racer",
+        "amount": 1,
+        "target": "rightLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "rightLane"
+      }
+    ]
+  },
+  {
+    "id": "cliff-strider",
+    "name": "Cliff Strider",
+    "type": "Creature",
+    "subtypes": [
+      "Reptile"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Charge Can't attack your opponent. At the end of your turn, if there are no enemy creatures in this lane, move Cliff Strider.",
+    "keywords": ["Charge"],
+    "immunity": ["AttackPlayer"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "dj",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "move",
+        "target": "self",
+        "condition": {
+          "type": "noEnemyCreaturesThisLane"
+        }
+      }
+    ]
+  },
+  {
+    "id": "cornerclub-gambler",
+    "name": "Cornerclub Gambler",
+    "type": "Creature",
+    "subtypes": [
+      "Wood Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 4,
+    "health": 3,
+    "rarity": "3Epic",
+    "text": "Summon : You must discard a card. At the start of your turn, draw two cards and Cornerclub Gambler loses this ability.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "dy",
+    "targetReq": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "discard",
+        "target": "cardPlayerHand"
+      },
+      {
+        "trigger": "StartOfTurn",
+        "type": "drawCards",
+        "amount": 2,
+        "target": "player"
+      },
+      {
+        "trigger": "StartOfTurn",
+        "type": "removeEffects",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "deranged-corprus",
+    "name": "Deranged Corprus",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Deranged Corprus has +5/+0 on your turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "eq",
+    "static": {
+      "condition": {
+        "type": "isYourTurn"
+      },
+      "modAttack": 5
+    }
+  },
+  {
+    "id": "drain-blood",
+    "name": "Drain Blood",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Betray Give a creature -2/-2.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "eR",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": -2,
+        "modHealth": -2,
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "dres-spy",
+    "name": "Dres Spy",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 0,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : Look at the top card of your deck. You may discard it.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "E",
+    "deckCodeId": "eY",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "scry",
+        "amount": 1,
+        "target": "player",
+        "choices": [
+          {
+            "text": "Keep the card",
+            "effect": {
+              "type": "drawCards",
+              "amount": 0,
+              "target": "player"
+            }
+          },
+          {
+            "text": "Discard the card",
+            "effect": {
+              "type": "discardTopDeck",
+              "amount": 1,
+              "target": "player"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fleeting-apparition",
+    "name": "Fleeting Apparition",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 5,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Betray Summon a random creature from your deck that costs 3 or less to a random lane. Unsummon it at the end of your turn.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "E",
+    "deckCodeId": "gA",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summonDeckCostMax",
+        "cost": 3,
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "gentleman-jim-stacey",
+    "name": "Gentleman Jim Stacey",
+    "type": "Creature",
+    "subtypes": [
+      "Redguard"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 7,
+    "attack": 5,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Summon : Your opponent chooses a card in their hand and gives it to you.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "gX",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "takeCard",
+        "amount": 1,
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "glass-greaves",
+    "name": "Glass Greaves",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "G"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "+1/+1 Plot : Reduce the cost of a random card in your hand by 1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "hf",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "modCost",
+        "amount": -1,
+        "target": "cardPlayerHandRandom"
+      }
+    ]
+  },
+  {
+    "id": "guar-stablemaster",
+    "name": "Guar Stablemaster",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Summon : +1/+1 and Guard if you have an Animal .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "hJ",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "addKeywords": ["Guard"],
+        "condition": {
+          "type": "hasInPlay",
+          "subtypes": [
+            "Beast",
+            "Fish",
+            "Mammoth",
+            "Mudcrab",
+            "Netch",
+            "Reptile",
+            "Spider",
+            "Skeever",
+            "Wolf"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "moon-sugar-smuggler",
+    "name": "Moon Sugar Smuggler",
+    "type": "Creature",
+    "subtypes": [
+      "Khajiit"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Last Gasp : Gain 2 magicka this turn.",
+    "keywords": ["LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "kH",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "magicka",
+        "amount": 2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "morag-tong-aspirant",
+    "name": "Morag Tong Aspirant",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 1,
+    "attack": 2,
+    "health": 1,
+    "rarity": "4Legendary",
+    "text": "Slay : Summon a Morag Tong Aspirant.",
+    "keywords": ["Slay"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kK",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "summon",
+        "cardId": "morag-tong-aspirant",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "morag-tong-assassin",
+    "name": "Morag Tong Assassin",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Summon : Summon a 0/1 Target with Guard for your opponent. Slay : +1/+1",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kL",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "thisLane"
+      },
+      {
+        "trigger": "Slay",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1
+      }
+    ]
+  },
+  {
+    "id": "naryu-virian",
+    "name": "Naryu Virian",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 6,
+    "attack": 6,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Summon : Summon a 0/1 Target with Guard for your opponent in each lane. Friendly creatures have \" Slay : +1/+1 and Lethal .\"",
+    "keywords": ["Slay"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "ln",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Summon",
+        "type": "summonOpponent",
+        "cardId": "target",
+        "amount": 1,
+        "target": "rightLane"
+      },
+      {
+        "trigger": "FriendlySlay",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "addKeywords": ["Lethal"],
+        "target": "slayer"
+      },
+      {
+        "trigger": "Slay",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "addKeywords": ["Lethal"]
+      }
+    ]
+  },
+  {
+    "id": "nix-hound",
+    "name": "Nix-Hound",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Prophecy Summon : Shackle each enemy creature with less power than Nix-Hound.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "lA",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "creatureEnemyAll",
+        "targetCondition": {
+          "type": "hasLessAttack"
+        }
+      }
+    ]
+  },
+  {
+    "id": "nix-ox",
+    "name": "Nix-Ox",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 7,
+    "attack": 5,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Summon : Gain 5 magicka this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "lC",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "magicka",
+        "amount": 5,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "silt-strider",
+    "name": "Silt Strider",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 0,
+    "health": 4,
+    "rarity": "2Rare",
+    "text": "Prophecy , Guard Summon : Move a friendly creature to this lane.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "ok",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "move",
+        "target": "creatureFriendlyOtherLane"
+      }
+    ]
+  },
+  {
+    "id": "suran-pawnbroker",
+    "name": "Suran Pawnbroker",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Plot : Put a random 0-cost card into your hand.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "pT",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "addToHand",
+        "cardId": "randomCost",
+        "amount": 1,
+        "cost": 0,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "telvanni-oathman",
+    "name": "Telvanni Oathman",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Summon : If you have a... [B] card in play, draw a random action from your deck. [P] card in play, summon a Risen Dead in each lane.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "qg",
+    "effects": [
+			{
+        "trigger": "Summon",
+        "type": "drawFiltered",
+        "subtypes": ["Action"],
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "B"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "risen-dead",
+        "amount": 1,
+        "target": "leftLane",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "P"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "risen-dead",
+        "amount": 1,
+        "target": "rightLane",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "P"
+        }
+			}
+		]
+  },
+  {
+    "id": "twin-lamps-consul",
+    "name": "Twin Lamps Consul",
+    "type": "Creature",
+    "subtypes": [
+      "Argonian"
+    ],
+    "attributes": [
+      "G"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Plot : Lethal and Guard .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qW",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "buffSelf",
+        "addKeywords": ["Lethal","Guard"]
+      }
+    ]
+  },
+  {
+    "id": "ald-velothi-assassin",
+    "name": "Ald Velothi Assassin",
+    "type": "Creature",
+    "subtypes": [
+      "Breton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Lethal , Rally",
+    "keywords": ["Lethal", "Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "ak"
+  },
+  {
+    "id": "almalexia",
+    "name": "Almalexia",
+    "type": "Creature",
+    "subtypes": [
+      "God"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 7,
+    "attack": 6,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Exalt 3 : +6/+6. Friendly Exalted creatures are immune to damage.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "at",
+    "unique": true,
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 6,
+        "modHealth": 6
+      },
+      {
+        "trigger": "Aura",
+        "type": "grantImmunity",
+        "immunity": "AllDamage",
+        "target": "creatureFriendlyAll",
+        "targetCondition": {
+          "type": "isExalted"
+        }
+      }
+    ]
+  },
+  {
+    "id": "almalexias-disciple",
+    "name": "Almalexia's Disciple",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Exalt 2 : Heal all friendly creatures.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "au",
+    "exalted": false,
+    "exaltCost": 2,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "heal",
+        "target": "creatureFriendlyAll"
+      }
+    ]
+  },
+  {
+    "id": "ancestral-dead",
+    "name": "Ancestral Dead",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Slay : Summon a Risen Dead .",
+    "keywords": ["Slay"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "aC",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "summon",
+        "cardId": "risen-dead",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "aundae-clan-sorcerer",
+    "name": "Aundae Clan Sorcerer",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 4,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "At the end of your turn, if three or more creatures died this turn, put a random Blood Magic Spell into your hand.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "bl",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "addToHand",
+        "amount": 1,
+        "names": [ "corpse-curse", "drain-life", "gargoyle", "raise-dead"],
+        "target": "player",
+        "condition": {
+          "type": "creatureDied",
+          "min": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "bal-isra-warrider",
+    "name": "Bal Isra Warrider",
+    "type": "Creature",
+    "subtypes": [
+      "Redguard"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 5,
+    "attack": 3,
+    "health": 6,
+    "rarity": "1Common",
+    "text": "Rally",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "bt"
+  },
+  {
+    "id": "betty-netch",
+    "name": "Betty Netch",
+    "type": "Creature",
+    "subtypes": [
+      "Netch"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 5,
+    "attack": 0,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "While Betty Netch is in play, your max magicka is increased by 2.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "bN",
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "maxMagicka",
+        "amount": 2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "bloodline-outcast",
+    "name": "Bloodline Outcast",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 7,
+    "attack": 7,
+    "health": 7,
+    "rarity": "1Common",
+    "text": "When a creature dies, Bloodline Outcast gains Drain this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "ch",
+    "effects": [
+      {
+        "trigger": "CreatureFriendlyDeath",
+        "type": "buffSelf",
+        "tempKeywords": ["Drain"]
+      },
+      {
+        "trigger": "CreatureEnemyDeath",
+        "type": "buffSelf",
+        "tempKeywords": ["Drain"]
+      }
+    ]
+  },
+  {
+    "id": "bonewalker",
+    "name": "Bonewalker",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 1,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "Prophecy , Guard Summon : +1/+1 for each enemy creature in this lane.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "cn",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "amountPer": "creatureEnemyThisLaneAll"
+      }
+    ]
+  },
+  {
+    "id": "caius-cosades",
+    "name": "Caius Cosades",
+    "type": "Creature",
+    "subtypes": [
+      "Imperial"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Summon : Look at two of your opponent's cards. Guess the one in their hand. If you're right, give all creatures in your hand +1/+1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "cD",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "revealAndGuessBuff",
+        "amount": 2,
+        "target": "opponent"
+      }
+    ]
+  },
+  {
+    "id": "caius-machinations",
+    "name": "Caius' Machinations",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Betray Give the top three creatures of your deck +1/+1.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "cE",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creaturesTopDeck"
+      }
+    ]
+  },
+  {
+    "id": "daedric-crescent",
+    "name": "Daedric Crescent",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "1Common",
+    "text": "+2/+2 Slay : +1/+1",
+    "keywords": ["Slay"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "dT",
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "wielder"
+      }
+    ]
+  },
+  {
+    "id": "indomitable-ordinator",
+    "name": "Indomitable Ordinator",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "3Epic",
+    "text": "Guard Exalt 1 : Your opponent can't target Indomitable Ordinator with actions .",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "iQ",
+    "exalted": false,
+    "exaltCost": 1,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "grantImmunity",
+        "immunity": "ActionTarget",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "indoril-mastermind",
+    "name": "Indoril Mastermind",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Summon : Draw a card.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "iS",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "knight-of-gnisis",
+    "name": "Knight of Gnisis",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "3Epic",
+    "text": "Rally Summon : Put a 2/2 Colovian Trooper with Guard into your hand.",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "jo",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "addToHand",
+        "amount": 1,
+        "cardId": "colovian-trooper",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "lichs-ascension",
+    "name": "Lich's Ascension",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 7,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Ongoing Your cards cost 0. You may play only one card per turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "jF",
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "modCost",
+        "target": "playerHand",
+        "amount": -20
+      },
+      {
+				"trigger": "Aura",
+				"type": "grantImmunity",
+				"immunity": "MultipleCards",
+				"target": "player"
+			}
+    ]
+  },
+  {
+    "id": "mournhold-pilgrim",
+    "name": "Mournhold Pilgrim",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 4,
+    "health": 4,
+    "rarity": "1Common",
+    "text": "Regenerate Exalt 3 : +2/+2",
+    "keywords": ["Regenerate"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kU",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "buffSelf",
+        "modAttack": 2,
+        "modHealth": 2
+      }
+    ]
+  },
+  {
+    "id": "mushroom-tower",
+    "name": "Mushroom Tower",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 9,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Ongoing Your actions have Betray .",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "E",
+    "deckCodeId": "li",
+    "effects": [
+      {
+        "trigger": "Aura",
+        "type": "buffTarget",
+        "addKeywords": [ "Betray" ],
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "odirniran-necromancer",
+    "name": "Odirniran Necromancer",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 6,
+    "attack": 3,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Summon : Summon a creature from your discard pile with less power than Odirniran Necromancer.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "lI",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summonDiscardAttack",
+        "target": "randomLane"
+      }
+    ]
+  },
+  {
+    "id": "quarra-clan-bloodkin",
+    "name": "Quarra Clan Bloodkin",
+    "type": "Creature",
+    "subtypes": [
+      "Vampire"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Drain",
+    "keywords": ["Drain"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "mw"
+  },
+  {
+    "id": "redoran-oathman",
+    "name": "Redoran Oathman",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Summon : If you have a... [Y] card in play, double Redoran Oathman's health. [R] card in play, double Redoran Oathman's power.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "mS",
+    "effects": [
+			{
+        "trigger": "Summon",
+        "type": "doubleHealth",
+        "target": "self",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "Y"
+        }
+			},
+      {
+        "trigger": "Summon",
+        "type": "doubleAttack",
+        "target": "self",
+        "condition": {
+          "type": "hasInPlay",
+          "min": 1,
+          "attribute": "R"
+        }
+			}
+		]
+  },
+  {
+    "id": "rising-of-bones",
+    "name": "Rising of Bones",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Betray Summon a 3/3 Risen Horror with Guard .",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "no",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "risen-horror",
+        "target": "lane"
+      }
+    ]
+  },
+  {
+    "id": "skeleton-champion",
+    "name": "Skeleton Champion",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 4,
+    "attack": 4,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Guard Summon : Give other friendly Skeletons +1/+1.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "os",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureFriendlyOtherAll",
+        "targetCondition": {
+          "type": "hasSubtype",
+          "subtypes": [ "Skeleton" ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "trespassers-bane",
+    "name": "Trespasser's Bane",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Set a creature's power to 1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "qO",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "setStats",
+        "modAttack": 1,
+        "target": "creature"
+      }
+    ]
+  },
+  {
+    "id": "vvardvark-experiment",
+    "name": "Vvardvark Experiment",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "P"
+    ],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Summon a 0/1 Vvardvark in each lane.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "qs",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "vvardvark",
+        "target": "leftLane"
+      },
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "vvardvark",
+        "target": "rightLane"
+      }
+    ]
+  },
+  {
+    "id": "bolvyn-venim",
+    "name": "Bolvyn Venim",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R", "Y", "P"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Rally When you Rally with no creatures in your hand, first draw Bolvyn Venim from your deck.",
+    "keywords": ["Rally"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "ck",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "FailRally",
+        "type": "drawFromDeck",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "inspiring-kinsman",
+    "name": "Inspiring Kinsman",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R", "Y", "P"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Rally 2 Last Gasp : Give a random creature in your hand +2/+2.",
+    "keywords": ["Rally", "LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "iX",
+    "effects": [
+      {
+        "trigger": "Rally",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "cardRallied"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "modHealth": 2,
+        "target": "cardPlayerHandRandom",
+        "subtypes": [ "Creature" ]
+      }
+    ]
+  },
+  {
+    "id": "redoran-forerunner",
+    "name": "Redoran Forerunner",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R", "Y", "P"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Charge , Drain , Ward",
+    "keywords": ["Charge", "Drain", "Ward"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "mR"
+  },
+  {
+    "id": "divayths-experiments",
+    "name": "Divayth's Experiments",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B", "G", "P"
+    ],
+    "cost": 9,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Betray Summon a copy of a friendly creature.",
+    "keywords": ["Betray"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "eB",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summonCopy",
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "sun-in-shadow",
+    "name": "Sun-in-Shadow",
+    "type": "Creature",
+    "subtypes": [
+      "Argonian"
+    ],
+    "attributes": [
+      "B", "G", "P"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 6,
+    "rarity": "4Legendary",
+    "text": "Summon : Permanently Shackle another friendly creature to draw an action of your choice from your deck.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "pP",
+    "unique": true,
+    "targetReq": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "freeze",
+        "target": "creatureFriendlyOther"
+      },
+      {
+        "trigger": "Summon",
+        "type": "revealAndChoose",
+        "amount": 20,
+        "target": "player",
+        "subtypes": ["Action"]
+      }
+    ]
+  },
+  {
+    "id": "telvanni-catspaw",
+    "name": "Telvanni Catspaw",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B", "G", "P"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Last Gasp : Draw a card. If Telvanni Catspaw was sacrificed , draw two cards instead.",
+    "keywords": ["LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qf",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Sacrifice",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "balmora-puppeteer",
+    "name": "Balmora Puppeteer",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R", "Y", "G"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "2Rare",
+    "text": "Plot : +1/+1 for each other card you've played this turn.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "bv",
+    "effects": [
+      {
+        "trigger": "Plot",
+        "type": "buffSelf",
+        "modAttack": 1,
+        "modHealth": 1,
+        "amountPer": "cardsPlayedTurn"
+      }
+    ]
+  },
+  {
+    "id": "duke-vedam-dren",
+    "name": "Duke Vedam Dren",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R", "Y", "G"
+    ],
+    "cost": 5,
+    "attack": 4,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "The first time you play a card each turn, draw a random card from your deck with cost equal to your remaining magicka.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "ff",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "PlayCard",
+        "type": "drawMagicka",
+        "amount": 1,
+        "target": "player",
+        "condition": {
+          "type": "playedCards",
+          "max": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "haunted-manor",
+    "name": "Haunted Manor",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "R", "Y", "G"
+    ],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Ongoing Give the second creature you summon each turn +2/+2.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "hT",
+    "effects": [
+      {
+        "trigger": "SummonSecond",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "modHealth": 2,
+        "target": "summon"
+      }
+    ]
+  },
+  {
+    "id": "archcanon-saryoni",
+    "name": "Archcanon Saryoni",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B", "Y", "P"
+    ],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "4Legendary",
+    "text": "Summon : Choose a blessing from one of the Tribunal gods. Exalt 3 : Gain all three blessings instead.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "S",
+    "deckCodeId": "aJ",
+    "exalted": false,
+    "exaltCost": 3,
+    "effects": [
+      {
+        "trigger": "Exalt",
+        "type": "addToHand",
+        "cardId": "almalexias-blessing",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Exalt",
+        "type": "addToHand",
+        "cardId": "vivecs-blessing",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Exalt",
+        "type": "addToHand",
+        "cardId": "sotha-sils-blessing",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Summon",
+        "type": "revealAndChooseName",
+        "amount": 3,
+        "names": ["almalexias-blessing","vivecs-blessing","sotha-sils-blessing"],
+        "target": "player",
+        "condition": {
+          "type": "notExalted"
+        }
+      }
+    ]
+  },
+  {
+    "id": "power-of-the-almsivi",
+    "name": "Power of the Almsivi",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "B", "Y", "P"
+    ],
+    "cost": 8,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Set each creature's power and health to 1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "mk",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "setStats",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureAll"
+      }
+    ]
+  },
+  {
+    "id": "temple-patriarch",
+    "name": "Temple Patriarch",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "B", "Y", "P"
+    ],
+    "cost": 6,
+    "attack": 5,
+    "health": 5,
+    "rarity": "2Rare",
+    "text": "Summon : Trigger the Exalt of each friendly creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "qi",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "allExalt",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "ascended-sleeper",
+    "name": "Ascended Sleeper",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "R", "B", "G"
+    ],
+    "cost": 6,
+    "attack": 3,
+    "health": 6,
+    "rarity": "2Rare",
+    "text": "Guard At the end of your turn, if you have a creature with 5 power or more, reduce the cost of all creatures in your hand by 1.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "aT",
+    "effects": [
+      {
+        "trigger": "EndOfTurn",
+        "type": "modCost",
+        "amount": -1,
+        "target": "playerHand",
+        "condition": {
+          "type": "hasCreatureAttack",
+          "min": 5
+        },
+        "targetCondition": {
+          "type": "hasType",
+          "subtypes": ["Creature"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "dagoth-ur",
+    "name": "Dagoth Ur",
+    "type": "Creature",
+    "subtypes": [
+      "God"
+    ],
+    "attributes": [
+      "R", "B", "G"
+    ],
+    "cost": 12,
+    "attack": 8,
+    "health": 8,
+    "rarity": "4Legendary",
+    "text": "Breakthrough , Charge , Drain , Guard , Lethal , Ward",
+    "keywords": ["Breakthrough", "Charge", "Drain", "Guard", "Lethal", "Ward"],
+    "set": "Houses of Morrowind",
+    "tier": "A",
+    "deckCodeId": "ea"
+  },
+  {
+    "id": "hand-of-dagoth",
+    "name": "Hand of Dagoth",
+    "type": "Creature",
+    "subtypes": [
+      "Ash Creature"
+    ],
+    "attributes": [
+      "R", "B", "G"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 4,
+    "rarity": "3Epic",
+    "text": "Breakthrough , Drain , Ward",
+    "keywords": ["Breakthrough", "Drain", "Ward"],
+    "set": "Houses of Morrowind",
+    "tier": "S",
+    "deckCodeId": "hP"
+  },
+  {
+    "id": "blueclaw-matron",
+    "name": "Blueclaw Matron",
+    "type": "Creature",
+    "subtypes": [
+      "Dreugh"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 7,
+    "attack": 3,
+    "health": 8,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "ci"
+  },
+  {
+    "id": "dismantle",
+    "name": "Dismantle",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Destroy an enemy support or [N] creature.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "C",
+    "deckCodeId": "ez",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "choice",
+        "target": "player",
+        "choices": [
+          {
+            "text": "Destroy an enemy support",
+            "effect": {
+              "type": "destroy",
+              "target": "supportEnemy"
+            }
+          },
+          {
+            "text": "Destroy a [N] creature",
+            "effect" : {
+              "type": "destroy",
+              "target": "creature",
+              "targetCondition": {
+                "type": "hasAttribute",
+                "attribute": "N"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dwemer-puzzle-box",
+    "name": "Dwemer Puzzle Box",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Uses: 3 Activate: Discard the top card of your deck. Last Gasp : Draw a card.",
+    "keywords": ["LastGasp"],
+    "uses": 3,
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "ft",
+    "effects": [
+      {
+        "trigger": "Activation",
+        "type": "discard",
+        "target": "topDeck"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "jiub",
+    "name": "Jiub",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "4Legendary",
+    "text": "Slay : Change into Saint Jiub, Eradicator of the Winged Menace .",
+    "keywords": ["Slay"],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "jf",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Slay",
+        "type": "change",
+        "cardId": "saint-jiub",
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "mudcrab-merchant",
+    "name": "Mudcrab Merchant",
+    "type": "Creature",
+    "subtypes": [
+      "Mudcrab"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "Summon : The Merchant shows you two cards he has for sale. Choose one to put into your hand. He puts the other into your opponent's hand.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "B",
+    "deckCodeId": "kY",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "revealAndChooseGive",
+        "amount": 2,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "silent-pilgrim",
+    "name": "Silent Pilgrim",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 3,
+    "attack": 1,
+    "health": 1,
+    "rarity": "2Rare",
+    "text": "Summon : Draw a random multi-attribute card from your deck.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "oj",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "drawMultiAttr",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "stolen-pants",
+    "name": "Stolen Pants",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 2,
+    "attack": 1,
+    "health": 1,
+    "rarity": "3Epic",
+    "text": "+1/+1 Summon : Summon a 0/1 Sheepish Dunmer in the other lane. Last Gasp : Give Sheepish Dunmer his pants.",
+    "keywords": ["LastGasp"],
+    "set": "Houses of Morrowind",
+    "tier": "D",
+    "deckCodeId": "pv",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "cardId": "sheepish-dunmer",
+        "amount": 1,
+        "target": "otherLane"
+      },
+      {
+        "trigger": "LastGasp",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "names": ["sheepish-dunmer"],
+        "target": "namedCard"
+      }
+    ]
+  },
+  {
+    "id": "unite-the-houses",
+    "name": "Unite the Houses",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": [
+      "N"
+    ],
+    "cost": 3,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Ongoing If you have at least one card of each attribute, you win the game.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "rh",
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "winGame",
+        "target": "player",
+        "condition": {
+          "type": "haveAllAttributes"
+        }
+      }
+    ]
+  },
+  {
+    "id": "yagrum-bagarn",
+    "name": "Yagrum Bagarn",
+    "type": "Creature",
+    "subtypes": [
+      "Dwemer"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "rarity": "4Legendary",
+    "text": "Summon : Draw a Dwemer from your discard pile and give it +2/+2.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "tier": "U",
+    "deckCodeId": "sj",
+    "unique": true,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "drawDiscard",
+        "subtypes": [ "Dwemer" ],
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "modHealth": 2,
+        "target": "drawnCard"
+      }
+    ]
+  },
+  {
+    "id": "fetcherfly-swarm",
+    "name": "Fetcherfly Swarm",
+    "type": "Creature",
+    "subtypes": [
+      "Insect"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "illusory-wall",
+    "name": "Illusory Wall",
+    "type": "Creature",
+    "subtypes": [
+      "Defense"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 1,
+    "attack": 0,
+    "health": 5,
+    "rarity": "1Common",
+    "text": "Guard Sacrifice Illusory Wall at the start of your turn.",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "StartOfTurn",
+        "type": "destroy",
+        "target": "self"
+      }
+    ]
+  },
+  {
+    "id": "imposter",
+    "name": "Imposter",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "R"
+    ],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "kwama-forager",
+    "name": "Kwama Forager",
+    "type": "Creature",
+    "subtypes": [
+      "Kwama"
+    ],
+    "attributes": [
+      "Y"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "risen-dead",
+    "name": "Risen Dead",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 1,
+    "attack": 1,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "risen-horror",
+    "name": "Risen Horror",
+    "type": "Creature",
+    "subtypes": [
+      "Skeleton"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "1Common",
+    "text": "Guard",
+    "keywords": ["Guard"],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "saint-jiub",
+    "name": "Saint Jiub",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 5,
+    "attack": 5,
+    "health": 5,
+    "rarity": "4Legendary",
+    "text": "Guard Can't be damaged or targeted by Cliff Racers , Cliff Hunters , and Cliff Striders .",
+    "keywords": ["Guard"],
+    "immunity": ["Cliffs"],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "unique": true
+  },
+  {
+    "id": "sheepish-dunmer",
+    "name": "Sheepish Dunmer",
+    "type": "Creature",
+    "subtypes": [
+      "Dark Elf"
+    ],
+    "attributes": [
+      "N"
+    ],
+    "cost": 0,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "Summon : Give Sheepish Dunmer Cover . While Sheepish Dunmer is pantsless, he does not lose Cover at the start of your turn.",
+    "keywords": ["Stealth"],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffSelf",
+        "addKeywords": ["Cover"]
+      }
+    ]
+  },
+  {
+    "id": "vvardvark",
+    "name": "Vvardvark",
+    "type": "Creature",
+    "subtypes": [
+      "Beast"
+    ],
+    "attributes": [
+      "P"
+    ],
+    "cost": 0,
+    "attack": 0,
+    "health": 1,
+    "rarity": "1Common",
+    "text": "",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null
+  },
+  {
+    "id": "almalexias-blessing",
+    "name": "Almalexia's Blessing",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["P"],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Give a friendly creature Drain and Guard.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "addKeywords": ["Drain","Guard"],
+        "target": "creatureFriendly"
+      }
+    ]
+  },
+  {
+    "id": "vivecs-blessing",
+    "name": "Vivec's Blessing",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Give other friendly creatures +1/+1.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creatureFriendlyOtherAll"
+      }
+    ]
+  },
+  {
+    "id": "sotha-sils-blessing",
+    "name": "Sotha Sil's Blessing",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["B"],
+    "cost": 0,
+    "attack": null,
+    "health": null,
+    "rarity": "4Legendary",
+    "text": "Summon a spider worker.",
+    "keywords": [],
+    "set": "Houses of Morrowind",
+    "deckCodeId": null,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "summon",
+        "cardId": "spider-worker",
+        "amount": 1,
+        "target": "randomLane"
+      }
+    ]
+  }
+]

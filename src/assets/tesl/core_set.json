@@ -4276,11 +4276,10 @@
     "effects": [
       {
         "trigger": "Summon",
-        "type": "summon",
+        "type": "summonCopy",
         "condition": {
           "type": "hasMoreHealth"
         },
-        "cardId": "golden-saint",
         "target": "otherLane"
       }
     ]

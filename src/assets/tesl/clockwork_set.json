@@ -358,13 +358,12 @@
 		"effects": [
       {
         "trigger": "Summon",
-        "type": "summon",
+        "type": "summonCopy",
         "condition": {
           "type": "hasInPlay",
           "min": 1,
           "attribute": "N"
         },
-        "cardId": "kagouti-fabricant",
         "target": "otherLane"
       }
 		]

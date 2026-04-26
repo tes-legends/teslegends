@@ -474,6 +474,8 @@ export class GameService {
     });
     game.betrayAvailable = false;
     owner.cardsPlayed++;
+    game.lastCardSummoned = null;
+    game.lastCardSummoned2 = null;
     const cardId = card.id;
     owner.playCounts[cardId] = (owner.playCounts[cardId] || 0) + 1;
 
@@ -1895,6 +1897,25 @@ export class GameService {
   }
 
   private resetTemporaryEffects(game: GameState) {
+    game.creatureSlain = null;
+    game.creatureSlayer = null;
+    game.creatureShackled = null;
+    game.thief = null;
+    game.rallyist = null;
+    game.creatureMoved = null;
+    game.creatureRevealed = null;
+    game.lastCardPlayed = null;
+    game.lastCardDrawn = null;
+    game.lastCardSummoned = null;
+    game.lastCardSummoned2 = null;
+    game.lastCardDealingDamage = null;
+    game.lastCardReceivingDamage = null;
+    game.lastCreatureTargeted = null;
+    game.lastCardEquipped = null;
+    game.lastDamageTaken = 0;
+    game.lastHealingTaken = 0;
+    game.healthJustGained=  0;
+
     [game.player, game.opponent].forEach(player => {
       player.board.forEach(lane => {
         lane.forEach(creature => {
@@ -6969,6 +6990,8 @@ export class GameService {
 
       game.betrayAvailable = false;
       game.opponent.cardsPlayed++;
+      game.lastCardSummoned = null;
+      game.lastCardSummoned2 = null;
       const cardId = card.id;
       game.opponent.playCounts[cardId] = (game.opponent.playCounts[cardId] || 0) + 1;
       const refType = this.deckService.getEffectiveType(card);

@@ -1,10 +1,7 @@
 <!--collection.component.html-->
 <div class="collection-viewer">
-  <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;">
-    <!-- invisible focus trap start -->
-  </button>
+  <button #firstFocusable tabindex="0" style="position: absolute; opacity: 0; width: 1px; height: 1px;"></button>
   <div class="collection-header">
-    <!--<h2>Card Collection</h2>-->
     @if (!hideStorySet) {
       <button class="close-btn" (click)="close()">X</button>
     }
@@ -89,7 +86,6 @@
         </button>
       </div>
     }
-
     @if (filterExpanded.set && showFilters) {
       <div class="filter-options">
         @for (set of setIcons | keyvalue; track set) {
@@ -107,7 +103,6 @@
         }
       </div>
     }
-
     @if (filterExpanded.attribute && showFilters) {
       <div class="filter-options">
         @for (attr of attributeIcons | keyvalue; track attr) {
@@ -120,7 +115,6 @@
         }
       </div>
     }
-
     @if (filterExpanded.magicka && showFilters) {
       <div class="filter-options magicka-options">
         @for (cost of availMagicka; track cost) {
@@ -136,8 +130,6 @@
         }
       </div>
     }
-
-    <!-- Rarity Options -->
     @if (filterExpanded.rarity && (showFilters || hideStorySet)) {
       <div class="filter-options">
         @for (r of rarityOptions; track r) {
@@ -150,8 +142,6 @@
         }
       </div>
     }
-
-    <!-- Type Options -->
     @if (filterExpanded.type && (showFilters || hideStorySet)) {
       <div class="filter-options">
         @for (t of typeOptions; track t) {
@@ -164,8 +154,6 @@
         }
       </div>
     }
-
-    <!-- Subtype Options -->
     @if (filterExpanded.subtype && (showFilters || hideStorySet)) {
       <div class="filter-options">
         @for (sub of subtypeOptions; track sub) {
@@ -178,8 +166,6 @@
         }
       </div>
     }
-
-    <!-- Keyword Options -->
     @if (filterExpanded.keyword && (showFilters || hideStorySet)) {
       <div class="filter-options">
         @for (kw of keywordOptions; track kw) {
@@ -193,7 +179,6 @@
                 [alt]="kw"
                 class="filter-icon">
             }
-            <!-- Fallback to text if no icon -->
             @if (!getIconFileName(kw)) {
               <span class="keyword-text">{{ kw }}</span>
             }
@@ -214,7 +199,6 @@
         (click)="enlargeCard(card)">
       </app-tesl-card>
     }
-
     @if (displayedCards.length === 0) {
       <div class="no-results">
         No cards match the selected filters

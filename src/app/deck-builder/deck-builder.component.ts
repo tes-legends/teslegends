@@ -14,20 +14,17 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   savedDecks: SavedDeck[] = [];
   // === DATA ===
-  allCards: Card[] = [];               // all collectible cards
-  displayedCards: Card[] = [];         // filtered cards
-  currentDeck: DeckEntry[] = [];       // deck being built
+  allCards: Card[] = [];
+  displayedCards: Card[] = [];
+  currentDeck: DeckEntry[] = [];
   deckName: string = 'New Deck';
-  unlockedCardIds: string[] = [];   // passed from parent
+  unlockedCardIds: string[] = [];
   unlockAll: boolean = false;
   morrowindAllowed: boolean = false;
-
   enlargedCard: Card | null = null;
+  selectedClass: any = null;
 
-  // === CLASS SELECTION ===
-  selectedClass: any = null;           // selected class object
-
-  // === FILTERS (reuse your existing ones) ===
+  // === FILTERS ===
   selectedSet: string | null = null;
   selectedAttribute: string | null = null;
   selectedMagicka: number | '7+' | null = null;
@@ -93,13 +90,11 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.morrowindAllowed = this.deckService.morrowindSetsAllowed;
-    //this.allCards = this.deckService.getAllCards(); // your method
-    //this.applyFilters();
     this.loadSavedDecks();
   }
 
   ngAfterViewInit() {
-      this.firstFocusable?.nativeElement.focus();
+    this.firstFocusable?.nativeElement.focus();
   }
 
   get classesFiltered(): any[] {
@@ -109,7 +104,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   selectClass(cls: any) {
     this.selectedClass = cls;
-    this.currentDeck = [];           // clear current deck
+    this.currentDeck = [];
     this.deckName = `New ${cls.name} Deck`;
     this.maxDeckSize = 50;
     if (this.selectedClass.attributes.length === 1) {
@@ -122,23 +117,16 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
   onDeckEntryClick(event: MouseEvent, entry: any) {
     const el = event.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
-
     const clickX = event.clientX - rect.left;
     const width = rect.width;
-
-    // LEFT 50px → decrement
     if (clickX <= 50) {
       this.decrementCard(entry);
       return;
     }
-
-    // RIGHT 50px → increment
     if (clickX >= width - 50) {
       this.incrementCard(entry);
       return;
     }
-
-    // MIDDLE → open preview
     this.openCardPreview(entry.card);
   }
 
@@ -157,7 +145,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   incrementCard(entry: any) {
     const max = entry.card.unique ? 1 : 3;
-
     if (entry.count < max) {
       entry.count++;
     }
@@ -167,31 +154,23 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     if (entry.count > 1) {
       entry.count--;
     } else {
-      // remove from deck if it hits 0
       this.currentDeck = this.currentDeck.filter(e => e !== entry);
     }
   }
 
   toggleCard(card: Card) {
     const existing = this.currentDeck.find(e => e.card.id === card.id);
-
     if (existing) {
       if (existing.count >= 3) {
-        // Remove all copies if at max
         this.currentDeck = this.currentDeck.filter(e => e.card.id !== card.id);
       } else if (card.unique && existing.count >= 1) {
-        // Remove all copies if unique
         this.currentDeck = this.currentDeck.filter(e => e.card.id !== card.id);
       } else {
         existing.count++;
       }
     } else {
-      // Add new card
-      const totalCards = this.currentDeck.reduce((sum, e) => sum + e.count, 0);
       this.currentDeck.push({ card: {...card}, count: 1 });
     }
-
-    // Sort deck by cost
     this.currentDeck.sort((a, b) => (a.card.cost ?? 0) - (b.card.cost ?? 0));
   }
 
@@ -202,7 +181,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
   getAttributeClass(attr: string[]): string {
     if (!attr) return 'attr-neutral';
     if (attr.length > 1) return 'attr-multi';
-
     switch (attr[0]) {
         case 'R': return 'attr-red';
         case 'Y': return 'attr-yellow';
@@ -230,7 +208,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
 
   get allowedAttributes(): string[] {
     if (!this.selectedClass) return ['N'];
-    //return ['N', ...this.selectedClass.attributes];
     return this.selectedClass.attributes;
   }
 
@@ -238,17 +215,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     const incomingCode = await navigator.clipboard.readText();
     const deckEntries = this.deckService.decodeDeckCode(incomingCode);
     if (deckEntries && deckEntries.length > 0) {
-      /*const codes = incomingCode.substring(2);
-      // Split every 2 characters
-      for (let i = 0; i < codes.length; i += 2) {
-        const dc = codes.slice(i,i+2);
-        if (!dc.startsWith('A') && !dc.startsWith('B')) {
-          if (!this.unlockedCardIds.includes(dc)) {
-            alert(`Card with code ${dc} not unlocked yet`);
-            return;
-          }
-        }
-      }*/
       const deckAttr: string[] = [];
       let hasNeutral = false;
       deckEntries.forEach(e => {
@@ -312,7 +278,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     navigator.clipboard.writeText(this.deckService.encodeDeckCode(this.currentDeck));
   }
 
-  // Placeholder for save
   saveDeck() {
     if (!this.deckName.trim()) {
       alert('Please enter a deck name');
@@ -326,7 +291,6 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       alert(`Deck is not ${this.maxDeckSize} cards`);
       return;
     }
-
     const trimmedName = this.deckName.trim();
     const deckCode = this.deckService.encodeDeckCode(this.currentDeck);
     const savedDeck: SavedDeck = {
@@ -334,12 +298,7 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
       deckCode,
       attributes: this.selectedClass?.attributes || []
     };
-
-    // Save to localStorage (append to list)
-    // Load existing decks
     let savedDecks: SavedDeck[] = JSON.parse(localStorage.getItem('custom_decks') || '[]');
-
-    // Check if name already exists → overwrite
     const existingIndex = savedDecks.findIndex(d => d.name.toLowerCase() === trimmedName.toLowerCase());
     if (existingIndex !== -1) {
       if (!confirm(`A deck named "${trimmedName}" already exists. Overwrite it?`)) {
@@ -349,9 +308,8 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     } else {
       savedDecks.push(savedDeck);
     }
-
     localStorage.setItem('custom_decks', JSON.stringify(savedDecks));
-    this.savedDecks = savedDecks;  // update local list to reflect changes
+    this.savedDecks = savedDecks;
   }
 
   loadSavedDecks() {
@@ -374,17 +332,12 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     if (!confirm(`Delete deck "${dName}"? This cannot be undone.`)) {
       return;
     }
-
     let savedDecks: SavedDeck[] = JSON.parse(localStorage.getItem('custom_decks') || '[]');
     savedDecks = savedDecks.filter(d => d.name.toLowerCase() !== dName.toLowerCase());
     localStorage.setItem('custom_decks', JSON.stringify(savedDecks));
-
     this.loadSavedDecks();
-
-    // If currently editing this deck → clear editor
       this.currentDeck = [];
       this.deckName = 'New Deck';
-
     alert(`Deck "${dName}" deleted`);
   }
 
@@ -398,16 +351,5 @@ export class DeckBuilderComponent implements OnInit, AfterViewInit {
     this.dialogRef.close({
       savedDecks: this.savedDecks
     });
-  }
-
-  // Your existing lock check
-  isCardLocked(card: Card): boolean {
-    // Implement your logic (story always locked, etc.)
-    return card.set === 'Story';
-  }
-
-  // TrackBy for performance
-  trackByCardId(index: number, card: Card): string {
-    return card.id;
   }
 }

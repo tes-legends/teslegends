@@ -855,5 +855,422 @@
         "target": "creatureFriendlyOther"
       }
     ]
+  },
+  {
+    "id": "confound",
+    "name": "Confound",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["P"],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Cards cost 1 more this turn. Draw a card.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Ye",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "addTempCost",
+        "amount": 1,
+        "target": "currentPlayer"
+      },
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      }
+    ]
+  },
+  {
+    "id": "dunmer-smithing-style",
+    "name": "Dunmer Smithing Style",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["B"],
+    "cost": 2,
+    "attack": null,
+    "health": null,
+    "rarity": "1Common",
+    "text": "Prophecy Draw a card. If it's an item or a Dark Elf, give it +2/+0.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yf",
+    "prophecy": true,
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "buffTarget",
+        "modAttack": 2,
+        "target": "drawnCard",
+        "targetCondition": {
+          "type": "hasTypeOrSubtype",
+          "subtypes": ["Item", "Dark Elf"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "envious-reflection",
+    "name": "Envious Reflection",
+    "type": "Creature",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "When another creature is summoned, steal its creature types.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yg",
+    "effects": [
+      {
+        "trigger": "SummonCreature",
+        "type": "stealSubtypes",
+        "target": "summon"
+      },
+      {
+        "trigger": "SummonCreatureEnemy",
+        "type": "stealSubtypes",
+        "target": "summon"
+      }
+    ]
+  },
+  {
+    "id": "goblin-totem-staff",
+    "name": "Goblin Totem Staff",
+    "type": "Item",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 3,
+    "attack": 2,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "+2/+2 Summon: Each player summons a random Goblin.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yh",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "summon",
+        "amount": 1,
+        "target": "randomLane",
+        "subtypes": [ "Goblin" ]
+      },
+      {
+        "trigger": "Summon",
+        "type": "summonOpponent",
+        "amount": 1,
+        "target": "randomLane",
+        "subtypes": [ "Goblin" ]
+      }
+    ]
+  },
+  {
+    "id": "imperial-saboteur",
+    "name": "Imperial Saboteur",
+    "type": "Creature",
+    "subtypes": [ "Imperial" ],
+    "attributes": ["P"],
+    "cost": 3,
+    "attack": 3,
+    "health": 2,
+    "rarity": "3Epic",
+    "text": "Summon: Silence a random creature in your opponent's hand with Summon or Assemble.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yi",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "silence",
+        "target": "cardOppHandRandom",
+        "subtypes": [ "Summon" ]
+      }
+    ]
+  },
+  {
+    "id": "imperial-tinkerer",
+    "name": "Imperial Tinkerer",
+    "type": "Creature",
+    "subtypes": [ "Imperial" ],
+    "attributes": ["Y"],
+    "cost": 3,
+    "attack": 4,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon: Choose an activated support. If it's an enemy support, it loses one use. If it's a friendly support, give it an additional use.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yj",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "addOrRemoveUse",
+        "target": "supportAny"
+      }
+    ]
+  },
+  {
+    "id": "inquisitive-mage",
+    "name": "Inquisitive Mage",
+    "type": "Creature",
+    "subtypes": [ "High Elf" ],
+    "attributes": ["B"],
+    "cost": 4,
+    "attack": 3,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon: Shackle a friendly creature to draw an action from your discard pile.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yk",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "shackle",
+        "target": "creatureFriendly"
+      },
+      {
+        "trigger": "Summon",
+        "type": "drawDiscard",
+        "subtypes": [ "Action" ],
+        "target": "player",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "inspiring-guard",
+    "name": "Inspiring Guard",
+    "type": "Creature",
+    "subtypes": [ "Imperial" ],
+    "attributes": ["P"],
+    "cost": 3,
+    "attack": 1,
+    "health": 4,
+    "rarity": "2Rare",
+    "text": "Guard Last Gasp: Give the top three creatures in your deck +1/+1.",
+    "keywords": ["Guard","LastGasp"],
+    "set": "Custom Set",
+    "deckCodeId": "Yl",
+    "effects": [
+      {
+        "trigger": "LastGasp",
+        "type": "buffTarget",
+        "modAttack": 1,
+        "modHealth": 1,
+        "target": "creaturesTopDeck"
+      }
+    ]
+  },
+  {
+    "id": "khajiit-hustler",
+    "name": "Khajiit Hustler",
+    "type": "Creature",
+    "subtypes": [ "Khajiit" ],
+    "attributes": ["G"],
+    "cost": 4,
+    "attack": 4,
+    "health": 1,
+    "rarity": "3Epic",
+    "text": "Pilfer: Transform a random card in each player's hand into a random 0-cost card.",
+    "keywords": ["Pilfer"],
+    "set": "Custom Set",
+    "deckCodeId": "Ym",
+    "effects": [
+      {
+        "trigger": "Pilfer",
+        "type": "transform",
+        "cardId": "refCost",
+        "cost": 0,
+        "target": "cardPlayerHandRandom"
+      },
+      {
+        "trigger": "Pilfer",
+        "type": "transform",
+        "cardId": "refCost",
+        "cost": 0,
+        "target": "cardOppHandRandom"
+      }
+    ]
+  },
+  {
+    "id": "martial-law",
+    "name": "Martial Law",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["R", "Y", "P"],
+    "cost": 11,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Shuffle all creatures into your oppoenent's deck. Increase their costs by 1.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yn",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "modCost",
+        "amount": 1,
+        "target": "creatureAll"
+      },
+      {
+        "trigger": "Play",
+        "type": "shuffleIntoOppDeck",
+        "target": "creatureAll"
+      }
+    ]
+  },
+  {
+    "id": "priest-of-arkay",
+    "name": "Priest of Arkay",
+    "type": "Creature",
+    "subtypes": [ "High Elf" ],
+    "attributes": ["Y"],
+    "cost": 4,
+    "attack": 4,
+    "health": 3,
+    "rarity": "2Rare",
+    "text": "Summon: Give a random creature in your hand +0/+2. Then if it has 5 or more health, +0/+2.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yo",
+    "effects": [
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modHealth": 2,
+        "target": "cardPlayerHandRandom",
+        "subtypes": ["Creature"]
+      },
+      {
+        "trigger": "Summon",
+        "type": "buffTarget",
+        "modHealth": 2,
+        "target": "lastTarget",
+        "targetCondition": {
+          "type": "hasHealth",
+          "min": 5
+        }
+      }
+    ]
+  },
+  {
+    "id": "providence",
+    "name": "Providence",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["Y"],
+    "cost": 1,
+    "attack": null,
+    "health": null,
+    "rarity": "2Rare",
+    "text": "Draw a card. Put a card in your hand on top of your deck.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yp",
+    "effects": [
+      {
+        "trigger": "Play",
+        "type": "drawCards",
+        "amount": 1,
+        "target": "player"
+      },
+      {
+        "trigger": "Play",
+        "type": "moveToTopDeck",
+        "target": "cardPlayerHand"
+      }
+    ]
+  },
+  {
+    "id": "rotten-luck",
+    "name": "Rotten Luck",
+    "type": "Action",
+    "subtypes": [],
+    "attributes": ["G"],
+    "cost": 13,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Costs 1 less for each card in your opponent's hand. Your opponent discards 2 cards at random.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yq",
+    "static": {
+      "condition": {
+        "type": "oppHandCards"
+      },
+      "modCost": -1
+    },
+    "effects": [
+      {
+        "trigger": "None",
+        "type": "modCostOppHand",
+        "modCost": -1
+      },
+      {
+        "trigger": "Play",
+        "type": "discard",
+        "target": "cardOppHandRandom"
+      },
+      {
+        "trigger": "Play",
+        "type": "discard",
+        "target": "cardOppHandRandom"
+      }
+    ]
+  },
+  {
+    "id": "safety-net",
+    "name": "Safety Net",
+    "type": "Support",
+    "subtypes": [],
+    "attributes": ["R"],
+    "cost": 4,
+    "attack": null,
+    "health": null,
+    "rarity": "3Epic",
+    "text": "Ongoing Whenever a creature breaks one of your runes, unsummon it.",
+    "keywords": [],
+    "set": "Custom Set",
+    "deckCodeId": "Yr",
+    "effects": [
+      {
+        "trigger": "LostRune",
+        "type": "unsummon",
+        "target": "lastCardUsed"
+      }
+    ]
+  },
+  {
+    "id": "shadow-harvester",
+    "name": "Shadow Harvester",
+    "type": "Creature",
+    "subtypes": [ "Dreugh" ],
+    "attributes": ["N"],
+    "cost": 8,
+    "attack": 4,
+    "health": 6,
+    "rarity": "2Rare",
+    "text": "Prophecy, Guard Summons don't trigger.",
+    "keywords": ["Guard"],
+    "immunity": [ "SummonEffects" ],
+    "set": "Custom Set",
+    "deckCodeId": "Ys"
   }
 ]

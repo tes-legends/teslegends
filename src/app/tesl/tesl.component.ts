@@ -1,14 +1,14 @@
 //tesl.component.ts
 import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { DeckService, ChoiceOption, CardEffect
-  , PlayerState, AuraEffect, SavedGameState
+  , PlayerState, SavedGameState
 , GameState, HistoryEntry, PendingAction, SavedDeck
 , DeckOption, DeckSource } from './deck.service';
 import { UtilityService, HelpRule } from './utility.service';
 import { GameService } from './game.service';
-import { Card, TargetType } from './deck.service';
+import { Card } from './deck.service';
 import { AudioService } from './audio.service';
-import { SwUpdate, VersionEvent, VersionReadyEvent } from '@angular/service-worker';
+import { SwUpdate, VersionEvent } from '@angular/service-worker';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
@@ -20,11 +20,10 @@ import { DeckBuilderComponent } from '../deck-builder/deck-builder.component';
 import { ArenaDraftComponent, ArenaOpponent } from '../arena-draft/arena-draft.component';
 import { RankedComponent } from '../ranked/ranked.component';
 
-// Grouped by turn
 interface TurnHistory {
   turnNumber: number;
   entries: HistoryEntry[];
-  isExpanded: boolean;      // ← new: controls accordion
+  isExpanded: boolean;
 }
 
 interface CardHeader {
@@ -66,12 +65,6 @@ interface GameOverrides {
 
 }
 
-// Deck source types
-
-
-// Unified deck option interface
-
-
 @Component({
     selector: 'app-tesl',
     templateUrl: './tesl.component.html',
@@ -109,6 +102,7 @@ export class TeslComponent implements OnInit {
         actionsPlayed: 0,
         cardsPlayed: 0,
         cardsDrawn: 0,
+        attacksMade: 0,
         tempCost: 0,
         hasWard: false,
         deckUnique: false
@@ -136,6 +130,7 @@ export class TeslComponent implements OnInit {
         actionsPlayed: 0,
         cardsPlayed: 0,
         cardsDrawn: 0,
+        attacksMade: 0,
         tempCost: 0,
         hasWard: false,
         deckUnique: false
@@ -193,7 +188,6 @@ export class TeslComponent implements OnInit {
     'B': 'LG-icon-Intelligence.webp',
     'G': 'LG-icon-Agility.webp',
     'N': 'LG-icon-Neutral.webp'
-    // Add more if needed (e.g. dual/tri attributes)
   };
 
   readonly lanes = [
@@ -217,26 +211,21 @@ export class TeslComponent implements OnInit {
     { name: 'Warrior', race: 'Orc', attributes: ['R', 'P'], color: '#6699ff' },
   ];
 
-  // Deck definition (expand this list as needed)
+  // Deck definition
   starterDecks: DeckOption[] = [];      // populated from unlocked story rewards
   npcDecks: DeckOption[] = [];
   randomDeckOptions: DeckOption[] = [];
-  customDecks: DeckOption[] = [];       // empty for now
+  customDecks: DeckOption[] = [];
   
   playerDeckMode: DeckSource = 'starter';
   opponentDeckMode: DeckSource = 'starter';
   selectedPlayerDeck: DeckOption | null = this.starterDecks[0];
   selectedOpponentDeck: DeckOption | null = this.starterDecks[0];
   expandedDeckSide: 'player' | 'opponent' | null = null;
-  // Player / Opponent deck selection
-  //selectedPlayerDeckSource: DeckSource = 'starter';
-  //selectedPlayerClassIndex: number | null = null;
-
   selectedOpponentDeckSource: DeckSource = 'starter';
 
   selectedSet: string = 'Core Set';  // default
 
-  // List of available sets (add more as you have expansions)
   readonly availableSets = [
     'All Sets',
     'Core Set',
@@ -249,7 +238,6 @@ export class TeslComponent implements OnInit {
     'Monthly Reward',
     'Story Set',
     'Custom Set'
-    // 'Return to Clockwork City', etc.
   ];  
 
   private setFolders: Record<string, string> = {
@@ -302,7 +290,7 @@ export class TeslComponent implements OnInit {
 
   @ViewChild('musicPlayer') musicPlayer!: ElementRef<HTMLAudioElement>;
 
-  musicVolume: number = 0.25;           // 0.0 to 1.0 – adjust to taste
+  musicVolume: number = 0.25;           // 0.0 to 1.0
   private currentMusicUrl: string | null = null;
 
   showMagickaOverlay = false;
@@ -327,26 +315,18 @@ export class TeslComponent implements OnInit {
   revealSource: Card | null = null;
   revealCards: Card[] = [];           // cards to show
   revealTitle = '';                   // "Reveal 3 cards" or "Top of opponent's deck"
-  revealAction = '';                  // "Choose one to draw" or empty
+  revealAction = '';                  // eg, "Choose one to draw" or empty
   revealCallback: ((selectedIndex?: number) => void) | null = null;  // for choice mode
   revealTimeout: any = null;
   revealIsOpponent = false;           // for positioning
 
-  // You'll need to track these values somewhere in your game logic
-  //history: HistoryEntry[] = [];
-  groupedHistory: TurnHistory[] = [];   // ← new: grouped + expanded state
-  //currentRound = 1;      // increment at the start of each full round
-  //currentTurn = 1;       // increment every time turn changes
+  groupedHistory: TurnHistory[] = [];
   showHistoryModal = false;
   showDiscardModal = false;
   showHandModal = false;
   discardView: 'player' | 'opponent' = 'player';
   handView: 'player' | 'opponent' = 'player';
-  //laneTypes = ['Shadow','Field'];
-
   opponentLog: string[] = [];
-  //gameRunning = false;
-  //firstPlayer: 'player' | 'opponent' = 'player';
   cpuTogglePlaying = true;
   cpuThinking: boolean = false;
   showHelpHints = true;
@@ -357,7 +337,7 @@ export class TeslComponent implements OnInit {
   handicapOptions: number[] = [0, 1, 2, 3];
   oppHandicapMagicka: number = 0;
   oppHandicapCards: number = 0;
-  testStartingMaxMagicka: number = 0;  // default to 1
+  testStartingMaxMagicka: number = 0;
   testStartingCard1: string = 'None';
   testStartingCard2: string = 'None';
   availableCards: CardHeader[] = [];
@@ -390,24 +370,19 @@ export class TeslComponent implements OnInit {
   lastBurnedCard: Card | null = null;
 
   mulliganActive = false;
-  mulliganCards: Card[] = [];           // the 3 cards to choose from
+  mulliganCards: Card[] = [];                 // the 3 cards to choose from
   mulliganToReturn: Set<string> = new Set();  // instanceIds of cards to mulligan
-  mulliganPhase: 'first' | 'second' | null = null;  // NEW
+  mulliganPhase: 'first' | 'second' | null = null;
   mulliganPlayer: PlayerState | null = null;
-
-  //cancelButtonActive = false;
-  //targetLaneRequired: boolean = false;
 
   showResumeModal: boolean = false;
   resumeTurnNumber: number = 0;
 
-  //forceProphecyForTesting = false; // Set to true to force a prophecy card draw for testing
-
   showProphecyFlash = false;
   prophecyMessage = 'PROPHECY!';
 
-  selectedCard: Card | null = null;   // currently selected card
-  hoveredCard: Card | null = null;   // currently selected card
+  selectedCard: Card | null = null;
+  hoveredCard: Card | null = null;
 
   enlargedCard: Card | null = null;
   showOpponentSupportBar = false;
@@ -457,10 +432,9 @@ export class TeslComponent implements OnInit {
     '/assets/tesl/images/avatars/LG-arena-Argonian_2.webp',
     '/assets/tesl/images/avatars/LG-arena-Argonian_3.webp',
     '/assets/tesl/images/avatars/LG-arena-Argonian_4.webp',
-    // ... add all LG-arena%.webp files
   ];
 
-  isMainMenu: boolean = true;  // Start in menu
+  isMainMenu: boolean = true;                 // Start in menu
   
   cheatCodeInput: string = '';
   cheatsActive: boolean = false;
@@ -468,10 +442,10 @@ export class TeslComponent implements OnInit {
   cheatEver: boolean = false;
   activeCheat: string = 'None';
 
-  unlockedCards: string[] = []; //unlocked deckcodes
+  unlockedCards: string[] = [];               //unlocked deckcodes
   savedDecks: SavedDeck[] = [];
   showGameBoard: boolean = false;
-  currentChapter: any = null;  // For Story mode
+  currentChapter: any = null;                 // For Story mode
   currentChapterDefeated: boolean = false;
   currentChapterIndex: number = 0;
   lastCompletedChapterIndex: number = -1;
@@ -483,10 +457,10 @@ export class TeslComponent implements OnInit {
   expandedAct: number | null = null;           // which Act is open (null = none)
   selectedChapter: any = null;                 // current chapter object
   currentVideo: string | null = null;          // path to playing video
-  currentDialogue: string = '';  // holds the active dialogue HTML
+  currentDialogue: string = '';                 // holds the active dialogue HTML
   private currentVideoJustPlayed: 'start' | 'end' | null = null;
 
-  storyChapters: any[] = [];                   // your JSON array
+  storyChapters: any[] = [];
   arenaScenarios: any[] = [];
   arenaOpponents: DeckOption[] = [];
   arenaClass: string | null = null;
@@ -494,11 +468,11 @@ export class TeslComponent implements OnInit {
   arenaElo: number = 1200;
   arenaWins: number = 0;
   arenaLosses: number = 0;
-  arenaState: any = null;   // full saved arena state
+  arenaState: any = null;
   private readonly ARENA_STATE_KEY = 'arena_draft_state';
 
 
-  // Menu options (you can make this dynamic later)
+  // Menu options
   menuOptions = [
     { name: 'Story', icon: '/assets/tesl/images/icons/LG-icon-Story.webp', action: () => this.startStoryMode(), disabled: false, info: () => this.storyInfo },
     { name: 'Arena', icon: '/assets/tesl/images/icons/LG-icon-Solo_Arena.webp', action: () => this.openSoloArena(), disabled: this.forcedStory, info: () => this.arenaInfo },
@@ -506,18 +480,18 @@ export class TeslComponent implements OnInit {
     { name: 'Exhibition', icon: '/assets/tesl/images/icons/LG-icon-Practice.webp', action: () => this.startExhibition(), disabled: this.forcedStory },
     { name: 'Collection', icon: '/assets/tesl/images/icons/LG-icon-Core_Set_white.webp', action: () => this.openCollection(), disabled: this.forcedStory, info: () => this.collectionInfo },
     { name: 'Decks', icon: '/assets/tesl/images/icons/cards_in_hand.webp', action: () => this.openDeckBuilder(), disabled: this.forcedStory },
-    { name: 'Settings', icon: '/assets/tesl/images/icons/LG-icon-Prophecy.webp', action: () => this.toggleSettingsOverlay(), disabled: false }
-    //{ name: 'Quit', icon: '/assets/tesl/images/icons/LG-icon-Silence.webp', action: () => this.quitGame(), disabled: false }
+    { name: 'Settings', icon: '/assets/tesl/images/icons/LG-icon-Prophecy.webp', action: () => this.toggleSettingsOverlay(), disabled: false }    
   ];
 
-  // Define the rule sections here
   isHelpVisible = false;
   currentHelpStep = 0;
   helpRules: HelpRule[];
   updateAvailable = false;
-  appVersion = '0.5.1';
+  appVersion = '0.5.2';
 
   /*
+  0.5.0
+    - added morrowind set and more
   0.4.0
     - added ranked mode
   0.3.0
@@ -532,7 +506,6 @@ export class TeslComponent implements OnInit {
 
   private highlightCache = new Map<string, CardHighlightState>();
   audioEnabled = true;
-  //http: any;
   
   constructor(private deckService: DeckService, 
     private utilityService: UtilityService,
@@ -547,9 +520,9 @@ export class TeslComponent implements OnInit {
         this.updateAvailable = true;
       }
     });
-      this.helpRules = this.utilityService.helpRules;
-      gsap.registerPlugin(MotionPathPlugin);
-    }
+    this.helpRules = this.utilityService.helpRules;
+    gsap.registerPlugin(MotionPathPlugin);
+  }
 
   ngOnInit(): void {
     document.addEventListener('contextmenu', event => {
@@ -604,9 +577,8 @@ export class TeslComponent implements OnInit {
         }
     });
     // Instead of decoding immediately, wait for cards
-    this.deckService.cards$.subscribe(cards => {  // ← we'll add this observable
+    this.deckService.cards$.subscribe(cards => {
       if (cards.length > 0) {  // cards loaded
-        // Load available cards for testing dropdown
         const allCards = this.deckService.getAllCards();
         this.collectibleCount = allCards.filter(c =>
           c.deckCodeId !== null && c.set !== 'Story Set'
@@ -619,7 +591,6 @@ export class TeslComponent implements OnInit {
             'Forgotten Hero Collection'].includes(c.set)
         ).length;
         this.availableCards = allCards
-          //.filter(card => card.type !== 'Support')  // optional filter
           .map(card => ({ id: card.id, name: card.name, set: card.set }))
           .sort((a, b) => a.name.localeCompare(b.name));        
 
@@ -637,14 +608,6 @@ export class TeslComponent implements OnInit {
         }
       }
       );
-  }
-
-  ngAfterViewInit() {
-    // Safe to use @ViewChild now    
-  }
-
-  ngOnChanges() {
-    //this.handlePendingAction(this.game.pendingAction);
   }
 
   ngOnDestroy() {
@@ -704,15 +667,13 @@ export class TeslComponent implements OnInit {
   private mapToDeckOption(d: any, source: string): DeckOption {
     if (source === 'arena') {
       return {
-        source: 'arena', // or whatever enum/value fits
+        source: 'arena',
         name: d.name,
         deckCode: d.deckCodeId,
         attributes: d.attributes ?? [],
         isRandom: false,
         avatar: d.avatar,
         elo: d.elo,
-
-        // optional fields
         description: d.theme,
       };
     } else if (source === 'starter') {
@@ -778,13 +739,10 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  // Get unlocked starter decks based on progress
   private unlockedStarterDecks(showMessage: boolean = true) {
-    //console.log(`chapters completed ${this.lastCompletedChapterIndex}`);
     let unlockCount = 0;
     this.starterDecks.forEach(deck =>
     {
-      //console.log(`check ${deck.name}`);
       if (deck.locked && deck.unlockAfterChapter && 
         deck.unlockAfterChapter <= this.lastCompletedChapterIndex) {
         deck.locked = false;
@@ -890,13 +848,12 @@ export class TeslComponent implements OnInit {
 
   invalidateHighlights() {
     this.highlightCache.clear();
-    this.cdr.markForCheck(); // if needed
+    this.cdr.markForCheck();
   }
 
-    // Computed property for filtered cards
   get filteredCards(): CardHeader[] {
     if (this.selectedSet === 'All Sets') {
-      return this.availableCards; // if you have an 'All' option
+      return this.availableCards;
     }
     return this.availableCards.filter(card => card.set === this.selectedSet || card.set === 'None');
   }
@@ -905,22 +862,16 @@ export class TeslComponent implements OnInit {
     // Reset card selections when set changes
     this.testStartingCard1 = 'None';
     this.testStartingCard2 = 'None';
-
-    // Optional: force previews to update
-    // Angular will handle this automatically via ngModel
     console.log(`Set changed to: ${this.selectedSet}`);
   }
 
 
   getCardHighlightState(card: Card): CardHighlightState {
-
     if (!card.instanceId) {
       return { playable:false, attackable:false, activatable: false, targetable:false, selected:false, exaltable:false };
     }
-
     let state = this.highlightCache.get(card.instanceId);
     if (state) return state;
-
     const owner = card.isOpponent ? this.game.opponent : this.game.player;
     state = {      
       playable: this.canPlayCard(this.game, card, owner),
@@ -936,7 +887,6 @@ export class TeslComponent implements OnInit {
         owner.currentMagicka >= (card.exaltCost+(card.currentCost ?? card.cost)) &&
         this.gameService.isCardInHand(this.game,card) && this.canPlayCard(this.game,card,owner))
     };
-
     this.highlightCache.set(card.instanceId, state);
     return state;
   }
@@ -966,7 +916,6 @@ export class TeslComponent implements OnInit {
     if (!action) {
       return;
     }
-
     this.invalidateHighlights();
 
     switch (action.type) {
@@ -1002,11 +951,9 @@ export class TeslComponent implements OnInit {
           this.currentChoiceEffect = action.effect;
           this.selectedChoiceIndex = null;
           if (this.currentChoiceOptions.length === 1) {
-            // Auto-select if only 1 option
             this.selectedChoiceIndex = 0;
             this.confirmChoice(this.game);
           } else if (action.prompt === 'random') {
-            // Auto-randomize if prompt says so
             const randomIndex = Math.floor(Math.random() * this.currentChoiceOptions.length);
             this.selectedChoiceIndex = randomIndex;
             this.confirmChoice(this.game);
@@ -1061,11 +1008,9 @@ export class TeslComponent implements OnInit {
               this.showRevealOverlay = false;
               return;
             }
-
             this.handleRevealChoiceSelection(
               selectedIndex
             );
-
             this.showRevealOverlay = false;
           };
         } else if (action.type === 'revealAndGuess') {
@@ -1074,15 +1019,12 @@ export class TeslComponent implements OnInit {
               this.showRevealOverlay = false;
               return;
             }
-
             this.handleGuessChoiceSelection(
               selectedIndex
             );
-
             this.showRevealOverlay = false;
           };
         } else {
-          // Auto-hide simple reveal
           setTimeout(() => {
             this.showRevealOverlay = false;
           }, 3000);
@@ -1098,19 +1040,15 @@ export class TeslComponent implements OnInit {
         this.gameOverHandled = true;
         this.gameOverVisible = true;
         this.gameOverMessage = action.prompt ?? '';
-        this.game.stagedProphecy = null;  // just in case
+        this.game.stagedProphecy = null;
         localStorage.removeItem('gameSave'); 
         const isVictory = action.prompt && (action.prompt.startsWith('You w') || action.prompt.startsWith('Bottom'));
         if (isVictory && this.isStoryMode) {
           if (this.isStoryMode) {
-            //console.log('victory in story');
-            //this.currentChapterIndex++;
             if (this.currentChapter?.endVideo && this.animationsEnabled) {
-              //console.log('has end video');
               this.currentDialogue = this.currentChapter.endDialogue || '';
               this.playVideo(`/assets/tesl/story/forgotten_hero/video/${this.currentChapter.endVideo}.mp4`,'end');
             } else {
-              //this.currentChapterIndex++;
               this.playMusic(this.getVictoryMusic());
               this.goToNextChapter();
             }
@@ -1158,7 +1096,6 @@ export class TeslComponent implements OnInit {
               localStorage.setItem('TESL_arena_elo', this.arenaElo.toString());
             }
             localStorage.setItem(this.ARENA_STATE_KEY, JSON.stringify(this.arenaState));
-            //localStorage.setItem('TESL_arena_losses',this.arenaLosses.toString());
           } else if (this.isRankedMode) {
             localStorage.setItem('TESL_ranked_result', 'lose');
           }
@@ -1181,7 +1118,6 @@ export class TeslComponent implements OnInit {
           }
         }
         break;
-
 
       // ... other pending types ...
     }
@@ -1292,17 +1228,16 @@ export class TeslComponent implements OnInit {
     this.hideReveal();
   }
 
-  ngDoCheck() {  // or use ngAfterViewChecked / a Subject
+  ngDoCheck() {
     const hasModalOpen = this.mulliganActive ||
     (this.isProphecyStaging && !this.isTargeting && !this.isSummonTargeting) ||
     this.showHistoryModal || this.enlargedCard ||
-    this.showDiscardModal;  // add other modals here too if needed
-      // e.g. this.enlargedCard || this.showHistoryModal || ...
+    this.showDiscardModal;
 
     if (hasModalOpen && !this.bodyScrollLocked) {
       // Lock body scroll
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';  // prevents bounce on iOS
+      document.body.style.height = '100vh';
       this.bodyScrollLocked = true;
     } 
     else if (!hasModalOpen && this.bodyScrollLocked) {
@@ -1378,7 +1313,6 @@ export class TeslComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    //console.log('KEY DOWN:', event.key, 'code:', event.code, 'target:', (event.target as any)?.tagName);
 
     // Skip if typing in input/select (don't steal focus)
     if (event.target instanceof HTMLInputElement || 
@@ -1655,7 +1589,6 @@ export class TeslComponent implements OnInit {
     this.showSettingsOverlay = false;
     this.showGameBoard = true;
     this.isMainMenu = false;
-    
     if (!this.deckValid() || !this.selectedPlayerDeck) {
       this.selectedPlayerDeck = this.starterDecks[0];
       this.playerDeckMode = 'starter';
@@ -1668,7 +1601,6 @@ export class TeslComponent implements OnInit {
     const oppDeck = this.selectedOpponentDeck;
     let playerDeckCode = playerDeck.deckCode ?? ''; 
     let opponentDeckCode = oppDeck.deckCode ?? '';
-
     // If player chose Random → generate deck
     if (playerDeck.isRandom) {
       if (playerDeck.class === null) {
@@ -1677,7 +1609,6 @@ export class TeslComponent implements OnInit {
       }
       playerDeckCode = this.deckService.generateRandomDeckCode(playerDeck.attributes);
     }
-
     // Same for opponent
     if (oppDeck.isRandom) {
       if (oppDeck.class === null) {
@@ -1720,7 +1651,6 @@ export class TeslComponent implements OnInit {
       }
     }
     if (Object.keys(overrides).length > 0) console.log('Overrides: ',overrides);
-
     this.gameService.startGame(this.game, this.cpuTogglePlaying
           , opponentDeckCode
           , playerDeckCode
@@ -1761,13 +1691,11 @@ export class TeslComponent implements OnInit {
   private startMulligan(game: GameState) {
     console.log("startMulligan triggered");
     this.mulliganCards = game.player.hand.splice(0, 3);  // take first 3
-    //this.mulliganCards = this.player.hand.splice(0, 3);  // take first 3
     console.log("Mulligan cards taken:", this.mulliganCards.map(c => c.name));
     this.mulliganToReturn.clear();
     this.mulliganActive = true;
     this.mulliganPhase = 'first';
     this.mulliganPlayer = game.player;
-    //this.mulliganPlayer = this.player;
     console.log("mulliganActive set to true");
   }
 
@@ -1786,16 +1714,11 @@ export class TeslComponent implements OnInit {
     if (this.mulliganPlayer) {
       this.mulliganPlayer.deck.push(...toReturn);
       this.mulliganPlayer.deck = this.utilityService.shuffle(this.mulliganPlayer.deck);
-
-      // Draw replacements
       const needed = toReturn.length;
       this.gameService.drawCards(this.mulliganPlayer, needed, game);
-
-      // Put remaining mulligan cards back into hand
       const kept = this.mulliganCards.filter(c => !this.mulliganToReturn.has(c.instanceId!));
-      this.mulliganPlayer.hand.unshift(...kept);  // add to front or wherever you prefer
+      this.mulliganPlayer.hand.unshift(...kept);
     }
-
     if (this.mulliganPhase === 'first' && !game.cpuPlaying) {
       this.mulliganCards = game.opponent.hand.splice(0, 3);  // take first 3
       console.log("Mulligan cards taken:", this.mulliganCards.map(c => c.name));
@@ -1808,10 +1731,7 @@ export class TeslComponent implements OnInit {
       this.mulliganActive = false;
       this.mulliganCards = [];
       this.mulliganToReturn.clear();
-
-      // Opponent auto-mulligan (simple: any card >3 magicka)
       if (game.cpuPlaying) this.autoMulligan('opponent', game);
-
       if (this.showTestInputs && this.isExhibitionMode) {
         game.player.maxMagicka = Math.max(0, Math.min(9, this.testStartingMaxMagicka));
         game.opponent.maxMagicka = Math.max(0, Math.min(9, this.testStartingMaxMagicka));
@@ -1826,8 +1746,7 @@ export class TeslComponent implements OnInit {
             this.gameService.executeEffectsForCard('AddToHand',cloneO1, game);
           }
         }
-
-        if (this.testStartingCard2 !== 'None' /*&& this.testStartingCard2 !== this.testStartingCard1*/) {
+        if (this.testStartingCard2 !== 'None') {
           const card2 = this.deckService.getCardById(this.testStartingCard2);
           if (card2) {
             const cloneP2 = this.deckService.cloneCardForGame(card2, false);
@@ -1859,17 +1778,14 @@ export class TeslComponent implements OnInit {
 
   private autoMulligan(reqPlayer: 'player' | 'opponent', game: GameState) {
     const refPlayer = reqPlayer === 'player' ? game.player : game.opponent;
-    //const refPlayer = reqPlayer === 'player' ? this.player : this.opponent;
     const highCost = refPlayer.hand.filter(c => c.cost > 3);
     if (highCost.length === 0) return;
     console.log (reqPlayer, ' replacing ', highCost.length, ' cards.')
     // Return them
     refPlayer.deck.push(...highCost);
     refPlayer.deck = this.utilityService.shuffle(refPlayer.deck);
-
     // Keep the rest
     refPlayer.hand = refPlayer.hand.filter(c => c.cost <= 3);
-
     // Draw replacements
     this.gameService.drawCards(refPlayer, highCost.length, game);
 
@@ -1927,11 +1843,8 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  
-
   confirmChoice(game: GameState) {
     if (this.selectedChoiceIndex === null) return;
-
     const chosen = this.currentChoiceOptions[this.selectedChoiceIndex];
     const nestedEffect = chosen.effect;
     game.targetLaneRequired = false;
@@ -1950,12 +1863,10 @@ export class TeslComponent implements OnInit {
     if (nestedEffect?.target?.includes('hisLane')) game.targetLaneRequired = true;
     if (!this.gameService.isAutoTarget(nestedEffect.target) ||
       game.targetLaneRequired) {
-      // Stage it for targeting
       game.stagedCard = this.currentChoiceSource;
       game.stagedAction = 'choice-followup';
       this.choiceFollowupEffect = nestedEffect;  // temp storage
       this.showChoiceModal = false;
-      //this.cancelButtonActive = true;
       console.log('Choice made — now select target');
       if (nestedEffect.target === 'supportEnemy') {
         if (this.showOpponent) {
@@ -1965,12 +1876,10 @@ export class TeslComponent implements OnInit {
         }
       }
     } else {
-      // Auto-apply immediately
       if (this.currentChoiceSource) this.gameService.executeEffect(nestedEffect, this.currentChoiceSource, game);
       this.closeChoiceModal();
     }
     this.invalidateHighlights();
-    //this.processPendingQueue();
   }
 
   cancelChoice() {
@@ -1985,8 +1894,7 @@ export class TeslComponent implements OnInit {
     this.currentChoiceOptions = [];
     this.selectedChoiceIndex = null;
   }
-
-  // Show reveal overlay
+  
   private showReveal(revealTitle: string, cards: Card[], actionText: string = '', isOpponent = false) {
     this.revealCards = cards;
     this.revealTitle = revealTitle;
@@ -1994,8 +1902,6 @@ export class TeslComponent implements OnInit {
     this.revealIsOpponent = isOpponent;
     this.showRevealOverlay = true;
     this.revealCallback = null;
-
-    // Auto-hide after 3 seconds if no choice needed
     if (!actionText) {
       this.revealTimeout = setTimeout(() => {
         this.hideReveal();
@@ -2003,17 +1909,6 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  // Show reveal WITH choice (player must pick one)
-  /*private showRevealChoice(revealTitle: string, cards: Card[], callback: (selectedIndex: number) => void, isOpponent = false) {
-    this.revealCards = cards;
-    this.revealTitle = revealTitle;
-    this.revealAction = 'Choose one to draw';
-    this.revealIsOpponent = isOpponent;
-    this.showRevealOverlay = true;
-    this.revealCallback = callback;
-  }*/
-
-  // Hide reveal (auto or manual)
   hideReveal() {
     this.showRevealOverlay = false;
     this.revealCards = [];
@@ -2026,16 +1921,12 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  // When player clicks a valid target during summon targeting
   onSummonTargetClick(game: GameState, target: Card | PlayerState) {
     if (!this.isSummonTargeting || game.stagedSummon === null) return;
-    //console.log('summon targeting');
     if (this.isValidSummonTarget(game, target, game.stagedSummon.laneIndex!)) {   // laneIndex not really used here
-      //console.log('valid effect');
       let summonAnimation = false;
       let animationIcon = '';
       const refCard = game.stagedSummon;
-      //console.log(`ref card is ${refCard.name}`);
       if (this.animationsEnabled && !this.isProphecyStaging) {
         refCard.effects?.forEach(effect => {
           if (effect.trigger === 'Summon') {
@@ -2117,7 +2008,6 @@ export class TeslComponent implements OnInit {
       console.log('invalid summon target');
     }
     this.invalidateHighlights();
-    //this.handlePendingAction(this.game.pendingAction);
     this.updateGroupedHistory();
   }
 
@@ -2127,7 +2017,7 @@ export class TeslComponent implements OnInit {
 
   toggleOpponentSupportBar() {
     this.showOpponentSupportBar = !this.showOpponentSupportBar;
-    this.showPlayerSupportBar = false; // close the other if open
+    this.showPlayerSupportBar = false;
   }
 
   togglePlayerSupportBar() {
@@ -2197,7 +2087,6 @@ export class TeslComponent implements OnInit {
     if (card.playCondition && 
       !this.gameService.isPlayConditionMet(card.playCondition,player)) return false;
     if (player.cardsPlayed > 0 && this.gameService.hasImmunityAura(player,'MultipleCards')) return false;
-    // Only allow playing from hand or support (for now)
     return player.hand.includes(card);
   }
 
@@ -2206,8 +2095,6 @@ export class TeslComponent implements OnInit {
   }
 
   canExaltCard(game: GameState, card: Card, player: PlayerState): boolean {
-    //card.exaltCost !== undefined && card.exaltCost > 0 && card.exalted !== true && 
-        //owner.currentMagicka >= (card.exaltCost+(card.currentCost ?? card.cost))
     if (card.exaltCost !== undefined && card.exaltCost > 0 && card.exalted !== true) {
       return this.ableToPlayCard(game,card,player,true);
     } else {
@@ -2220,7 +2107,6 @@ export class TeslComponent implements OnInit {
     this.invalidateHighlights();
     game.targetLaneRequired = false;
     if (this.isSummonTargeting) {
-      // Player chose to skip targeting
       if (game.stagedSummon?.targetReq || game.classicTargeting) {
         let msg = 'Target required for this effect.';
         if (game.classicTargeting) msg = 'Targeting cannot be skipped in classic mode.';
@@ -2246,12 +2132,9 @@ export class TeslComponent implements OnInit {
       return;
     }
     if (game.gameRunning) {
-
       this.callEndTurn();
     } else {
       this.callStartGame();
-      //console.log(`# creatures on board is ${this.getAllCreatures(this.game).length}`);
-      //this.game = { ...this.game };  // shallow copy trick to trigger change detection
     }
   }
 
@@ -2259,12 +2142,10 @@ export class TeslComponent implements OnInit {
     game.stagedSummon = null;
     game.stagedSummonEffect = null;
     this.showOpponentSupportBar = false;
-    //this.cancelButtonActive = false;
     this.clearHint();
     if (this.isProphecyStaging) {
       console.log("Clearing staged prophecy after play");
       game.stagedProphecy = null;
-      //resume opponent turn
       this.gameService.breakRunesIfNeeded(game, game.player);
       if (!game.stagedProphecy && !game.player.turn && game.cpuPlaying) {
         this.resumeOpponentTurn(game);
@@ -2272,42 +2153,29 @@ export class TeslComponent implements OnInit {
     }
   }
 
-  isValidTarget(game: GameState, card: Card | PlayerState, laneIndex: number): boolean {    
-    //console.log('staged card: ',game.stagedCard);
+  isValidTarget(game: GameState, card: Card | PlayerState, laneIndex: number): boolean {
     if (game.stagedCard) {
-      //console.log('staged action: ',game.stagedAction);
-      //console.log('staged effect: ',this.choiceFollowupEffect);
       if (game.stagedAction === 'play-item') {
         return this.gameService.isCard(card) && card.type === 'Creature' && card.isOpponent === this.showOpponent;
       } else if (game.stagedAction === 'play-creature' && 
           this.isLaneFull(game, laneIndex)) {
         return this.gameService.isCard(card) && card.type === 'Creature' && card.isOpponent === this.showOpponent;
       } else if (game.stagedAction === 'play-action' && game.stagedCard) {
-        // Check based on the Play effects of the staged action card
         const playEffects = game.stagedCard.effects?.filter(
             e => e.trigger === 'Play') || [];
-
-        // If no Play effects → assume auto / no target needed
         if (playEffects.length === 0) {
-          return false; // or true if you want to allow clicking anywhere
+          return false;
         }
-
-        // We need the target to be valid for **at least one** Play effect that requires selection
         for (const effect of playEffects) {
-          // Skip auto-target effects (they don't need player input)
           if (this.gameService.isAutoTarget(effect.target)) {
             continue;
           }
-
-          // Check if this target matches what the effect wants
           if (this.gameService.isTargetValidForEffect(game, game.stagedCard, effect, card, laneIndex)) {
             return true;
           }
         }
-
         return false;
       } else if (game.stagedAction === 'choice-followup' && this.choiceFollowupEffect) {
-        //console.log('checking targeting for choice followup');
         if (!game.classicTargeting && this.gameService.isCard(card) && 
           card.instanceId === game.stagedCard?.instanceId && 
           !game.stagedCard.targetReq) return false; // cannot target self
@@ -2383,83 +2251,61 @@ export class TeslComponent implements OnInit {
     if (game.stagedSupportActivation !== null) {
       const actEffects = game.stagedSupportActivation.effects?.filter(
           e => e.trigger === 'Activation') || [];
-
-      // If no Play effects → assume auto / no target needed
       if (actEffects.length === 0) {
-        return false; // or true if you want to allow clicking anywhere
+        return false;
       }
-
-      // We need the target to be valid for **at least one** Play effect that requires selection
       for (const effect of actEffects) {
-        // Skip auto-target effects (they don't need player input)
         if (this.gameService.isAutoTarget(effect.target)) {
           continue;
         }
-
-        // Check if this target matches what the effect wants
         if (this.gameService.isTargetValidForEffect(game,game.stagedSupportActivation, effect, card, laneIndex)) {
           return true;
         }
       }
-
       return false;
     }
     return false;
   }
 
   isValidSummonTarget(game: GameState, target: Card | PlayerState, laneIndex: number): boolean {
-      if (!game.stagedSummonEffect || !game.stagedSummon) return false;
-      if (!game.classicTargeting && this.gameService.isCard(target) && target.instanceId === game.stagedSummon?.instanceId) {
-        if (target.targetReq) {
-          return true; // allow target self if target req
-        } else {
-          return false; // cannot target self
-        }
-      } 
-      const result = this.gameService.isTargetValidForEffect(game, game.stagedSummon, game.stagedSummonEffect, target, laneIndex);
-      //console.log(`target valid for summon target? : ${result}`);
-      return result;
+    if (!game.stagedSummonEffect || !game.stagedSummon) return false;
+    if (!game.classicTargeting && this.gameService.isCard(target) && target.instanceId === game.stagedSummon?.instanceId) {
+      if (target.targetReq) {
+        return true; // allow target self if target req
+      } else {
+        return false; // cannot target self
+      }
+    } 
+    const result = this.gameService.isTargetValidForEffect(game, game.stagedSummon, game.stagedSummonEffect, target, laneIndex);
+    return result;
   }
 
-  // NEW: Separate target vs enlarge clicks
   onLaneClick(game: GameState, laneIndex: number) {
     if (!this.isTargeting || game.stagedAction !== 'play-creature') return;
-    
     if (!this.isLaneFull(game, laneIndex)) {
-      // Empty lane - play directly
       this.finalizePlay(game, laneIndex);
     }
-    // Full lane - do nothing (sacrifice handled by creature clicks)
   }
 
   onCreatureTarget(game: GameState, card: Card, laneIndex: number, position: number) {
     if (!this.isTargeting) return;
-    
     if (game.stagedAction === 'play-item') {
-      // Item targeting
       this.finalizePlay(game,undefined, card);
     } else if (game.stagedAction === 'play-creature' && this.isLaneFull(game,laneIndex)) {
-      // Sacrifice for space
       this.sacrificeCreature(game,card, laneIndex, position);
     }
   }
 
   sacrificeCreature(game: GameState, card: Card, laneIndex: number, position: number) {
-    // Remove creature (destroy effect)
     const player = this.showOpponent ? game.opponent : game.player;
     const sacCreature = player.board[laneIndex][position];
     this.gameService.destroyCard(game, sacCreature);
-    //this.player.board[laneIndex].splice(position, 1);
-    
-    // Play the staged creature in its place
     this.finalizePlay(game, laneIndex);
-    
     console.log(`Sacrificed ${card.name} to make room`);
   }
 
   playCardFromModal(card: Card) {
     this.stageCardForPlay(this.game, card, this.showOpponent ? this.game.opponent : this.game.player);
-    //this.handlePendingAction(this.game.pendingAction);
     this.updateGroupedHistory();
   }
 
@@ -2476,7 +2322,6 @@ export class TeslComponent implements OnInit {
            (this.game.stagedAction === 'play-creature' && this.isLaneFull(this.game,0) && !this.isLaneFull(this.game,1));
   }
 
-  // Check if lane has 4 creatures (TESL limit)
   isLaneFull(game: GameState, laneIndex: number): boolean {
     if (this.showOpponent) {
       if (game.opponent.board[laneIndex].length >= 4) {
@@ -2498,7 +2343,6 @@ export class TeslComponent implements OnInit {
     
   }
 
-  // Get valid lanes for creature placement
   getValidLanes(game: GameState): number[] {
     return game.stagedAction === 'play-creature' ? 
       [0, 1].filter(lane => !this.isLaneFull(game, lane)) : [];
@@ -2542,27 +2386,20 @@ export class TeslComponent implements OnInit {
         this.audioService.queueAudio(url);
       }
     }
-    // Look at the effects instead of card.target
     const playEffects = newCard.effects?.filter(e => e.trigger === 'Play') || [];
-
-    // If there are no Play effects → just play immediately (unlikely but safe)
     if (playEffects.length === 0) {
       this.gameService.playCard(game,newCard,newCard.isOpponent,undefined,undefined,false,true);
       this.clearStaging(game);
       game.betrayAvailable = false;
       return;
     }
-
-    // Check if **all** Play effects are auto-targetable
     const creatureTargetRequired = playEffects.some(effect => effect.target?.includes('creature') &&
       !effect.target.includes('All') && !effect.target.includes('Random'));
     game.targetLaneRequired = playEffects.some(effect => effect.target === 'lane' || 
       (effect.target?.includes('hisLane') && !creatureTargetRequired));
-
     const allAuto = playEffects.every(effect => this.gameService.isAutoTarget(effect.target));
     const thisLane = playEffects.some(effect => effect.target?.includes('hisLane'));
     if (allAuto && !thisLane) {
-      // Everything can be resolved automatically → play now
       this.gameService.playCard(game,newCard,newCard.isOpponent,undefined,undefined,false,true);
       this.clearStaging(game);
     } else {
@@ -2577,12 +2414,10 @@ export class TeslComponent implements OnInit {
     this.updateGroupedHistory();
   }
 
-  // Stage card for playing (called from modal)
   stageCardForPlay(game: GameState, card: Card, player: PlayerState) {
     this.invalidateHighlights();
     this.closeHandModal();
-    const isProphecy = this.isProphecyStaging && game.stagedProphecy === card;
-    
+    const isProphecy = this.isProphecyStaging && game.stagedProphecy === card;    
     if (!isProphecy) {
       // Normal play checks
       if (!player.turn || player.currentMagicka < (card.currentCost ?? card.cost)) {
@@ -2594,7 +2429,6 @@ export class TeslComponent implements OnInit {
     }
     game.stagedCard = card;
     console.log(`Staging card for play: ${card.name}`);
-    //this.cancelButtonActive = true;
     let url: string | null;
     const refType = this.deckService.getEffectiveType(card);
     switch (refType) {
@@ -2626,48 +2460,35 @@ export class TeslComponent implements OnInit {
             this.audioService.queueAudio(url);
           }
         }
-        // Look at the effects instead of card.target
         const playEffects = card.effects?.filter(e => e.trigger === 'Play') || [];
-
-        // If there are no Play effects → just play immediately (unlikely but safe)
         if (playEffects.length === 0) {
           this.gameService.playCard(game,card,card.isOpponent,undefined,undefined,this.isProphecyStaging);
           this.clearStaging(game);
           break;
         }
-
-        // Check if **all** Play effects are auto-targetable
         const creatureTargetRequired = playEffects.some(effect => effect.target?.includes('creature') &&
           !effect.target.includes('All') && !effect.target.includes('Random'));
         game.targetLaneRequired = playEffects.some(effect => effect.target === 'lane' || 
           (effect.target?.includes('hisLane') && !creatureTargetRequired));
-
         const allAuto = playEffects.every(effect => this.gameService.isAutoTarget(effect.target));
         const thisLane = playEffects.some(effect => effect.target?.includes('hisLane'));
         if (allAuto && !thisLane) {
-          // Everything can be resolved automatically → play now
           this.gameService.playCard(game,card,card.isOpponent,undefined,undefined,this.isProphecyStaging);
           this.clearStaging(game);
         } else {
-          // At least one effect needs player selection → stage and wait for target
           game.stagedAction = 'play-action';
-          if (this.showHelpHints) this.showTemporaryHint(card.text);      
-          // Optional: highlight valid targets based on the effect(s) that need selection
+          if (this.showHelpHints) this.showTemporaryHint(card.text);
         }
         break;
     }
-
     if (this.showHelpHints && game.stagedCard) {
       if (game.stagedCard.type === 'Action') {
         this.showTemporaryHint(game.stagedCard.text || 'Play this action');
       } else if (game.stagedCard.type === 'Item') {
         this.showTemporaryHint('Target friendly creature');
       }
-      // Summon staging handled separately below
     }
-
-    this.closeModal(); // Close enlarged view
-    //this.handlePendingAction(this.game.pendingAction);
+    this.closeModal();
     this.updateGroupedHistory();
   }
 
@@ -2682,11 +2503,8 @@ export class TeslComponent implements OnInit {
         }
       }
     }
-    
-
   }
 
-  // Finalize play after target selection
   finalizePlay(game: GameState, targetLane?: number, targetCreature?: Card | PlayerState) {
     if (targetLane && game.laneTypes[targetLane] === 'Disabled') return false;
     this.invalidateHighlights();
@@ -2718,7 +2536,7 @@ export class TeslComponent implements OnInit {
         return;
       }
     } else if (game.stagedAction === 'play-action') {
-      // Step 1: Check if any Play effect requires a lane target
+      // Check if any Play effect requires a lane target
       const playEffects = game.stagedCard.effects?.filter(e => e.trigger === 'Play') || [];
       const requiresLane = playEffects.some(effect => effect.target === 'lane' || effect.target?.includes('hisLane'));
       if (targetLane) game.stagedCard.laneIndex = targetLane;
@@ -2743,9 +2561,8 @@ export class TeslComponent implements OnInit {
         const allAuto = playEffects.every(effect => this.gameService.isAutoTarget(effect.target));
 
         if (allAuto) {
-          // Safe to play immediately with no specific target    
-          
-            console.log('calling auto play card betray staged is', this.stagedBetray);    
+          // Safe to play immediately with no specific target
+          console.log('calling auto play card betray staged is', this.stagedBetray);    
           this.gameService.playCard(game,game.stagedCard, false, undefined, targetCreature, this.isProphecyStaging, this.stagedBetray);
         } 
         else {
@@ -2777,12 +2594,10 @@ export class TeslComponent implements OnInit {
     if (!this.animationsEnabled || prophPlay ||
       (game.stagedAction !== 'play-creature' && game.stagedAction !== 'play-item')) {
       this.clearStaging(this.game);
-      //this.handlePendingAction(this.game.pendingAction);
       this.updateGroupedHistory();
     }
   }
 
-  // Clear staging (Cancel button)
   clearStaging(game: GameState) {
     if (game.stagedCard && game.stagedCard.exalted === true && 
         this.gameService.isCardInHand(this.game, game.stagedCard)) {
@@ -2812,19 +2627,18 @@ export class TeslComponent implements OnInit {
     if (game.waitingOnAnimation) return;
     this.invalidateHighlights();
     const player = this.showOpponent ? this.game.opponent : this.game.player;
-    //console.log('summon targeting is: ',this.isSummonTargeting);
     if (this.isSummonTargeting) {
       this.onSummonTargetClick(game,card);
       return;
     }
-    if (!this.isTargeting) { //} || (card.type !== 'Creature' && card.type !== 'Support')) {
+    if (!this.isTargeting) {
       console.log('Not targeting');
       return;
     }
     if (game.stagedCard) {
       if (game.stagedAction === 'play-item') {
         if (card.isOpponent && !this.showOpponent) return; // Can't target opponent's creatures with items
-        if (!card.isOpponent && this.showOpponent) return; // Can't target opponent's creatures with items
+        if (!card.isOpponent && this.showOpponent) return;
         this.finalizePlay(game, undefined, card);
       } else if (game.stagedAction === 'play-creature' && this.isLaneFull(game, laneIndex)) {
         console.log('Sacrifice', card.name, 'for space');
@@ -2879,11 +2693,9 @@ export class TeslComponent implements OnInit {
     } else {
       console.log('Not in a valid staging state');
     }
-    //this.handlePendingAction(this.game.pendingAction);
     this.updateGroupedHistory();
   }
 
-  
   finalizeAttack(game: GameState, target?: Card | PlayerState) {
     if (!game.stagedAttack || !target) return;
     this.gameService.resolveAttack(game, game.stagedAttack, target);
@@ -2891,29 +2703,18 @@ export class TeslComponent implements OnInit {
     game.stagedAttack = null;
   }
 
-  
-
   playProphecyCard(game: GameState, card: Card) {
     if (game.stagedProphecy !== card) return;
-
-    //if (!card.isOpponent) {
-      this.stageCardForPlay(game, card, card.isOpponent ? game.opponent : game.player);
-      //this.handlePendingAction(this.game.pendingAction);
+    this.stageCardForPlay(game, card, card.isOpponent ? game.opponent : game.player);
     this.updateGroupedHistory();
-    //}
-
     console.log(`Playing Prophecy card for free: ${card.name}`);
   }
 
   skipProphecy(game: GameState) {
     if (!game.stagedProphecy) return;
-
     // Player skipped → now add the card to hand normally
     const player = game.stagedProphecy.isOpponent ? game.opponent : game.player;
     this.gameService.drawCards(player, 1, game); // Increment hand version
-
-    
-    //this.cancelButtonActive = false;
     console.log(`Prophecy skipped — ${game.stagedProphecy?.name} added to hand`);
     game.stagedProphecy = null;
 
@@ -2947,31 +2748,22 @@ export class TeslComponent implements OnInit {
 
   onMagickaInput(event: Event) {
     const input = event.target as HTMLInputElement;
-
     // Remove non-digits
     let value = input.value.replace(/[^0-9]/g, '');
-
     // Keep only the LAST digit typed
     if (value.length > 1) {
       value = value.slice(-1);
     }
-
     if (!value) {
       value = '0';
     }
-
     this.testStartingMaxMagicka = parseInt(value);
     input.value = value;
   }
 
-  
-
   trackByHand(index: number, card: Card): string {
-    // Use card.id + index so it forces re-creation when order changes
     return `${card.instanceId || card.name}-${index}`;
   }
-
-  
 
   get isAttackStaging(): boolean {
     return this.game.stagedAttack !== null;
@@ -3008,8 +2800,8 @@ export class TeslComponent implements OnInit {
       ((card.isOpponent && game.opponent.turn) ||
       (!card.isOpponent && game.player.turn)) &&
       this.gameService.isCardOnBoard(game,card) &&
-      !game.stagedCard &&    // no play staging
-      !this.isAttackStaging       // not already attacking
+      !game.stagedCard &&
+      !this.isAttackStaging
     );
   }
 
@@ -3022,24 +2814,19 @@ export class TeslComponent implements OnInit {
       ((card.isOpponent && game.opponent.turn) ||
       (!card.isOpponent && game.player.turn)) &&
       this.gameService.isCardOnSupport(game, card) &&
-      !game.stagedCard &&    // no play staging
-      !this.isAttackStaging       // not already attacking
+      !game.stagedCard &&
+      !this.isAttackStaging
       && !this.isActivationStaging
     );
   }
 
   stageAttack(game: GameState, creature: Card) {
     this.invalidateHighlights();
-    /*if (this.audioEnabled) {
-      const url = this.audioService.getAudioForCard(creature.id, 'attack', creature.set);
-      if (url) {
-        this.audioService.queueAudio(url);
-      }
-    }*/
     game.stagedAttack = creature;
     console.log('Staged attack for', creature.name, ', lane:', creature.laneIndex);
     this.closeModal();
   }
+
   cancelAttack(game: GameState) {
     game.stagedAttack = null;
     this.selectedCard = null;
@@ -3056,35 +2843,22 @@ export class TeslComponent implements OnInit {
       console.log('Support cannot be activated (no uses or attacks left)');
       return;
     }
-
-    // Find all Activation effects
     const activationEffects = support.effects?.filter(e => e.trigger === 'Activation') || [];
-
     if (activationEffects.length === 0) {
       console.log('No Activation effects found on support');
       return;
     }
-
-    // Check if ALL effects are auto-targeted → can activate immediately
     const allAuto = activationEffects.every(e => this.gameService.isAutoTarget(e.target));
-
     if (allAuto) {
-      // No targeting needed → activate now
       this.gameService.applySupportActivation(game, support);
     } else {
-      // At least one effect needs manual target → stage it
       game.stagedSupportActivation = support;
-      //this.cancelButtonActive = true;
       console.log(`Staged activation for ${support.name} — waiting for target`);
-      // Optional: show targeting UI/highlights here
     }
   }
 
-  
-
   onPlayerTargetClick(game: GameState, target: Card | PlayerState) {
     if (this.isSummonTargeting) {
-      //console.log('summon targeting');
       this.onSummonTargetClick(game,target);
       return;
     }
@@ -3097,10 +2871,8 @@ export class TeslComponent implements OnInit {
     } else if ((game.stagedCard && game.stagedAction === 'play-action') || 
       game.stagedAction === 'choice-followup') {
         if (this.isValidTarget(game,target, 0)) {
-          //console.log('trying to finalize play');
           this.finalizePlay(game, undefined, target);
         } else {
-          //console.log('invalid target');
         }
     } else if (game.stagedSupportActivation !== null && this.isValidTarget(game,target,0)) {
       this.gameService.applySupportActivation(game,game.stagedSupportActivation,target);
@@ -3114,33 +2886,22 @@ export class TeslComponent implements OnInit {
       }
     }
     this.invalidateHighlights();
-    //this.handlePendingAction(this.game.pendingAction);
     this.updateGroupedHistory();
   }
 
-  
-
-  
-
-  
-
-  // Check if player has any possible actions
   hasPossibleActions(game: GameState, player: PlayerState): boolean {
     // 1. Any creature that can attack
     const canAttack = player.board.some(lane =>
       lane.some(c => this.canAttack(game, c))
     );
-
     // 2. Any support that can be activated
     const canActivateSupport = player.support.some(s => this.canActivate(game, s));
 
     // 3. Any card in hand that can be played
     const canPlayCard = player.hand.some(c => this.canPlayCard(game, c, player));
-
     return canAttack || canActivateSupport || canPlayCard;
   }
 
-  // Check if any support has available activations
   hasAvailableSupportActivations(game: GameState): boolean {
     const player = this.showOpponent ? game.opponent : game.player;
     return player.support.some(support =>
@@ -3148,103 +2909,75 @@ export class TeslComponent implements OnInit {
     );
   }
 
-  // Toggle selection (called from card component)
   onCardSelect(card: Card, event?: Event) {
-    event?.stopPropagation();   // ← Prevents bubbling to board background
+    event?.stopPropagation();
     if (card.isOpponent && !this.showOpponent) {
-      this.enlargeCard(card);  // enlarge immediately
+      this.enlargeCard(card);
       return;
     }
     if (!card.isOpponent && this.showOpponent) {
-      this.enlargeCard(card);  // enlarge immediately
+      this.enlargeCard(card);
       return;
     }
     if (this.game.stagedCard || this.isActivationStaging || this.isAttackStaging) return;
     if (this.selectedCard?.instanceId === card.instanceId) {
-      // Already selected → enlarge
       this.enlargeCard(card);
-      //this.selectedCard = null;
     } else {
-      // Select new card
       this.selectedCard = card;
     }
   }
 
   onCardHover(card: Card) {
-    if (this.isTouchDevice) return; // disable hover on touch devices
+    if (this.isTouchDevice) return;
     if (!this.hoverSelectEnabled) return;
-    
-    // Only auto-select when nothing is staged / no modal open / player's turn
     if (this.isTargeting || this.enlargedCard || this.mulliganActive) {
       return;
     }
-
     this.hoveredCard = card;
     this.selectedCard = card;
-    
-    // Optional: auto-enlarge on hover
-    // this.enlargedCard = card;
   }
 
   onCardLeave() {
     if (!this.hoverSelectEnabled) return;
     this.hoveredCard = null;
     this.deselectCard();
-    
-    // If you auto-enlarged on hover, close it
-    // if (this.enlargedCard === this.hoveredCard) {
-    //   this.enlargedCard = null;
-    // }
   }
-
-  // Deselect when clicking elsewhere (e.g. board background, modal close, etc.)
+  
   deselectCard() {
     if (this.game.stagedCard || this.isActivationStaging || this.isAttackStaging || this.isSummonTargeting) return;
     this.selectedCard = null;
   }
 
-  // Call this when clicking anywhere outside cards (example: board container)
   onBoardBackgroundClick() {
     this.deselectCard();
   }
 
-  
-
-  // When toggling modal on
   showHistory() {
     this.showHistoryModal = true;
-    this.updateGroupedHistory();           // refresh + auto-expand latest
+    this.updateGroupedHistory();
   }
 
-  // Rebuild grouped data whenever history changes or modal opens
   private updateGroupedHistory() {
     const map = new Map<number, HistoryEntry[]>();
-
-    // Group by turnNumber (descending order later)
     this.game.history.forEach(entry => {
       if (!map.has(entry.turnNumber)) {
         map.set(entry.turnNumber, []);
       }
       map.get(entry.turnNumber)!.push(entry);
     });
-
-    // Convert to array, sort descending by turn number
     this.groupedHistory = Array.from(map.entries())
       .map(([turnNumber, entries]) => ({
         turnNumber,
         entries,
-        isExpanded: false   // default collapsed
+        isExpanded: false
       }))
-      .sort((a, b) => b.turnNumber - a.turnNumber); // most recent first
-
-    // Auto-expand the most recent turn
+      .sort((a, b) => b.turnNumber - a.turnNumber);
     if (this.groupedHistory.length > 0) {
       this.groupedHistory[0].isExpanded = true;
     }
   }
 
   toggleTurnExpansion(index: number) {
-    // Collapse all others, expand the clicked one
     this.groupedHistory.forEach((turn, i) => {
       turn.isExpanded = i === index;
     });
@@ -3252,8 +2985,6 @@ export class TeslComponent implements OnInit {
 
   showDiscard(playerSide: 'player' | 'opponent') {
     const p = playerSide === 'player' ? this.game.player : this.game.opponent;
-    // You can open a modal with p.discard list
-    // For now, just log
     console.log(`${playerSide} discard:`, p.discard.map(c => c.name));
   }
 
@@ -3262,12 +2993,10 @@ export class TeslComponent implements OnInit {
     this.showDiscardModal = true;
   }
 
-  // Switch views inside modal
   switchDiscardView(view: 'player' | 'opponent') {
     this.discardView = view;
   }
 
-  // Close
   closeDiscardModal() {
     this.showDiscardModal = false;
   }
@@ -3289,22 +3018,18 @@ export class TeslComponent implements OnInit {
     this.showHandModal = false;
   }
 
-  // Open/close overlay
   toggleSettingsOverlay() {
     this.showSettingsOverlay = !this.showSettingsOverlay;
     if (this.showSettingsOverlay) this.expandedDeckSide = null;
   }
 
   toggleDeckSelector(side: 'player' | 'opponent') {
-    if (this.game.gameRunning) return;  // no selection during game
-
-    // Toggle expand/collapse
+    if (this.game.gameRunning) return;
     if (this.expandedDeckSide === side) {
       this.expandedDeckSide = null;
     } else {
       this.expandedDeckSide = side;
     }
-
     if (this.expandedDeckSide === 'player') {
       if (!this.isExhibitionMode && !['starter','custom'].includes(this.playerDeckMode)) {
         this.playerDeckMode = 'starter';
@@ -3318,9 +3043,7 @@ export class TeslComponent implements OnInit {
 
   selectDeck(side: 'player' | 'opponent', source: DeckSource, deck: DeckOption) {
     if (deck.locked && source !== 'npc' && !this.isExhibitionMode) return;
-
     const serialized = JSON.stringify(deck);
-
     if (side === 'player') {
       this.selectedPlayerDeck = deck;
       this.playerDeckMode = source;
@@ -3333,12 +3056,9 @@ export class TeslComponent implements OnInit {
       localStorage.setItem('exhibition_opponent_deck', serialized);
       console.log('Saved opponent deck:', deck.name);
     }
-
-    // Optional: auto-collapse after selection
     this.expandedDeckSide = null;
   }
 
-  // Concede game
   concede() {
     if (this.isStoryMode) {
       this.showSettingsOverlay = false;
@@ -3410,7 +3130,6 @@ export class TeslComponent implements OnInit {
     if (savedPlayerDeck) {
       try {
         const parsed = JSON.parse(savedPlayerDeck);
-        // Validate / re-hydrate if needed (e.g. match to your current deck lists)
         this.selectedPlayerDeck = this.findMatchingDeck(parsed);
         if (!this.selectedPlayerDeck) this.selectedPlayerDeck = this.starterDecks[0];
         this.playerDeckMode = this.selectedPlayerDeck.source;
@@ -3506,15 +3225,12 @@ export class TeslComponent implements OnInit {
       ...this.customDecks,
       ...this.arenaOpponents
     ];
-
-    // Match by source + name + class (or deckCode if available)
     return allDecks.find(d =>
       d.source === saved.source &&
       d.name === saved.name
     ) || null;
   }
 
-  // Get attributes to display (uses selected class if Random)
   getDeckAttributes(side: 'player' | 'opponent'): string[] {
     if (side === 'player') {
       return this.selectedPlayerDeck?.attributes || [];
@@ -3528,11 +3244,10 @@ export class TeslComponent implements OnInit {
     return [];
   }
 
-  // Get display name (adds class name for Random)
   getDeckDisplayName(side: 'player' | 'opponent'): string {
     if (side === 'player') {
       return this.selectedPlayerDeck?.name || '';
-    } else /*if (side === 'opponent')*/ {
+    } else {
       return this.selectedOpponentDeck?.name || '';
     }
   }
@@ -3588,8 +3303,7 @@ export class TeslComponent implements OnInit {
   }
 
   openAvatarModal(forPlayer: 'player' | 'opponent') {
-    if (this.game.gameRunning) return; // only when game not running
-
+    if (this.game.gameRunning) return;
     this.avatarModalFor = forPlayer;
     this.showAvatarModal = true;
   }
@@ -3619,10 +3333,8 @@ export class TeslComponent implements OnInit {
   toggleStoryDifficulty() {
     if (this.storyDifficulty === 'normal') {
       this.storyDifficulty = 'hard';
-      //console.log('hard mode');
     } else {
       this.storyDifficulty = 'normal';
-      //console.log('normal mode');
     }
   }
 
@@ -3648,65 +3360,49 @@ export class TeslComponent implements OnInit {
 
   closeHelpModal() {
     this.isHelpVisible = false;
-    this.currentHelpStep = 0; // reset for next time
+    this.currentHelpStep = 0;
   }
 
   getSummonText(card: Card): string {
     if (!card.text) return 'Summoning...';
-
-    // Extract text after "Summon :" until first period
     const summonIndex = card.text.toLowerCase().indexOf('summon :');
     if (summonIndex === -1) return card.text;
-
     const afterSummon = card.text.substring(summonIndex + 8).trim(); // skip "Summon :"
     const periodIndex = afterSummon.indexOf('.');
-
     if (periodIndex === -1) {
       return afterSummon.trim();
     }
-
     return afterSummon.substring(0, periodIndex + 1).trim();
   }
 
   showTemporaryHint(message: string, duration?: number) {
-    if (!this.showHelpHints) return;   // respect user preference
-
-    // Clear any existing timeout
+    if (!this.showHelpHints) return;
     if (this.hintTimeout) {
       clearTimeout(this.hintTimeout);
     }
-
-    // Show new message
     this.currentHintMessage = message;
     this.cdr.detectChanges();
-
-    // Auto-hide after 2 seconds
     this.hintTimeout = setTimeout(() => {
       this.currentHintMessage = null;
       this.hintTimeout = null;
     }, (duration ?? 2000));
   }
 
-  // Call this whenever a card is burned
   showBurnHint(card: Card, isOpponent: boolean) {
     const message = card.id === 'out-of-cards' ? `Destroy your front rune!` : `Burned ${card.name}`;
     this.burnQueue.push({ message, isOpponent, card });
     this.processBurnQueue();
   }
 
-  // Process next in queue (non-blocking)
   private processBurnQueue() {
     if (this.burnQueue.length === 0 || this.currentBurnMessage !== null) {
       return; // already showing one
     }
-
     const next = this.burnQueue.shift()!;
     this.currentBurnMessage = next.message;
     this.currentBurnIsOpponent = next.isOpponent;
     this.lastBurnedCard = next.card;
     this.burnHintVisible = true;
-
-    // Auto-hide after 2 seconds
     let timeout = 2000;
     let interval = 400;
     if (this.burnQueue.length >= 5) {
@@ -3718,13 +3414,10 @@ export class TeslComponent implements OnInit {
       this.currentBurnIsOpponent = false;
       this.lastBurnedCard = null;
       this.burnHintVisible = false;
-
-      // Check queue again after hide
       setTimeout(() => this.processBurnQueue(), interval); // small delay for fade-out
     }, 1000);
   }
 
-  // Clear hint immediately when action is taken (call in onEndTurn, playCard, etc.)
   clearHint() {
     if (this.hintTimeout) {
       clearTimeout(this.hintTimeout);
@@ -3734,10 +3427,7 @@ export class TeslComponent implements OnInit {
   }
 
   onHintToggle() {
-  // Optional: save to localStorage for persistence
     localStorage.setItem('TESL_showHelpHints', JSON.stringify(this.showHelpHints));
-    
-    // If turned off → hide current hint
     if (!this.showHelpHints) {
       this.clearHint();
     }
@@ -3755,49 +3445,40 @@ export class TeslComponent implements OnInit {
     localStorage.setItem('TESL_Morrowind', JSON.stringify(this.useMorrowind));
   }
 
-  // Called when user clicks "Resume"
   resumeSavedGame(game: GameState) {
     this.showResumeModal = false;
     this.isMainMenu = false;
     this.showGameBoard = true;
-    // Now actually restore
     const json = localStorage.getItem('gameSave');
     if (json) {
       const saved = JSON.parse(json);
       this.restoreGameState(game, saved);
       console.log('Game restored from turn', saved.turnNumber);
+      console.log(game.opponent.hand);
+      console.log(game.player.hand);
     }
   }
 
-  // Called when user clicks "New Game"
   startNewGameFromModal() {
     this.showResumeModal = false;
     this.isMainMenu = false;
     this.showGameBoard = true;
     localStorage.removeItem('gameSave');
-    this.callStartGame();  // your normal new game logic
-    //this.game = { ...this.game };  // shallow copy trick to trigger change detection
+    this.callStartGame();
   }
   
   private async loadGameState() {
     try {
-      //const saved = await this.loadFromIndexedDB('gameSave');
       const json = localStorage.getItem('gameSave');
-
       if (!json) {
         console.log('No saved game found — starting fresh');
         return false;
       }
-
       const saved: SavedGameState = JSON.parse(json);
-
       if (saved.version !== 7) {
         console.warn('Saved game version mismatch — starting fresh');
         return false;
       }
-
-      // Show resume dialog
-      // Show styled modal instead of confirm()
       this.resumeTurnNumber = saved.turnNumber;
       if (saved.arenaMode) this.isArenaMode = true;
       if (saved.rankedMode) this.isRankedMode = true;
@@ -3822,20 +3503,16 @@ export class TeslComponent implements OnInit {
         arenaMode: this.isArenaMode,
         rankedMode: this.isRankedMode,
         animationsEnabled: this.animationsEnabled,
-        turnNumber: game.currentTurn,           // your turn counter
+        turnNumber: game.currentTurn,
         cpuPlaying: game.cpuPlaying,
         firstPlayer: game.firstPlayer,
         tempCostAdjustment: game.tempCostAdjustment,
         laneTypes: game.laneTypes,
         player: this.deckService.serializePlayer(game.player),
         opponent: this.deckService.serializePlayer(game.opponent),
-        history: game.history.map(entry => ({ ...entry }))  // deep copy
+        history: game.history.map(entry => ({ ...entry }))
       };
-
-      // Save to IndexedDB (best for PWA) OR localStorage (simpler)
-      //await this.saveToIndexedDB('gameSave', state);
       localStorage.setItem('gameSave', JSON.stringify(state));
-
       console.log('Game saved at turn: ', game.currentTurn, '; chapter: ', this.currentChapterIndex);
     } catch (error) {
       console.warn('Failed to save game state:', error);
@@ -3864,30 +3541,22 @@ export class TeslComponent implements OnInit {
     game.firstPlayer = saved.firstPlayer;
     game.laneTypes = saved.laneTypes;
     game.tempCostAdjustment = saved.tempCostAdjustment ?? 0;
-
     // Restore players
     await this.deckService.restorePlayer(game.player, saved.player, false);
     await this.deckService.restorePlayer(game.opponent, saved.opponent, true);
-
-
     // Re-apply auras, static buffs, etc.
     this.gameService.updateStaticBuffs(game, game.player);
     this.gameService.updateStaticBuffs(game, game.opponent);
-
-    //not sure if needed
     this.gameService.reapplyHandAuras(game.player);
     this.gameService.reapplyHandAuras(game.opponent);
     game.gameRunning = true;
-
     if (saved.history) {
       game.history = saved.history.map(entry => ({ ...entry }));
     } else {
       game.history = [];
     }
-    
     this.updateGroupedHistory();  // rebuild groups after load
     this.updateBackgroundMusic();
-
   }
 
   addClone(handCardEl: Element | null, startX: number, startY: number, card: Card, startRect: DOMRect): HTMLElement {
@@ -3916,22 +3585,17 @@ export class TeslComponent implements OnInit {
   }
 
   playCreatureToLane(game: GameState, card: Card, laneIndex: number, isOpponent: boolean) {
-    //const stagedCardAtStart = game.stagedCard;
-
     let handCardEl: Element | null = null;  
     if (!isOpponent) {
       handCardEl = document.querySelector(`[data-instance-id="${card.instanceId}"]`);
     }
-
     const queryLane = card.isOpponent ? laneIndex : (laneIndex + 2);
-
     const laneEl = document.querySelector(`[data-lane="${queryLane}"]`);
     if (!laneEl) {
       console.log('lane not found');
       return;
     }
     game.waitingOnAnimation = true;
-
     let startRect: DOMRect;
     let startX: number;
     let startY: number;
@@ -3943,32 +3607,25 @@ export class TeslComponent implements OnInit {
       startX = (handCardEl as HTMLElement).offsetLeft;
       startY = (handCardEl as HTMLElement).offsetTop;
       let currentEl = (handCardEl as HTMLElement).offsetParent as HTMLElement | null;
-
       while (currentEl && currentEl !== document.body) {
         startX += currentEl.offsetLeft;
         startY += currentEl.offsetTop;
         currentEl = currentEl.offsetParent as HTMLElement;
       }
-
       const xShift = startX - startRect.left;
       const yShift = startY - startRect.top;
-
       endX = endRect.left + endRect.width / 2 + xShift;
       endY = endRect.top + endRect.height / 2 + yShift;
     } else {
       const containerRect = document.querySelector('.game-board-container')?.getBoundingClientRect() 
                         || document.body.getBoundingClientRect();
-
       startX = containerRect.left + containerRect.width * 0.5 + 30;   
-      startY = containerRect.top - 50;                            
-
+      startY = containerRect.top - 50;
       startRect = new DOMRect(startX, startY, 105, 150); 
       endX = endRect.left + endRect.width / 2;
       endY = endRect.top + endRect.height / 8;
     }
-
-    const clone = this.addClone(handCardEl,startX, startY, card, startRect);    
-
+    const clone = this.addClone(handCardEl,startX, startY, card, startRect);
     gsap.to(clone, {
       duration: isOpponent ? 0.8 : 0.4,
       left: endX,
@@ -3985,7 +3642,6 @@ export class TeslComponent implements OnInit {
         }
         game.waitingOnAnimation = false;
         clone.remove();
-        // Place real card on board
         if (isOpponent) {
           this.gameService.opponentPlayCard(game, card, laneIndex);
           this.resumeOpponentTurn(game);
@@ -4001,21 +3657,17 @@ export class TeslComponent implements OnInit {
   }
 
   playActionToLane(game: GameState, card: Card, laneIndex: number, isOpponent: boolean) {
-    //const stagedCardAtStart = game.stagedCard;
     let handCardEl: Element | null = null;  
     if (!isOpponent) {
       handCardEl = document.querySelector(`[data-instance-id="${card.instanceId}"]`);
-    }   
-
+    }
     const queryLane = card.isOpponent ? laneIndex : (laneIndex + 2);
-
     const laneEl = document.querySelector(`[data-lane="${queryLane}"]`);
     if (!laneEl) {
       console.log('lane not found');
       return;
     }
     game.waitingOnAnimation = true;
-
     let startRect: DOMRect;
     let startX: number;
     let startY: number;
@@ -4024,36 +3676,28 @@ export class TeslComponent implements OnInit {
     const endRect = laneEl.getBoundingClientRect();
     if (!isOpponent && handCardEl) {
       startRect = handCardEl.getBoundingClientRect();
-
       startX = (handCardEl as HTMLElement).offsetLeft;
       startY = (handCardEl as HTMLElement).offsetTop;
       let currentEl = (handCardEl as HTMLElement).offsetParent as HTMLElement | null;
-
       while (currentEl && currentEl !== document.body) {
         startX += currentEl.offsetLeft;
         startY += currentEl.offsetTop;
         currentEl = currentEl.offsetParent as HTMLElement;
       }
-
       const xShift = startX - startRect.left;
       const yShift = startY - startRect.top;
-
       endX = endRect.left + endRect.width / 2 + xShift;
       endY = endRect.top + endRect.height / 2 + yShift;
     } else {
       const containerRect = document.querySelector('.game-board-container')?.getBoundingClientRect() 
                         || document.body.getBoundingClientRect();
-
       startX = containerRect.left + containerRect.width * 0.5 + 30;   
-      startY = containerRect.top - 50;                            
-
+      startY = containerRect.top - 50;
       startRect = new DOMRect(startX, startY, 105, 150); 
       endX = endRect.left + endRect.width / 2;
       endY = endRect.top + endRect.height / 2;
     }
-
-    const clone = this.addClone(handCardEl,startX, startY, card, startRect);    
-
+    const clone = this.addClone(handCardEl,startX, startY, card, startRect);
     gsap.to(clone, {
       duration: 0.4,
       left: endX,
@@ -4092,10 +3736,8 @@ export class TeslComponent implements OnInit {
       document.querySelector(`[data-instance-id="${target.instanceId}"]`) :
       (target === game.player ? document.querySelector('.player-hero')
       : document.querySelector('.opponent-hero'));
-
     if ((!isOpponent && !attackerEl) || !defenderEl) return;
     game.waitingOnAnimation = true;
-
     let startRect: DOMRect;
     let startX: number;
     let startY: number;
@@ -4104,36 +3746,28 @@ export class TeslComponent implements OnInit {
     const endRect = defenderEl.getBoundingClientRect();
     if (!isOpponent && attackerEl) {
       startRect = attackerEl.getBoundingClientRect();
-
       startX = (attackerEl as HTMLElement).offsetLeft;
       startY = (attackerEl as HTMLElement).offsetTop;
       let currentEl = (attackerEl as HTMLElement).offsetParent as HTMLElement | null;
-
       while (currentEl && currentEl !== document.body) {
         startX += currentEl.offsetLeft;
         startY += currentEl.offsetTop;
         currentEl = currentEl.offsetParent as HTMLElement;
       }
-
       const xShift = startX - startRect.left;
       const yShift = startY - startRect.top;
-
       endX = endRect.left + xShift;
       endY = endRect.top + yShift;
     } else {
       const containerRect = document.querySelector('.game-board-container')?.getBoundingClientRect() 
                         || document.body.getBoundingClientRect();
-
       startX = containerRect.left + containerRect.width * 0.5 + 30;  
-      startY = containerRect.top - 50;        
-
+      startY = containerRect.top - 50;
       startRect = new DOMRect(startX, startY, 105, 150); 
       endX = endRect.left;
       endY = endRect.top;
     }
-
-    const clone = this.addClone(attackerEl,startX, startY, card, startRect);    
-
+    const clone = this.addClone(attackerEl,startX, startY, card, startRect);
     gsap.to(clone, {
       duration: 0.4,
       left: endX,
@@ -4158,7 +3792,6 @@ export class TeslComponent implements OnInit {
   }
 
   playSupportToBar(game: GameState, card: Card, isOpponent: boolean) {
-    //const stagedCardAtStart = game.stagedCard;
     let handCardEl: Element | null = null;  
     if (!isOpponent) {
       handCardEl = document.querySelector(`[data-instance-id="${card.instanceId}"]`);
@@ -4168,7 +3801,6 @@ export class TeslComponent implements OnInit {
       : document.querySelector('.player-support');
     if (!supportEl) return;
     const endRect = supportEl.getBoundingClientRect();
-
     let startRect: DOMRect;
     let startX: number;
     let startY: number;
@@ -4176,11 +3808,9 @@ export class TeslComponent implements OnInit {
     let endY: number;
     if (!isOpponent && handCardEl) {
       startRect = handCardEl.getBoundingClientRect();
-
       startX = (handCardEl as HTMLElement).offsetLeft;
       startY = (handCardEl as HTMLElement).offsetTop;
       let currentEl = (handCardEl as HTMLElement).offsetParent as HTMLElement | null;
-
       while (currentEl && currentEl !== document.body) {
         startX += currentEl.offsetLeft;
         startY += currentEl.offsetTop;
@@ -4191,17 +3821,13 @@ export class TeslComponent implements OnInit {
     } else {
       const containerRect = document.querySelector('.game-board-container')?.getBoundingClientRect() 
                         || document.body.getBoundingClientRect();
-
       startX = containerRect.left + containerRect.width * 0.5 + 30;   
-      startY = containerRect.top - 50;                           
-
+      startY = containerRect.top - 50;
       startRect = new DOMRect(startX, startY, 105, 150); 
       endX = endRect.left + endRect.width / 2;
       endY = endRect.top + endRect.height / 2;
     }
-
-    const clone = this.addClone(handCardEl,startX, startY, card, startRect);    
-
+    const clone = this.addClone(handCardEl,startX, startY, card, startRect);
     gsap.to(clone, {
       duration: 0.4,
       left: endX,
@@ -4237,10 +3863,8 @@ export class TeslComponent implements OnInit {
       attackerEl = document.querySelector(`[data-instance-id="${card.instanceId}"]`);
     }  
     const defenderEl = document.querySelector(`[data-instance-id="${target.instanceId}"]`);
-
     if ((!isOpponent && !attackerEl) || !defenderEl) return;
     game.waitingOnAnimation = true;
-
     let startRect: DOMRect;
     let startX: number;
     let startY: number;
@@ -4249,36 +3873,28 @@ export class TeslComponent implements OnInit {
     const endRect = defenderEl.getBoundingClientRect();
     if (!isOpponent && attackerEl) {
       startRect = attackerEl.getBoundingClientRect();
-
       startX = (attackerEl as HTMLElement).offsetLeft;
       startY = (attackerEl as HTMLElement).offsetTop;
       let currentEl = (attackerEl as HTMLElement).offsetParent as HTMLElement | null;
-
       while (currentEl && currentEl !== document.body) {
         startX += currentEl.offsetLeft;
         startY += currentEl.offsetTop;
         currentEl = currentEl.offsetParent as HTMLElement;
       }
-
       const xShift = startX - startRect.left;
       const yShift = startY - startRect.top;
-
       endX = endRect.left + xShift;
       endY = endRect.top + yShift;
     } else {
       const containerRect = document.querySelector('.game-board-container')?.getBoundingClientRect() 
                         || document.body.getBoundingClientRect();
-
       startX = containerRect.left + containerRect.width * 0.5 + 30;  
       startY = containerRect.top - 50;
-
       startRect = new DOMRect(startX, startY, 105, 150);
       endX = endRect.left;
       endY = endRect.top;
     }
-
-    const clone = this.addClone(attackerEl,startX, startY, card, startRect);        
-
+    const clone = this.addClone(attackerEl,startX, startY, card, startRect);
     gsap.to(clone, {
       duration: 0.4,
       left: endX,
@@ -4314,7 +3930,6 @@ export class TeslComponent implements OnInit {
       ? document.querySelector(`[data-instance-id="${defender.instanceId}"]`)
       : (defender === game.player ? document.querySelector('.player-hero')
       : document.querySelector('.opponent-hero'));
-
     if (!attackerEl || !defenderEl) return;
     game.waitingOnAnimation = true;
     let iconUrl = `/assets/tesl/images/icons/summon_${icon}.webp`;
@@ -4323,13 +3938,10 @@ export class TeslComponent implements OnInit {
     } else if (icon === 'silence') {
       iconUrl = `/assets/tesl/images/icons/LG-icon-Silence.webp`;
     }
-
     const startRect = attackerEl.getBoundingClientRect();
     const endRect = defenderEl.getBoundingClientRect();
-
     const startX = startRect.left + startRect.width / 2;
     const startY = startRect.top + startRect.height / 2;
-
     const iconEl = document.createElement('img');
     iconEl.src = iconUrl;
     iconEl.alt = 'Summon icon';
@@ -4342,9 +3954,7 @@ export class TeslComponent implements OnInit {
     iconEl.style.pointerEvents = 'none';
     iconEl.style.opacity = '1';
     document.body.appendChild(iconEl);
-
     gsap.to(attackerEl, { duration: 0.1, x: -8, yoyo: true, repeat: 3 });
-
     gsap.to(iconEl, {
       duration: 0.4,
       left: endRect.left + (endRect.width) / 2 - 24,
@@ -4364,7 +3974,6 @@ export class TeslComponent implements OnInit {
         });
         this.updateGroupedHistory();
         this.invalidateHighlights();
-        // Hit impact
         gsap.to(defenderEl, {
           duration: 0.08,
           x: 12,
@@ -4372,14 +3981,12 @@ export class TeslComponent implements OnInit {
           repeat: 3,
           ease: "power1.inOut"
         });
-
         gsap.to(defenderEl, {
           background: "rgba(255,0,0,0.4)",
           duration: 0.15,
           yoyo: true,
           repeat: 1
         });
-
         iconEl.remove();
       }
     });
@@ -4387,7 +3994,6 @@ export class TeslComponent implements OnInit {
 
   attackWithCreature(game: GameState, attacker: Card, defender: Card | PlayerState, isOpponent: boolean) {
     game.waitingOnAnimation = true;
-
     if (this.audioEnabled) {
       const url = this.audioService.getAudioForCard(attacker.id, 'attack', attacker.set);
       if (url) {
@@ -4401,14 +4007,11 @@ export class TeslComponent implements OnInit {
         : (defender === game.player 
             ? document.querySelector('.player-hero')
             : document.querySelector('.opponent-hero'));
-      
       if (attempt > 1) console.log(`Attempt ${attempt + 1}: attackerEl:`, attackerEl, 'defenderEl:', defenderEl);
-
       if (attackerEl && defenderEl) {
         this.performAttackAnimation(attackerEl, defenderEl, attacker, defender, isOpponent, game);
         return;
       }
-
       // Not found yet → retry or fallback
       if (attempt < 6) {  // ~600ms total max
         const delay = 50 * (attempt + 1);
@@ -4416,12 +4019,10 @@ export class TeslComponent implements OnInit {
       } else {
         console.warn('Failed to find attack elements after retries — instant resolve');
         game.waitingOnAnimation = false;
-
         if (isOpponent) {
           this.gameService.resolveOpponentAttack(game, attacker, defender);
           game.stagedAttack = null;
           this.resumeOpponentTurn(game);
-          
         } else {
           this.finalizeAttack(game, defender);
           this.updateGroupedHistory();
@@ -4429,7 +4030,6 @@ export class TeslComponent implements OnInit {
         }
       }
     };
-
     // Start the retry process
     tryFindElement();
   }
@@ -4444,7 +4044,6 @@ export class TeslComponent implements OnInit {
   ) {
     const startRect = attackerEl.getBoundingClientRect();
     const endRect = defenderEl.getBoundingClientRect();
-
     const clone = attackerEl.cloneNode(true) as HTMLElement;
     clone.style.position = 'fixed';
     clone.style.zIndex = '9999';
@@ -4454,9 +4053,7 @@ export class TeslComponent implements OnInit {
     clone.style.height = `${startRect.height}px`;
     document.body.appendChild(clone);
     (attackerEl as HTMLElement).classList.add('anim-hidden');
-
     gsap.to(attackerEl, { duration: 0.1, x: -8, yoyo: true, repeat: 3 });
-
     gsap.to(clone, {
       duration: 0.6,
       left: endRect.left + (endRect.width - startRect.width) / 2,
@@ -4466,7 +4063,6 @@ export class TeslComponent implements OnInit {
       ease: "power2.out",
       onComplete: () => {
         game.waitingOnAnimation = false;
-
         if (isOpponent) {
           this.gameService.resolveOpponentAttack(game, attacker, defender);
           game.stagedAttack = null;
@@ -4477,7 +4073,6 @@ export class TeslComponent implements OnInit {
           this.invalidateHighlights();
         }
         (attackerEl as HTMLElement).classList.remove('anim-hidden');
-
         // Hit impact
         gsap.to(defenderEl, {
           duration: 0.08,
@@ -4486,57 +4081,16 @@ export class TeslComponent implements OnInit {
           repeat: 3,
           ease: "power1.inOut"
         });
-
         gsap.to(defenderEl, {
           background: "rgba(255,0,0,0.4)",
           duration: 0.15,
           yoyo: true,
           repeat: 1
         });
-
         clone.remove();
       }
     });
   }
-
-  /*selectArenaClass(name: string) {
-    this.arenaClass = name;
-    const cardsArena = this.deckService.getAllCards().filter(c => c.tier && c.tier !== 'U');
-    const classArena = this.classes.find(cls => cls.name === name);
-    if (classArena) {
-      this.arenaClassCards = cardsArena.filter(c =>
-      (c.attributes.length === 1 && ['N',...classArena.attributes].includes(c.attributes[0])) ||
-      (c.attributes.length === 2 &&
-        classArena.attributes[0] === c.attributes[0] && classArena.attributes[1] === c.attributes[1]));
-    }
-  }*/
-
-  /*getSetOfThree() {
-    const roll = Math.random();
-    let rarity = '1Common';
-    if (roll < .0232) {
-      rarity = '4Legendary';
-    } else if (roll < (.0232+.1036)) {
-      rarity = '3Epic';
-    } else if (roll < (.0232+.1036+.2595)) {
-      rarity = '2Rare';
-    }
-    const cardsRarity = this.arenaClassCards.filter(c => c.rarity === rarity);
-    const pickOne = this.utilityService.random(cardsRarity);
-    let cardsBucket = cardsRarity.filter(c => c.tier === pickOne.tier);
-    if (cardsBucket.length < 3) {
-      let bucketTiers = [pickOne.tier];
-      if (pickOne.tier === 'S') bucketTiers.push('A');
-      if (pickOne.tier === 'E') bucketTiers.push('D');
-      if (pickOne.tier === 'A') bucketTiers.push('S');
-      if (pickOne.tier === 'D') bucketTiers.push('E');
-      cardsBucket = cardsRarity.filter(c => bucketTiers.includes(c.tier));
-    }
-    cardsBucket = cardsBucket.filter(c => c.id !== pickOne.id);
-    const pickTwo = this.utilityService.random(cardsBucket);
-    cardsBucket = cardsBucket.filter(c => c.id !== pickTwo.id);
-    const pickThree = this.utilityService.random(cardsBucket);
-  }*/
 
   get acts() {
     const actsMap = new Map<number, any[]>();
@@ -4555,12 +4109,10 @@ export class TeslComponent implements OnInit {
       this.selectedPlayerDeck = this.starterDecks[0];
       this.playerDeckMode = 'starter';
     }
-   // this.loadCurrentChapter();
   }
 
   toggleAct(act: number) {
     this.expandedAct = this.expandedAct === act ? null : act;
-    //console.log(`current chapter ${this.currentChapterIndex}. last completed ${this.lastCompletedChapterIndex}`);
   }
 
   get hardMode(): boolean {
@@ -4574,7 +4126,6 @@ export class TeslComponent implements OnInit {
     this.currentChapterIndex = this.storyChapters.indexOf(chapter);
     if (this.hardMode) this.currentChapterIndex += 30;
     console.log(`starting chapter ${this.currentChapterIndex}`);
-
     if (chapter.startVideo && this.animationsEnabled) {
       this.currentDialogue = chapter.startDialogue || '';
       this.playVideo(`/assets/tesl/story/forgotten_hero/video/${chapter.startVideo}.mp4`,'start');
@@ -4590,61 +4141,47 @@ export class TeslComponent implements OnInit {
     if (videoEl) {
       videoEl.pause();
     }
+    this.currentVideo = null;
+    this.currentDialogue = '';
+    this.updateMusicVolume();
+    const chapter = this.currentChapter;
+    if (!chapter) {
+      this.backToMenu();
+      return;
+    }
+    // Case 1: This was the START video
+    if (this.currentVideoJustPlayed === 'start') {
+      this.currentVideoJustPlayed = null;
 
-    // Give browser ~300–500ms to finish rendering last frame
-    //setTimeout(() => {
-      this.currentVideo = null;
-      this.currentDialogue = '';
-      this.updateMusicVolume();
-      //console.log('checking chapter');
-      const chapter = this.currentChapter;
-      if (!chapter) {
-        this.backToMenu();
-        return;
-      }
-      //console.log(`handling video end. it was ${this.currentVideoJustPlayed}`);
-      // Case 1: This was the START video
-      if (this.currentVideoJustPlayed === 'start') {
-        this.currentVideoJustPlayed = null;
-
-        if (chapter.opponent) {
-          // Has a fight → start the battle
-          this.startStoryFight(chapter);
+      if (chapter.opponent) {
+        // Has a fight → start the battle
+        this.startStoryFight(chapter);
+      } else {
+        // No fight (Prologue/Interlude) → play endVideo if it exists
+        if (chapter.endVideo) {
+          setTimeout(() => {
+            this.currentDialogue = chapter.endDialogue || '';
+            this.playVideo(`/assets/tesl/story/forgotten_hero/video/${chapter.endVideo}.mp4`, 'end');
+          }, 300);   // 300ms delay — usually enough
         } else {
-          // No fight (Prologue/Interlude) → play endVideo if it exists
-          if (chapter.endVideo) {
-            //console.log('play end video');
-            setTimeout(() => {
-              this.currentDialogue = chapter.endDialogue || '';
-              this.playVideo(`/assets/tesl/story/forgotten_hero/video/${chapter.endVideo}.mp4`, 'end');
-            }, 300);   // 300ms delay — usually enough
-            //this.playVideo(`/assets/tesl/story/forgotten_hero/video/${chapter.endVideo}.mp4`,'end');
-          } else {
-            // No endVideo → go to next chapter
-            //console.log('go to next chapter');
-            this.goToNextChapter();
-          }
+          // No endVideo → go to next chapter
+          this.goToNextChapter();
         }
-        return;
       }
-
-      // Case 2: This was the END video
-      if (this.currentVideoJustPlayed === 'end') {
-        //console.log('finished end video');
-        this.currentVideoJustPlayed = null;
-        this.goToNextChapter();
-        return;
-      }
-      //console.log('fallback');
-      // Fallback
+      return;
+    }
+    // Case 2: This was the END video
+    if (this.currentVideoJustPlayed === 'end') {
+      this.currentVideoJustPlayed = null;
       this.goToNextChapter();
-    //}, 400);   // adjust 200–600ms based on your video resolution/framerate
+      return;
+    }
+    this.goToNextChapter();    
   }
 
   private goToNextChapter() {
     this.updateMusicVolume();
     let refIndex = this.currentChapterIndex;
-    //if (this.hardMode) refIndex += 30;
     if (refIndex > this.lastCompletedChapterIndex) {
       this.lastCompletedChapterIndex = refIndex;
       if (this.lastCompletedChapterIndex === (this.storyChapters.length-1)) {
@@ -4654,8 +4191,6 @@ export class TeslComponent implements OnInit {
       localStorage.setItem('forgotten_hero_progress', this.currentChapterIndex.toString());
     }
     this.currentChapterIndex++;
-
-
     if (this.currentChapterIndex >= 
       (this.hardMode ? (this.storyChapters.length+30) : this.storyChapters.length)) {
       console.log('Story complete!');
@@ -4685,7 +4220,7 @@ export class TeslComponent implements OnInit {
       }
       globalIndex += actEntry[1].length;
     }
-    return -1; // fallback
+    return -1;
   }
 
   resetStoryProgress() {
@@ -4701,10 +4236,8 @@ export class TeslComponent implements OnInit {
     const chOffset = this.hardMode ? 30 : 0;
     const actChapters = this.storyChapters.filter(ch => ch.act === actNumber);
     if (actChapters.length === 0) return 'mixed';
-
     const allCompleted = actChapters.every(ch => (ch.chapter+chOffset) <= this.lastCompletedChapterIndex);
     const allLocked = actChapters.every(ch => (ch.chapter+chOffset) > this.lastCompletedChapterIndex + 1);
-
     if (allCompleted) return 'all-completed';
     if (allLocked) return 'all-locked';
     return 'mixed';
@@ -4742,11 +4275,10 @@ export class TeslComponent implements OnInit {
   playStoryHints(chapterNumber: number) {
     const hints = this.storyHints[chapterNumber - 1];
     if (!hints || hints.length === 0) return;
-
     hints.forEach((hint, index) => {
       setTimeout(() => {
         this.showTemporaryHint(hint, 5000);
-      }, index * 7500); // every 10 seconds
+      }, index * 7500);
     });
   }
 
@@ -4758,44 +4290,33 @@ export class TeslComponent implements OnInit {
       console.log('not found element');
       return;
     }
-
     let newUrl: string | null = null;
-    //console.log('update music');
     if (this.isMainMenu) {
-      //console.log('menu music');
       newUrl = this.getRandomMenuMusic();
     } else if (this.game.gameRunning) {
-      //console.log('battle music');
       newUrl = this.getRandomBattleMusic();
     } else {
       newUrl = this.getRandomAmbientMusic();
     }
-
-    // Only change if different (prevents restart on every tick)
     if (newUrl !== this.currentMusicUrl) {
       this.currentMusicUrl = newUrl;
-
       if (newUrl) {
         this.musicPlayer.nativeElement.src = newUrl;
-        //console.log(`playing ${newUrl}`);
         this.musicPlayer.nativeElement.currentTime = 0; // restart from beginning
         this.musicPlayer.nativeElement.play().catch(err => {
           console.warn('Music autoplay blocked:', err);
         });
       } else {
-        //console.log(`stopping music`);
         this.musicPlayer.nativeElement.pause();
         this.musicPlayer.nativeElement.src = '';
       }
     }
   }
 
-  // Pick random track
   private getRandomMenuMusic(): string {
     const menuTracks = [
       '/assets/tesl/audio/music/The_Elder_Scrolls_Legends_Menu_01_v1.mp3',
       '/assets/tesl/audio/music/The_Elder_Scrolls_Legends_Menu_02_v1.mp3',
-      // add all your %_Menu_% files here
     ];
     return menuTracks[Math.floor(Math.random() * menuTracks.length)];
   }
@@ -4804,7 +4325,6 @@ export class TeslComponent implements OnInit {
     const battleTracks = [
       '/assets/tesl/audio/music/The_Elder_Scrolls_Legends_Battle_01_v1.mp3',
       '/assets/tesl/audio/music/The_Elder_Scrolls_Legends_Battle_02_v1.mp3',
-      // add all your %_Battle_% files
     ];
     return battleTracks[Math.floor(Math.random() * battleTracks.length)];
   }
@@ -4812,7 +4332,6 @@ export class TeslComponent implements OnInit {
   private getRandomAmbientMusic(): string {
     const battleTracks = [
       '/assets/tesl/audio/music/Cardinal_General_Pregame_Ambience.mp3',
-      // add all your %_Battle_% files
     ];
     return battleTracks[Math.floor(Math.random() * battleTracks.length)];
   }
@@ -4825,7 +4344,6 @@ export class TeslComponent implements OnInit {
     return '/assets/tesl/audio/music/Cardinal_General_Gameplay_Fanfare_Lose.mp3';
   }
 
-  // Optional: change track when song ends
   onMusicEnded() {
     if (this.isMainMenu) {
       this.musicPlayer.nativeElement.src = this.getRandomMenuMusic();
@@ -4872,7 +4390,6 @@ export class TeslComponent implements OnInit {
         });
       }
     }, 100);
-
     console.log(`Playing ${type} video: ${videoUrl} (muted: ${!this.audioEnabled})`);
   }
 
@@ -4889,16 +4406,13 @@ export class TeslComponent implements OnInit {
 
   toggleDesktopMode() {
     this.isDesktopMode = !this.isDesktopMode;
-    // optional: save to localStorage if you want persistence
     localStorage.setItem('tesl-layout', this.isDesktopMode ? 'desktop' : 'mobile');
   }
 
-  // Menu actionsconsole.log('Chapters loaded:', this.storyChapters.length);
   startExhibition() {
     this.isExhibitionMode = true
     this.isMainMenu = false;
     this.showGameBoard = true;
-    // Start exhibition mode (custom game, no opponent, etc.)
   }
 
   openCollection() {
@@ -4906,13 +4420,11 @@ export class TeslComponent implements OnInit {
       width: '100vw',
       maxWidth: '1400px',
       height: '100vh',
-      //height: '100%',
-     // maxHeight: '95vh',
-      panelClass: 'collection-dialog', // for custom styling
+      panelClass: 'collection-dialog',
       disableClose: false,
       autoFocus: false,
       data: {
-        unlockedCardIds: Array.from(this.unlockedCards),   // your global unlocked set
+        unlockedCardIds: Array.from(this.unlockedCards),
         unlockAll: this.unlockedAll
       }
     });
@@ -4923,31 +4435,26 @@ export class TeslComponent implements OnInit {
       width: '100%',
       maxWidth: '1440px',
       height: '100%',
-      //maxHeight: '95vh',
       panelClass: 'deck-dialog',
       disableClose: false,
       autoFocus: false,
       data: {
-        unlockedCardIds: Array.from(this.unlockedCards),   // your global unlocked set
+        unlockedCardIds: Array.from(this.unlockedCards),
         unlockAll: this.unlockedAll
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.savedDecks) {
-        // Update local state if needed
-        this.savedDecks = result.savedDecks;  // optional: mirror in parent
+        this.savedDecks = result.savedDecks;
         this.customDecks = this.savedDecks.map(d => this.mapToDeckOption(d,'custom'));
         this.unlockCustomDecks();
         console.log('Updated saved decks from dialog:', result.savedDecks.length);
-        
-        // Optional: refresh UI, show toast, etc.
       }
     });
   }
 
   openRanked() {
     this.isRankedMode = true;
-
     const dialogRef = this.dialog.open(RankedComponent, {
       width: '100%',
       maxWidth: '1440px',
@@ -4957,12 +4464,11 @@ export class TeslComponent implements OnInit {
       autoFocus: false,
       data: {
         currentDeck: this.selectedPlayerDeck,
-        starterDecks: this.starterDecksFiltered.filter(d => !d.locked || this.unlockedAll) || [],   // your existing starter decks
-        customDecks: this.customDecks.filter(d => !d.locked || this.unlockedAll) || [],      // your existing custom decks
+        starterDecks: this.starterDecksFiltered.filter(d => !d.locked || this.unlockedAll) || [],
+        customDecks: this.customDecks.filter(d => !d.locked || this.unlockedAll) || [],
         triple: this.tripleRewards
       }
     });
-
     dialogRef.afterClosed().subscribe(result => {
       this.isRankedMode = false;
       console.log('result:' , result);
@@ -4970,10 +4476,8 @@ export class TeslComponent implements OnInit {
         this.backToMenu();
         return;
       }
-
       if (result.mode === 'ranked' && result.playerDeck 
           && result.tier !== undefined && result.stars !== undefined) {
-        // Start the ranked match
         this.selectedPlayerDeck = result.playerDeck;
         this.playerDeckMode = this.selectedPlayerDeck!.source;
         const serialized = JSON.stringify(this.selectedPlayerDeck);
@@ -4984,81 +4488,56 @@ export class TeslComponent implements OnInit {
     });
   }
 
-  // ====================== RANKED MATCH START ======================
-startRankedMatch(tier: number, stars: number) {
-  // Determine opponent deck based on current player rank
-  const opponentDeck = this.getRankedOpponentDeck(tier, stars);
-  if (!opponentDeck) {
-    console.error('Could not find a suitable opponent deck for ranked');
-    return;
+  startRankedMatch(tier: number, stars: number) {
+    const opponentDeck = this.getRankedOpponentDeck(tier, stars);
+    if (!opponentDeck) {
+      console.error('Could not find a suitable opponent deck for ranked');
+      return;
+    }
+    console.log(`Ranked opponent chosen: ${opponentDeck.name} (tier ${opponentDeck.tier})`);
+    this.selectedOpponentDeck = opponentDeck;
+    this.opponentDeckMode = opponentDeck.source;
+    const serialized = JSON.stringify(opponentDeck);
+    localStorage.setItem('exhibition_opponent_deck', serialized);
+    this.isRankedMode = true;
+    let overrides: GameOverrides = {};
+    if (tier === 5) { //legendary
+      overrides.maxMagicka = 2;
+      overrides.oppCards = 3;
+    } else if (tier === 4) { //diamond
+      overrides.maxMagicka = 1;
+      overrides.oppCards = 2;
+    } else if (tier === 3) {  //platinum
+      overrides.oppCards = 1;
+    }
+    this.callStartGame(overrides);
   }
-  console.log(`Ranked opponent chosen: ${opponentDeck.name} (tier ${opponentDeck.tier})`);
 
-  // Store for UI / game
-  this.selectedOpponentDeck = opponentDeck;
-  this.opponentDeckMode = opponentDeck.source;
-  const serialized = JSON.stringify(opponentDeck);
-  localStorage.setItem('exhibition_opponent_deck', serialized);
-  this.isRankedMode = true;
-  // Start the actual game (same pattern as arena)
-  let overrides: GameOverrides = {};
-  if (tier === 5) { //legendary
-    overrides.maxMagicka = 2;
-    overrides.oppCards = 3;
-  } else if (tier === 4) { //diamond
-    overrides.maxMagicka = 1;
-    overrides.oppCards = 2;
-  } else if (tier === 3) {  //platinum
-    overrides.oppCards = 1;
-  }
-  this.callStartGame(overrides);
-}
-
-// ====================== OPPONENT TIER SELECTION ======================
-private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
+  private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
     const allDecks = [...(this.npcDecks || []), ...(this.starterDecks || [])]
       .filter(d => d && d.tier && d.tier >= 1 && d.tier <= 6);
-
     if (allDecks.length === 0) return null;
-
     const playerTier = tier;
     const playerStars = stars;
-
     let targetTiers: number[] = [];
-
-    // Legendary (tier 5) always faces the best decks
     if (playerTier === 5) {
       targetTiers = [1];
     }
-    // Bronze with 0 stars always faces the weakest decks
     else if (playerTier === 0 && playerStars === 0) {
       targetTiers = [6];
     }
-    // All other ranks: mix of 2 tiers with probability
     else {
-      // Base opponent tier (higher player tier = harder opponent)
-      const baseTier = Math.max(1, 6 - playerTier); // Bronze(0)→6, Silver(1)→5, ..., Diamond(4)→3
-
-      // Add a small random shift based on stars
+      const baseTier = Math.max(1, 6 - playerTier);
       const shift = playerStars >= 3 ? -1 : 1;
-
       const tier1 = Math.max(1, Math.min(6, baseTier + shift));
       const tier2 = Math.max(1, Math.min(6, baseTier));
-
       targetTiers = [tier1, tier2];
     }
-
     console.log(`Player tier ${playerTier} with ${playerStars} stars → target opponent tiers: ${targetTiers.join(', ')}`);
-
-    // Filter decks that match one of the target tiers
     const candidateDecks = allDecks.filter(d => targetTiers.includes(d.tier!));
-
     if (candidateDecks.length === 0) {
-      // Fallback: return any deck
       return this.utilityService.random(allDecks);
     }
-
-    // Pick randomly from the candidates
     return this.utilityService.random(candidateDecks);
   }
 
@@ -5078,11 +4557,9 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
         triple: this.tripleRewards
       }
     });
-
     dialogRef.afterClosed().subscribe(result => {
       this.loadUnlockedCards();
       this.loadArenaState();
-
       const arenaElo = localStorage.getItem('TESL_arena_elo');
       if (arenaElo !== null) {
         this.arenaElo = parseInt(arenaElo,10);
@@ -5091,7 +4568,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
         this.backToMenu();
         return;
       }
-
       if (result?.mode === 'arena') {
         this.isArenaMode = true;
         this.startArenaMatch(result.opponent, result.playerDeck);
@@ -5139,8 +4615,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
     const saved = localStorage.getItem(this.ARENA_STATE_KEY);
     if (saved) {
       this.arenaState = JSON.parse(saved);
-      //this.arenaWins = this.arenaState.wins || 0;
-      //this.arenaLosses = this.arenaState.losses || 0;
     } else {
       this.resetArenaState();
     }
@@ -5148,8 +4622,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
 
   saveArenaState() {
     if (this.arenaState) {
-      //this.arenaState.wins = this.arenaWins;
-      //this.arenaState.losses = this.arenaLosses;
       localStorage.setItem(this.ARENA_STATE_KEY, JSON.stringify(this.arenaState));
     }
   }
@@ -5180,29 +4652,22 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
   }
 
   deckValid(): boolean {
-       // console.log('a');
     if (!this.selectedPlayerDeck || !this.playerDeckMode) return false;
     const deck = this.selectedPlayerDeck;
     const source = this.playerDeckMode;
     if (this.isStoryMode) {
-        //console.log('b');
       if (source === 'starter') {
-        //console.log('c');
         const currDeck = this.starterDecks.find(s => s.name === deck.name);
         if (!currDeck) return false;
         if (this.unlockedAll) return true;
         if (currDeck.locked) return false;
       } else if (source === 'custom') {
-        //console.log('1');
         const currDeck = this.customDecks.find(s => s.name === deck.name);
         if (this.unlockedAll) return true;
-        //console.log('2');
         if (!currDeck) return false;
-        //console.log('3');
         if (!currDeck.deckCode) return false;
         const deckInfo = this.deckService.decodeDeckCode(currDeck.deckCode);
         if (!deckInfo) return false;
-        //console.log('4');
         let allUnlocked = true;
         deckInfo.forEach(c => {
           if (c.card.deckCodeId && !this.unlockedCards.includes(c.card.deckCodeId)) {
@@ -5220,8 +4685,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
 
   submitCheat() {
     const code = this.cheatCodeInput.trim().toLowerCase().replace(/\s/g, '');
-
-    // Example cheat handling
     if (code === 'showmethemoney') {
       this.activateCheat('Triple Rewards');
     } else if (code === 'thereisnocowlevel') {
@@ -5286,10 +4749,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
 
   quitGame() {
     this.quitTESL();
-    /*// Exit game or close window
-    if (confirm('Quit game?')) {
-      window.close();  // or redirect to login/home
-    }*/
   }
 
   backToMenu() {
@@ -5307,7 +4766,6 @@ private getRankedOpponentDeck(tier: number, stars: number): DeckOption | null{
   }
 
   quitTESL() {
-    //this.router.navigate(['/'], { replaceUrl: true });
     window.location.href = '/';
   }
 

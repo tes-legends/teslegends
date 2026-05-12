@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, APP_BOOTSTRAP_LISTENER } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Card, DeckEntry, DeckOption, DeckService } from '../tesl/deck.service'; // adjust path
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Inject } from '@angular/core';
+import { Card, DeckEntry, DeckOption, DeckService } from '../tesl/deck.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UtilityService } from '../tesl/utility.service';
 
@@ -9,7 +8,7 @@ export interface ArenaOpponent {
   avatar: string;
   deckCode: string;
   elo: number;
-  scenario?: any;           // from your scenarios array
+  scenario?: any;
   isBoss?: boolean;
   beaten?: boolean;
 }
@@ -190,7 +189,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
   private loadSavedState() {
     const saved = localStorage.getItem(this.STORAGE_KEY);
     if (!saved) return;
-
     try {
       const state: ArenaSaveState = JSON.parse(saved);
       console.log(state);
@@ -206,38 +204,25 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       this.bossOpponent = state.bossOpponent;
       this.arenaRewardSets = state.rewardSets || [];
       this.currentRewardIndex = state.rewardIndex ?? -1;
-
-      //console.log('draft deck is ...',this.draftDeck);
-
       if (this.selectedClass) {
         this.selectArenaClass(this.selectedClass.name);
         this.avatarUrl = `/assets/tesl/images/avatars/LG-avatar-${this.selectedClass.race}_${state.avatarNumber}.webp`;
-
-        // If draft was in progress, regenerate current picks if needed
         if (this.picksRemaining > 0 && this.currentPicks.length === 0) {
           this.generateNextPicks();
         }
-
         this.draftDeck.forEach(c => {
           this.addCardToList(c);
         });
       }
-
-      
     } catch (e) {
       console.warn('Failed to load arena draft state', e);
       localStorage.removeItem(this.STORAGE_KEY);
     }
   }
 
-  private clearSavedState() {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
   getAttributeClass(attr: string[]): string {
     if (!attr) return 'attr-neutral';
     if (attr.length > 1) return 'attr-multi';
-
     switch (attr[0]) {
         case 'R': return 'attr-red';
         case 'Y': return 'attr-yellow';
@@ -272,41 +257,27 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
   grantArenaRewards(wins: number) {
     this.arenaRewardSets = [];
     this.currentRewardIndex = 0;
-
     const allCards = this.deckService.getMostCards().filter(c => 
       !this.unlockedCards.includes(c.deckCodeId!)
     );
-
     const draftAttrs = this.selectedClass.attributes; // we'll define this
-
     const usedIds = new Set<string>();
-
     const milestones = [0, 3, 6, 9];
-
-    // Check for daily double reward
     const todayStr = this.getCurrentDateYYYYMMDD();
     console.log(`today is ${todayStr}`);
     let lastRewardStr = localStorage.getItem(this.LAST_REWARD_KEY);
     console.log(`last reward date is ${lastRewardStr}`);
-
     let daysSinceLastReward = 0;
-
     if (lastRewardStr) {
       daysSinceLastReward = this.getDaysBetween(lastRewardStr, todayStr);
       console.log(`days since last reward is ${daysSinceLastReward}`);
     }
-
     let isDoubleDay = false;
-
     if (!lastRewardStr || lastRewardStr !== todayStr) {
       isDoubleDay = true;
-      // Update last reward date
       if (daysSinceLastReward > 1) {
         const bankedDays = Math.min(daysSinceLastReward, this.MAX_BANK_DAYS-1);
-
-        // Move last reward date forward so remaining bank is preserved
         const newLastReward = this.addDays(todayStr, -bankedDays+1);
-
         localStorage.setItem(this.LAST_REWARD_KEY, newLastReward);
         console.log(`setting reward key to ${newLastReward}`);
       } else {
@@ -348,7 +319,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     this.saveState();
   }
 
-  // Helper to get current date as YYYYMMDD
   private getCurrentDateYYYYMMDD(): string {
     const now = new Date();
     const year = now.getFullYear();
@@ -368,7 +338,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       parseInt(date2.substring(4,6)) - 1,
       parseInt(date2.substring(6,8))
     );
-
     const diffTime = Math.abs(d2.getTime() - d1.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // days
   }
@@ -379,13 +348,10 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       parseInt(dateStr.substring(4, 6)) - 1,
       parseInt(dateStr.substring(6, 8))
     );
-
     d.setDate(d.getDate() + days);
-
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
-
     return `${year}${month}${day}`;
   }
 
@@ -423,9 +389,7 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 
   private getEloAdjustmentFactor(): number {
     const elo = this.arenaElo;
-
     let factor = (elo - 700 - (elo > 1400 ? (elo - 1400) / 2 : 0)) / 700;
-
     return factor;
   }
 
@@ -433,15 +397,12 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     const set: Card[] = [];
     const rarityOrder = ['1Common', '2Rare', '3Epic', '4Legendary'];
     const rarityChances = this.generateRarityPools(wins);
-
     const roll = Math.random();
     let selectedRarity = '1Common';
     if (legendary) {
       selectedRarity = '4Legendary';
     } else {
       let cumulative = 0;
-
-      // Safely calculate rarity
       for (const [rarity, chance] of Object.entries(rarityChances)) {
         cumulative += chance as number;   // explicit cast
         if (roll <= cumulative) {
@@ -449,68 +410,44 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
           break;
         }
       }
-
       const factor = this.getEloAdjustmentFactor();
-
-      // Skip upward bonus for 0-win rewards
       const allowUpgrade = !(wins === 0 && factor > 1);
-
       const roll2 = Math.random();
-
       let rarityIndex = rarityOrder.indexOf(selectedRarity);
-
       if (factor < 1) {
-        // Chance to DOWNGRADE
         const downgradeChance = 1 - factor;
-
         if (roll2 < downgradeChance && rarityIndex > 0) {
           rarityIndex -= 1;
         }
-
       } else if (factor > 1 && allowUpgrade) {
-        // Chance to UPGRADE
         const upgradeChance = factor - 1;
-
         if (roll2 < upgradeChance && rarityIndex < rarityOrder.length - 1) {
           rarityIndex += 1;
         }
       }
-
       selectedRarity = rarityOrder[rarityIndex];
     }
-
     let rarityIndex = rarityOrder.indexOf(selectedRarity);
     let candidates: Card[] = [];
-
-    // Step DOWN until we find available cards
     while (rarityIndex >= 0) {
       candidates = allCards.filter(c => 
         c.rarity === rarityOrder[rarityIndex] && 
         !usedIds.has(c.id)
       );
-
       if (candidates.length > 0) {
         break;
       }
-
       rarityIndex--;
     }
     if (rarityIndex >= 0) {
       selectedRarity = rarityOrder[rarityIndex];
     } else {
-      return []; // no cards available at all
+      return [];
     }
-
     for (let i = 0; i < 3; i++) {
-
-      // Get candidates for this rarity
       candidates = candidates.filter(c => !usedIds.has(c.id));
-
       if (candidates.length === 0) break;
-
       let pool = candidates;
-
-      // Prefer cards matching draft class attributes (60% chance)
       if (Math.random() < 0.6 && !legendary) {
         const matching = candidates.filter(card => 
           card.attributes.some(attr => draftAttrs.includes(attr))
@@ -523,7 +460,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       set.push(chosen);
       usedIds.add(chosen.id);          
     }
-
     return set;
   }
 
@@ -556,7 +492,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     }
   }
 
-
 	startNewRun() {
 		this.selectedClass = null;
     this.wins = 0;
@@ -565,13 +500,9 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     this.currentRewardIndex = -1;
     this.draftDeckList = [];
     this.draftDeck = [];
-
-		//localStorage.setItem('TESL_arena_wins','0');
-		//localStorage.setItem('TESL_arena_losses','0');
 		this.getThreeClasses();
 	}
 
-  // === CLASS SELECTION ===
   selectClass(cls: any) {
     this.selectedClass = cls;
 		this.selectArenaClass(cls.name);
@@ -618,7 +549,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 		this.saveState();
 	}	
 
-  // === DRAFTING ===
   startDraft() {
     this.draftDeck = [];
     this.picksRemaining = 30;
@@ -635,7 +565,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       this.finishDraft();
       return;
     }
-
     this.currentPicks = this.getSetOfThree(); // your existing method
   }
 
@@ -669,8 +598,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     const pickTier = this.getTier(cardsRarity);
     let cardsBucket = cardsRarity.filter(c => c.tier === pickTier);
     const pickOne = this.utilityService.random(cardsBucket);
-    //const pickOne = this.utilityService.random(cardsRarity);
-    //let cardsBucket = cardsRarity.filter(c => c.tier === pickOne.tier);
     if (cardsBucket.length < 3) {
       let bucketTiers = [pickOne.tier];
       if (pickOne.tier === 'S') bucketTiers.push('A');
@@ -707,12 +634,8 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     }
     tierWeights = tierWeights.map(t => {
       const index = tierOrder.indexOf(t.tier);
-      const strength = 1 - (index / (tierOrder.length - 1)); 
-      // S = 1, E = 0
-
-      // Shift weight based on bias
+      const strength = 1 - (index / (tierOrder.length - 1));
       const adjusted = t.weight * (1 - bias * (strength - 0.5) * 2);
-
       return {
         tier: t.tier,
         weight: Math.max(0.01, adjusted) // prevent zero
@@ -724,13 +647,11 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
   private weightedPick(weights: { tier: string, weight: number }[]) {
     const total = weights.reduce((sum, w) => sum + w.weight, 0);
     let roll = Math.random() * total;
-
     for (const w of weights) {
       if (roll < w.weight) return w.tier;
       roll -= w.weight;
     }
-
-    return weights[0].tier; // fallback
+    return weights[0].tier;
   }
 
   pickCard(card: Card) {
@@ -744,14 +665,11 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 
   addCardToList(card: Card) {
     const existing = this.draftDeckList.find(e => e.card.id === card.id);
-
     if (existing) {
       existing.count++;
     } else {
       this.draftDeckList.push({ card: {...card}, count: 1 });
     }
-
-    // Sort deck by cost
     this.draftDeckList.sort((a, b) => (a.card.cost ?? 0) - (b.card.cost ?? 0));
   }
 
@@ -772,17 +690,12 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 		if (index > 7) index = 7;
     newCurve[index]++;
 		if (newCurve[index] >= this.maxManaCurve) this.maxManaCurve = newCurve[index]+1;
-
 		this.manaCurve = newCurve;
-
     this.typeCounts[card.type] = (this.typeCounts[card.type] || 0) + 1;
-
     if (card.prophecy) this.typeCounts['Prophecy']++;
-
     card.attributes.forEach(attr => {
       this.attributeCounts[attr] = (this.attributeCounts[attr] || 0) + 1;
     });
-		//console.log(this.manaCurve);
   }
 
 	trackByIndex(index: number): number {
@@ -798,8 +711,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     this.loadArenaOpponents(); // show opponents after draft
 		this.saveState();
   }
-
-	
 
 	findSlotOpponent(slot: number, boss: boolean = false): ArenaOpponent {
 		const roll = Math.random();
@@ -817,14 +728,12 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 			arenaScenario = this.utilityService.random(candidates);
 			eloAdjust = arenaScenario.eloModifier;
 		}
-
     // ELO-based magicka disadvantage scaling
     if (this.arenaElo > 1600) {
       const chance = Math.min(1, (this.arenaElo - 1600) / 400);
       if (Math.random() < chance) {
         console.log('Applying magicka disadvantage scenario due to high ELO:', this.arenaElo, ' for slot: ', slot);
         if (!arenaScenario) {
-          // Create new scenario if none exists
           arenaScenario = {
             name: "Elo Magicka Disadvantage",
             description: "Your opponent gains a magicka advantage due to your high rank.",
@@ -834,7 +743,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
             maxMagicka: 1
           };
         } else {
-          // Modify existing scenario (clone to avoid mutating base data)
           arenaScenario = { ...arenaScenario };
           if (arenaScenario.maxMagicka) {
             arenaScenario.maxMagicka += 1;
@@ -844,7 +752,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
         }
       }
     }
-
 		console.log(arenaType, arenaScenario);
 		let oppCandidates = this.arenaDecks.filter(d => 
 			d.elo! >= (this.arenaElo-eloAdjust+param.minVar) && 
@@ -867,29 +774,22 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
 
 	getBarHeight(count: number): number {
 		if (count <= 0) return 0;
-
-		//const maxCount = Math.max(...this.manaCurve) + 1;
 		return Math.round((count / this.maxManaCurve) * 100);
 	}
 
-	// Helper for Object.keys in template
 	getAttributeKeys(): string[] {
 		return Object.keys(this.attributeCounts);
 	}
 
-  // === OPPONENTS ===
   loadArenaOpponents() {
     this.arenaOpponents = [];
-    // First 8 follow your table
 		for (let i = 0; i < 8; i++) {
 			this.arenaOpponents.push(this.findSlotOpponent(i));
 		}
 		this.arenaOpponents = this.utilityService.shuffle(this.arenaOpponents);
 		this.bossOpponent = this.findSlotOpponent(8,true);
-
     const supportOptions = ['moonstone-relic','ebony-relic','malachite-relic','iron-relic','quicksilver-relic','corundum-relic'];
     const chosenOption = this.utilityService.random(supportOptions);
-    //this.bossOpponent.scenario.support = [chosenOption];
     this.bossOpponent.scenario = {
         "name": `Boss - ${chosenOption}`,
         "description": `Boss starts with ${chosenOption} relic.`,
@@ -946,8 +846,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
       alert('Already beaten this opponent.');
       return;
     }
-    // Start arena match with this opponent
-    // You can close dialog and start game with scenario applied
     this.dialogRef.close({
       mode: 'arena',
       opponent: opponent,
@@ -955,7 +853,6 @@ export class ArenaDraftComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Close without playing
   close() {
     this.dialogRef.close({ cancelled: true });
   }

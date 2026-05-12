@@ -27,6 +27,7 @@ export interface RankedSaveState {
     styleUrls: ['./ranked.component.scss'],
     standalone: false
 })
+
 export class RankedComponent implements OnInit, AfterViewInit {
 
   @ViewChild('firstFocusable') firstFocusable!: ElementRef;
@@ -53,7 +54,10 @@ export class RankedComponent implements OnInit, AfterViewInit {
   private setFolders: Record<string, string> = {
     'Core Set': 'core_set',
     'Dark Brotherhood': 'brotherhood',
+    'Clockwork City': 'clockwork',
     'Heroes of Skyrim': 'heroes_of_skyrim',
+    'Houses of Morrowind': 'morrowind',
+    'Forgotten Hero Collection': 'forgotten',
     'Madhouse Collection': 'madhouse',
     'Monthly Reward': 'reward_set',
     'Story Set': 'story_set',
@@ -67,19 +71,18 @@ export class RankedComponent implements OnInit, AfterViewInit {
 
   lastRewardStars: { [key: string]: number[] } = {}; // e.g. "Gold": [1,3,5]
 
-  // Reward system (exactly like Arena)
   arenaRewardSets: Card[][] = [];
   currentRewardIndex = -1;
 
   totalWins = 0;
   totalLosses = 0;
 
-  availableDecks: DeckOption[] = [];           // will contain both starter + custom decks
+  availableDecks: DeckOption[] = [];
   selectedDeck: DeckOption | null = null;
-  inputDeck: DeckOption | null = null;              // for pasting deck codes directly in ranked mode
+  inputDeck: DeckOption | null = null;
 
   customSets: boolean = true;
-  unlockedCards: string[] = [];           // card IDs that are unlocked
+  unlockedCards: string[] = [];
   tripleRewards: boolean = false;
 
   private readonly CUSTOM_SETS = 'TESL_CustomSets';
@@ -107,7 +110,6 @@ export class RankedComponent implements OnInit, AfterViewInit {
     if (storedCustomToggle !== null) {
       this.customSets = storedCustomToggle === 'true';
     }
-    // Check if we have a ranked result from the game
     const rankedResult = localStorage.getItem(this.RANKED_RESULT_KEY);
     if (rankedResult) {
       localStorage.removeItem(this.RANKED_RESULT_KEY);
@@ -141,7 +143,6 @@ export class RankedComponent implements OnInit, AfterViewInit {
   private checkMonthlyReset() {
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-
     const lastReset = localStorage.getItem(this.LAST_RESET_KEY);
     console.log(`last reset: ${lastReset}, current month: ${currentMonth}`);
     if (!lastReset || lastReset !== currentMonth) {
@@ -195,7 +196,6 @@ export class RankedComponent implements OnInit, AfterViewInit {
   private loadRankedState() {
     const saved = localStorage.getItem(this.STORAGE_KEY);
     if (!saved) return;
-
     try {
       const state: RankedSaveState = JSON.parse(saved);
       this.currentTierIndex = state.currentTier ?? 0;
@@ -219,21 +219,17 @@ export class RankedComponent implements OnInit, AfterViewInit {
     return this.currentTierIndex === 5;
   }
 
-  // Called after a match ends
   processMatchResult(isWin: boolean) {
     if (isWin) {
-      this.totalWins++;
-      
+      this.totalWins++;      
       if (this.isLegendary) {
         this.grantLegendaryReward();
       } else {
         this.currentStars++;
-
         if (this.currentStars > 5) {
           this.currentStars = 1;
           this.currentTierIndex = Math.min(5, this.currentTierIndex + 1);
         }
-
         this.checkAndGrantStarReward();
       }
     } else {
@@ -242,37 +238,28 @@ export class RankedComponent implements OnInit, AfterViewInit {
         this.currentStars--;
       }
     }
-
     this.saveRankedState();
   }
 
   private loadAvailableDecks() {
-    // Concatenate starter decks + custom decks (from your existing logic)
     const starterDecks = this.data?.starterDecks || [];
-    const customDecks = this.data?.customDecks || [];
-    
+    const customDecks = this.data?.customDecks || [];    
     this.availableDecks = [...starterDecks, ...customDecks]
       .filter(deck => deck && (deck.cards?.length > 0 || deck.deckCode));
-
-    // Auto-select first deck if available
     if (this.availableDecks.length > 0) {
       this.selectedDeck = this.availableDecks
         .find(d => d.source === this.inputDeck?.source && 
           d.name === this.inputDeck?.name) || this.availableDecks[0];
-      //this.selectedDeck = this.availableDecks[0];
     }
   }
 
-  // Add this method
   selectDeck(deck: any) {
     this.selectedDeck = deck;
     this.expandedDeckList = false;
   }
 
-  // Add this to close() when starting match
   startRankedMatch() {
     if (!this.selectedDeck) return;
-
     this.dialogRef.close({
       mode: 'ranked',
       result: 'start',
@@ -287,9 +274,7 @@ export class RankedComponent implements OnInit, AfterViewInit {
     if (!this.lastRewardStars[tierName]) {
       this.lastRewardStars[tierName] = [];
     }
-
     const rewardedStars = this.lastRewardStars[tierName];
-
     // First time reaching this star in this tier
     if (!rewardedStars.includes(this.currentStars)) {
       rewardedStars.push(this.currentStars);
@@ -303,24 +288,20 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const star = this.currentStars;
     this.arenaRewardSets = [];
     this.currentRewardIndex = 0;
-
     const allCards = this.getEligibleCards();
     const usedIds = new Set<string>();
     let numSets = tierIndex >= 4 ? 2 : 1;   // Diamond+ gets 2 reward sets
     if (star === 1 && tierIndex > 0) numSets *= 3;
     if (this.tripleRewards) numSets *= 3;
-
     for (let i = 0; i < numSets; i++) {
       const set = this.generateRankedRewardSet(allCards, usedIds);
       this.arenaRewardSets.push(set);
     }
-
     while (this.currentRewardIndex < this.arenaRewardSets.length && 
       this.arenaRewardSets[this.currentRewardIndex].length === 0) {
         console.log(`no available rewards for index ${this.currentRewardIndex}. go next`);
         this.currentRewardIndex++;
     }
-
     this.saveRankedState();
   }
 
@@ -329,10 +310,8 @@ export class RankedComponent implements OnInit, AfterViewInit {
     const set: Card[] = [];
     const rarityChances = this.getRarityChancesForTier(tierIndex);
     const rarityOrder = ['1Common', '2Rare', '3Epic', '4Legendary'];
-
     let roll = Math.random();
     let selectedRarity = '1Common';
-
     let cum = 0;
     for (const [rarity, chance] of Object.entries(rarityChances)) {
       cum += chance;
@@ -348,11 +327,9 @@ export class RankedComponent implements OnInit, AfterViewInit {
         c.rarity === rarityOrder[rarityIndex] && 
         !usedIds.has(c.id)
       );
-
       if (candidates.length > 0) {
         break;
       }
-
       rarityIndex--;
     }
     if (rarityIndex >= 0) {
@@ -360,7 +337,6 @@ export class RankedComponent implements OnInit, AfterViewInit {
     } else {
       return []; // no cards available at all
     }
-
     for (let i = 0; i < 3; i++) {
       candidates = candidates.filter(c => !usedIds.has(c.id));
       if (candidates.length === 0) break;
@@ -377,14 +353,10 @@ export class RankedComponent implements OnInit, AfterViewInit {
     if (tier === 3) return { '4Legendary': 0.05,'3Epic': 0.2, '2Rare': 0.4, '1Common': 0.35 }; // Platinum
     if (tier === 2) return { '4Legendary': 0.025, '3Epic': 0.1, '2Rare': 0.4, '1Common': 0.475 }; // Gold
     if (tier === 1) return { '4Legendary': 0.01, '3Epic': 0.05, '2Rare': 0.3, '1Common': 0.64 }; // Silver
-    return { '2Rare': 0.2, '1Common': 0.8 }; // lower tiers
+    return { '2Rare': 0.2, '1Common': 0.8 };
   }
 
   private getEligibleCards(): Card[] {
-    /*return this.deckService.getAllCards().filter(c =>
-      c.deckCodeId && c.set !== 'Story Set' && !this.unlockedCards.includes(c.deckCodeId) &&
-      (this.customSets || c.set !== 'Custom Set')
-    );*/
     return this.deckService.getMostCards().filter(c => 
       !this.unlockedCards.includes(c.deckCodeId!)
     );
@@ -405,8 +377,6 @@ export class RankedComponent implements OnInit, AfterViewInit {
 
   // ====================== REWARD PICKING ======================
   pickReward(card: Card) {
-    // Unlock the card
-    // (You can expand this with your existing unlock logic)
     console.log(`Ranked reward picked: ${card.name}`);
     this.unlockedCards.push(card.deckCodeId!);
     this.saveUnlockedCards();

@@ -4,7 +4,7 @@
     [volume]="musicVolume"
     (ended)="onMusicEnded()">
   </audio>
-  <!-- Main Menu (shown when isMainMenu = true) -->
+  <!-- Main Menu -->
   @if (isMainMenu) {
     <div class="main-menu">
       <img
@@ -24,7 +24,6 @@
               [class.disabled]="option.disabled"
               (click)="option.action()"
               [disabled]="option.disabled">
-              <!-- Icon + Text -->
               @if (option.icon) {
                 <img
                   [src]="option.icon"
@@ -33,7 +32,6 @@
                   >
               }
               <span class="menu-text">{{ option.name }}</span>
-              <!-- Extra info (optional) -->
               @if (option.info) {
                 <span
                   class="menu-info">
@@ -47,7 +45,7 @@
     </div>
   }
 
-  <!-- Story Mode Treeview -->
+  <!-- Story Mode -->
   @if (!isMainMenu && !currentVideo && isStoryMode && !game.gameRunning) {
     <div class="story-treeview">
       <img
@@ -133,6 +131,7 @@
     </div>
   }
 
+  <!-- Hint overlay in game -->
   @if (currentHintMessage) {
     <div class="staging-overlay">
       <div class="staging-text">
@@ -141,8 +140,9 @@
     </div>
   }
 
+  <!-- Game Board -->
   @if (!isMainMenu && showGameBoard && (game.gameRunning || !isStoryMode)) {
-    <div class="game-board-container"
+      <div class="game-board-container"
       [class.desktop-layout]="isDesktopMode">
       <!-- Prophecy flash overlay -->
       @if (showProphecyFlash) {
@@ -152,6 +152,7 @@
           PROPHECY!
         </div>
       }
+      <!-- CPU spinner -->
       @if (cpuThinking) {
         <div class="cpu-overlay">
           <div class="spinner"></div>
@@ -161,7 +162,7 @@
       <!-- Opponent Area (top) -->
       <div class="player-area opponent">
         <div class="opponent-info">
-          <!-- Support count box (left) -->
+          <!-- Support button -->
           <div class="magicka opponent-support"
             (click)="toggleOpponentSupportBar()"
             [class.highlight]="showOpponent && hasAvailableSupportActivations(game)">
@@ -170,6 +171,7 @@
               <span class="current">{{ opponentSupportCount }}</span>
             </div>
           </div>
+          <!-- History button -->
           @if (!showOpponent) {
             <button
               class="history-btn"
@@ -178,6 +180,7 @@
               📜
             </button>
           }
+          <!-- Magicka display -->
           @if (showOpponent) {
             <div class="magicka" (click)="toggleMagickaOverlay()">
               <div class="magicka-icon">
@@ -204,7 +207,7 @@
               }
             </div>
           }
-          <!-- Hero portrait (center) -->
+          <!-- Hero portrait -->
           <div class="hero-portrait opponent-hero"
             [class.targetable]="isHeroTargetable(game,true)"
             [class.warded]="game.opponent.hasWard"
@@ -222,6 +225,7 @@
                 </div>
               }
             </div>
+            <!-- Attribute icons -->
             <div class="deck-attributes">
               @for (attr of getDeckAttributes('opponent') || []; track attr) {
                 <img
@@ -233,6 +237,7 @@
               }
             </div>
           </div>
+          <!-- End Turn/Skip button-->
           @if (showOpponent) {
             <button
               class="end-turn-btn"
@@ -242,7 +247,7 @@
               {{ isSummonTargeting ? '→' : cancelButtonActive || isAttackStaging ? '✕' : game.gameRunning ? '■' : '▶'}}
             </button>
           }
-          <!-- Hand count (right of avatar) -->
+          <!-- Hand count -->
           @if (!showOpponent && !game.betrayAvailable) {
             <div class="hand-count">
               <div class="hand-icon">
@@ -252,6 +257,7 @@
               </div>
             </div>
           }
+          <!-- Betray button -->
           @if (!showOpponent && game.betrayAvailable) {
             <div class="hand-count">
               <button
@@ -263,7 +269,7 @@
               </button>
             </div>
           }
-          <!-- Hamburger / Settings button -->
+          <!-- Settings button -->
           <button
             class="settings-btn"
             (click)="toggleSettingsOverlay()"
@@ -272,6 +278,7 @@
             ☰
           </button>
         </div>
+        <!-- Opponent hand -->
         @if (showOpponent) {
           <div class="hand player-hand"
             [attr.data-card-count]="game.opponent.hand.length"
@@ -305,7 +312,7 @@
           </div>
         }
       </div>
-      <!-- Board: lanes stacked top-to-bottom -->
+      <!-- Board: lanes (stacked top-to-bottom in mobile layout) -->
       <div class="board"
         [class.desktop-layout]="isDesktopMode"
         (click)="onBoardBackgroundClick()">
@@ -319,10 +326,10 @@
           <!-- Lane icon (top-left) -->
           <div class="lane-icon">
             <img [src]="getLaneIconImage(game.laneTypes[0])"
-              draggable="false" alt="Shadow Lane" class="lane-icon-img"
+              draggable="false" alt="Field Lane" class="lane-icon-img"
               (click)="showLaneHelp(0)">
           </div>
-          <!-- Opponent's shadow lane cards -->
+          <!-- Opponent's field lane cards -->
           <div class="lane opponent-lane"
             [class.targetable]="isLaneTargetable(game,0,true,false)"
             [class.full-targetable]="isLaneTargetable(game,0,true,true)"
@@ -363,7 +370,7 @@
               </div>
             }
           </div>
-          <!-- Player's shadow lane cards -->
+          <!-- Player's field lane cards -->
           <div class="lane player-lane"
             [class.targetable]="isLaneTargetable(game,0,false,false)"
             [class.full-targetable]="isLaneTargetable(game,0,false,true)"
@@ -391,7 +398,6 @@
                 (enlarge)="enlargeCard($event)"
               ></app-tesl-card>
             }
-            <!-- NEW: Target overlay -->
             @if (!showOpponent && showLaneHighlights && game.laneTypes[0] !== 'Disabled') {
               <div class="target-overlay"
                 [class.valid]="!isLaneFull(game,0)"
@@ -419,7 +425,7 @@
               draggable="false" alt="Regular Lane" class="lane-icon-img"
               (click)="showLaneHelp(1)">
           </div>
-          <!-- Opponent's regular lane cards -->
+          <!-- Opponent's shadow lane cards -->
           <div class="lane opponent-lane"
             [class.targetable]="isLaneTargetable(game,1,true,false)"
             [class.full-targetable]="isLaneTargetable(game,1,true,true)"
@@ -488,7 +494,6 @@
                 (enlarge)="enlargeCard($event)"
               ></app-tesl-card>
             }
-            <!-- NEW: Target overlay -->
             @if (showLaneHighlights && game.laneTypes[1] !== 'Disabled') {
               <div class="target-overlay"
                 [class.valid]="!isLaneFull(game,1)"
@@ -506,7 +511,7 @@
       </div>
       <!-- Player Area (bottom) -->
       <div class="player-area player">
-        <!-- Support bar overlay for opponent -->
+        <!-- Support overlay for opponent -->
         @if (showOpponentSupportBar) {
           <div class="support-bar-overlay">
             <div class="support-bar">
@@ -534,8 +539,6 @@
                   ></app-tesl-card>
                 }
               </div>
-              <!--
-              (click)="onSupportBarClick(card)"-->
               @if (hasRingOfMagicka(game,'opponent')) {
                 <div class="ring-tooltip">
                   Second player starts with Ring of Magicka (+1 magicka per turn)
@@ -544,7 +547,7 @@
             </div>
           </div>
         }
-        <!-- Support bar overlay for player -->
+        <!-- Support overlay for player -->
         @if (showPlayerSupportBar) {
           <div class="support-bar-overlay">
             <div class="support-bar">
@@ -581,6 +584,7 @@
             </div>
           </div>
         }
+        <!-- Player hand -->
         @if (!showOpponent) {
           <div class="hand player-hand"
             [attr.data-card-count]="game.player.hand.length"
@@ -615,17 +619,16 @@
         }
         <div class="player-info">
           <div class="player-row">
-            <!-- Support count box (left) -->
+            <!-- Support button -->
             <div class="magicka player-support"
               (click)="togglePlayerSupportBar()"
               [class.highlight]="!showOpponent && hasAvailableSupportActivations(game)">
-              <!--<span class="support-icon">🛡️</span>
-              <span class="support-count">{{ playerSupportCount }}</span>-->
               <div class="magicka-icon">
                 <img src="/assets/tesl/images/icons/icon_gray.webp" draggable="false" alt="Supports" class="magicka-bg">
                 <span class="current">{{ playerSupportCount }}</span>
               </div>
             </div>
+            <!-- History button -->
             @if (showOpponent) {
               <button
                 class="history-btn"
@@ -634,6 +637,7 @@
                 📜
               </button>
             }
+            <!-- Magicka display -->
             @if (!showOpponent) {
               <div class="magicka" (click)="toggleMagickaOverlay()">
                 <div class="magicka-icon">
@@ -660,6 +664,7 @@
                 }
               </div>
             }
+            <!-- Player Hero Portrait -->
             <div class="hero-portrait player-hero"
               [class.targetable]="isHeroTargetable(game,false)"
               [class.warded]="game.player.hasWard"
@@ -676,6 +681,7 @@
                   </div>
                 }
               </div>
+              <!-- attribute icons -->
               <div class="deck-attributes">
                 @for (attr of getDeckAttributes('player') || []; track attr) {
                   <img
@@ -687,6 +693,7 @@
                 }
               </div>
             </div>
+            <!-- End Turn/Skip/Cancel button -->
             @if (!showOpponent) {
               <button
                 class="end-turn-btn"
@@ -696,7 +703,7 @@
                 {{ isSummonTargeting ? '→' : cancelButtonActive || isAttackStaging ? '✕' : game.gameRunning ? '■' : '▶'}}
               </button>
             }
-            <!-- Hand count (right of avatar) -->
+            <!-- Hand count -->
             @if (showOpponent && !game.betrayAvailable) {
               <div class="hand-count">
                 <div class="hand-icon">
@@ -706,6 +713,7 @@
                 </div>
               </div>
             }
+            <!-- Betray button -->
             @if (showOpponent && game.betrayAvailable) {
             <div class="hand-count">
               <button
@@ -716,21 +724,22 @@
                 x2
               </button>
             </div>
-          }
+            }
+            <!-- Discard button -->
             <div class="discard-box player" (click)="openDiscard()">
               <span class="discard-icon">💀</span>
             </div>
           </div>
         </div>
       </div>
-      <!-- Burn hint (floating text) -->
+      <!-- Burn overlay (for overdraw) -->
       @if (burnHintVisible && currentBurnMessage) {
         <div
           class="burn-hint"
-    [ngClass]="{
-      'top-center': currentBurnIsOpponent,
-      'bottom-center': !currentBurnIsOpponent
-    }">
+          [ngClass]="{
+            'top-center': currentBurnIsOpponent,
+            'bottom-center': !currentBurnIsOpponent
+          }">
           <div class="burn-content">
             <!-- Card preview (small image) -->
             @if (lastBurnedCard) {
@@ -854,7 +863,7 @@
       @if (mulliganActive) {
         <div class="mulligan-modal">
           <div class="mulligan-content">
-            <!-- New: Who goes first/second -->
+            <!-- Who goes first/second -->
             @if (!game.cpuPlaying && mulliganPhase === 'first') {
               <div class="turn-order-info">
                 @if (game.firstPlayer === 'player') {
@@ -897,8 +906,6 @@
                 }
               </div>
             }
-            <!--<h3>Mulligan</h3>-->
-            <!--<p>Choose cards to return to your deck (red X = return)</p>-->
             <div class="mulligan-cards">
               @for (card of mulliganCards; track card) {
                 <div class="mulligan-card-wrapper">
@@ -919,7 +926,7 @@
           </div>
         </div>
       }
-      <!-- Prophecy offer popup -->
+      <!-- Prophecy modal (shown when drawing prophecy on rune break) -->
       @if (isProphecyStaging && !isTargeting && !isSummonTargeting && game.stagedProphecy) {
         <div class="prophecy-modal">
           <div class="prophecy-content">
@@ -932,7 +939,7 @@
           </div>
         </div>
       }
-      <!-- Choice Modal -->
+      <!-- Choice Modal (for 'choice' card effects)-->
       @if (showChoiceModal) {
         <div class="choice-modal">
           <div class="choice-content">
@@ -962,7 +969,7 @@
           </div>
         </div>
       }
-      <!-- Fabricate Overlay-->
+      <!-- Fabricate Overlay (step 1)-->
       @if (showFabricateOverlay && selectedFabricateCreatureIndex < 0) {
         <div class="reveal-overlay">
           <div class="reveal-content">
@@ -990,6 +997,7 @@
           </div>          
         </div>
       }
+      <!-- Fabricate overlay (step 2)-->
       @if (showFabricateOverlay && selectedFabricateCreatureIndex >= 0) {
         <div class="choice-modal">
           <div class="choice-content">
@@ -1195,7 +1203,6 @@
         <div class="discard-modal">
           <div class="discard-modal-content">
             <div class="modal-header">
-              <!-- Toggle buttons instead of h3 -->
               <div class="view-toggle">
                 <button
                   class="view-btn"
@@ -1274,6 +1281,7 @@
     </div>
   }
 
+  <!-- Help Overlay -->
   @if (isHelpVisible) {
     <div class="help-modal-backdrop" (click)="closeHelpModal()">
       <div class="help-modal-content" (click)="$event.stopPropagation()">
@@ -1317,6 +1325,7 @@
     </div>
   }
 
+  <!-- Deck unlock display (story rewards)-->
   @if (unlockOverlayVisible) {
     <div class="game-over-modal">
       <div class="game-over-modal-content">
@@ -1337,7 +1346,6 @@
           <h3>Game Setup</h3>
           <button class="settings-close-btn" (click)="toggleSettingsOverlay()">×</button>
         </div>
-        <!-- Replace the old button -->
         <div class="mode-toggle-grid">
           <div class="mode-toggle-container">
             <button
@@ -1423,8 +1431,6 @@
             </label>
           </div>
         }
-        <!-- Deck Selection -->
-        <!-- Deck Selection -->
         <!-- Deck Selection -->
         <div class="deck-selection">
           <!-- Top / Opponent Deck -->
@@ -1830,8 +1836,7 @@
                 [(ngModel)]="useMorrowind"
                 (change)="onMorrowindToggle()"
                 >
-            </label>
-            <!--<p class="settings-desc">Brief instructions appear when staging cards or summons</p>-->
+            </label>            
           </div>
         }
         <!-- Concede Button -->
@@ -1849,24 +1854,18 @@
             </button>
           </div>
         }
-        <!-- toggle cpu/2p button-->
-        <!--<button class="settings-close-bottom-btn" (click)="toggleCPU()">
-        {{ cpuPlaying ? 'CPU': '2P'}}
-      </button>-->
-      <!-- Close button at bottom for mobile -->
       <button class="settings-close-bottom-btn" (click)="showHelpModal()">
         Help
       </button>
-      <!-- Close button at bottom for mobile -->
       <button class="settings-close-bottom-btn" (click)="toggleSettingsOverlay()">
         Close
       </button>
-      <!-- Close button at bottom for mobile -->
       @if (!game.gameRunning && !isMainMenu) {
         <button class="settings-close-bottom-btn" (click)="backToMenu()">
           Main Menu
         </button>
       }
+      <!-- Cheat section -->
       @if (!game.gameRunning && isMainMenu) {
         <div class="cheat-section">
           <!-- When NO cheats active -->
@@ -1897,7 +1896,7 @@
           }
         </div>
       }
-      <!-- Version Section -->
+      <!-- Version & Import/Export Section -->
       @if (!game.gameRunning) {
         <div class="version-section">
           <div class="version-info">

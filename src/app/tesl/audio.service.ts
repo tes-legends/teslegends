@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 interface AudioManifest {
@@ -10,7 +10,6 @@ interface AudioManifest {
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
-  //private manifest: AudioManifest | null = null;
   private manifests: Record<string, AudioManifest> = {};
   private audioQueue: string[] = [];
   private isPlaying = false;
@@ -54,7 +53,6 @@ export class AudioService {
   }
 
   getAudioForCard(cardName: string, type: string, set: string): string | null {
-    //type 'stage' | 'enter' | 'attack' | 'lastgasp' | 'hit'
     const manifest = this.manifests[set];
     const basePath = this.setPaths[set];
 
@@ -92,37 +90,30 @@ export class AudioService {
         pattern = /_hit/i;
         break;
         default:
-        // Safety fallback — should never reach here
         pattern = /.*/; // match anything
     }
 
     const matching = candidates.filter(f => pattern.test(f));
 
     if (matching.length === 0) {
-        // Fallback: use any file (or you could return null / log warning)
-        //console.warn(`No ${type} audio found for ${cardName}, using random fallback`);
         return null;
     }
 
-    // Pick one randomly from matching files
     const chosen = matching[Math.floor(Math.random() * matching.length)];
     console.log(`playing audio ${type} for ${cardName}`);
     return `${basePath}${chosen}`;
     
   }
 
-  // ─── Queue system ───────────────────────────────────────
   queueAudio(url: string | null): void {
     if (!url) return;
     this.audioQueue.push(url);
-    //console.log(`queueing audio: ${url}`);
     this.playNext();
   }
 
-    stopAllAudio(): void {
-        // Clear queued sounds
-        this.audioQueue = [];
-    }
+  stopAllAudio(): void {
+      this.audioQueue = [];
+  }
 
   private playNext(): void {
     if (this.isPlaying || this.audioQueue.length === 0) return;

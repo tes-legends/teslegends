@@ -120,7 +120,14 @@
 }
 
 /* ====================== PHASE 2: DRAFTING ====================== */
-.draft-screen {
+.draft-horizontal {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.draft-vertical {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -186,7 +193,6 @@
   }
 }
 
-/* Sidebar */
 .draft-sidebar {
   flex: 1;
   background: rgba(15, 25, 50, 0.95);
@@ -233,7 +239,6 @@
   justify-content: center;
 }
 
-/* Mana Curve */
 .mana-curve {
   display: flex;
   gap: 6px;
@@ -242,7 +247,6 @@
   height: 110px;
 
   .bar-container {
-    //margin-top: 15px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -263,10 +267,10 @@
   }
 
   .bar-area {
-    flex: 1;                 // takes ALL remaining height
+    flex: 1;
     position: relative;
     display: flex;
-    align-items: flex-end;   // bars grow upward
+    align-items: flex-end;
     width: 100%;
   }
 
@@ -275,18 +279,16 @@
     background: linear-gradient(to top, #00aaff, #88ddff);
     border-radius: 4px 4px 0 0;
     position: relative;
-    //min-height: 2px;
   }
 
   .bar-label {
-    font-size: 1rem;      // bigger
-    font-weight: 600;     // bolder
+    font-size: 1rem;
+    font-weight: 600;
     margin-top: 6px;
-    color: #cfe8ff;       // slightly brighter
+    color: #cfe8ff;
   }
 }
 
-/* Type Counts */
 .type-counts {
   width: 150px;
   display: flex;
@@ -300,7 +302,6 @@
   }
 }
 
-/* Prophecy */
 .prophecy-count {
   .big-number {
     font-size: 3rem;
@@ -309,11 +310,9 @@
   }
 }
 
-/* Attributes */
 .attribute-counts {
   display: flex;
   flex-direction: column;
-  //flex-wrap: wrap;
   gap: 12px;
 
   .attr {
@@ -335,7 +334,6 @@
   }
 }
 
-/* Current Deck */
 .current-deck-panel {
   h4 {
     color: #aaddff;
@@ -343,7 +341,6 @@
   }
 
   .deck-list {
-    //max-height: 320px;
     max-height: calc(100vh - 370px);
     max-height: calc(100dvh - 370px);
     overflow-y: auto;
@@ -355,7 +352,6 @@
       align-items: center;
       gap: 3px;
       margin: 3px 0;
-      //background: rgba(30, 60, 120, 0.6);
       background: black;
       border-radius: 8px;
       padding: 2px;
@@ -366,12 +362,11 @@
       width: 100%;
     }
 
-      /* COST CIRCLE */
       .cost {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #1e90ff; /* blue */
+      background: #1e90ff;
       border: 2px solid white;
       color: black;
       font-weight: bold;
@@ -381,14 +376,12 @@
       margin-right: 10px;
     }
 
-      /* NAME CENTERED */
       .name {
       flex: 1;
       text-align: center;
       font-weight: 500;
     }
 
-      /* COUNT RIGHT */
       .count {
       min-width: 40px;
       color: white;
@@ -398,7 +391,6 @@
       padding-left: 10px;
     }
 
-      /* RARITY BAR */
       .count::before {
       content: '';
       position: absolute;
@@ -408,7 +400,6 @@
       height: 100%;
     }
 
-      /* ATTRIBUTE COLORS */
       .attr-red .name { color: #ff4d4d; }
       .attr-yellow .name { color: #ffd700; }
       .attr-blue .name { color: #4da6ff; }
@@ -417,7 +408,6 @@
       .attr-neutral .name { color: #ffffff; }
       .attr-multi .name { color: #ff66cc; } /* pink */
 
-      /* RARITY COLORS */
       .rarity-common .count::before { background: white; }
       .rarity-rare .count::before { background: #4da6ff; }
       .rarity-epic .count::before { background: #c266ff; }
@@ -455,21 +445,19 @@
   }
 
   .draft-bottom .deck-list {
-    //max-height: 200px;
     max-height: calc(100vh - 585px);
     max-height: calc(100dvh - 585px);
-    overflow-y: auto;           /* Makes it scrollable when it exceeds 200px */
+    overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 8px;         /* Optional: space for scrollbar */
+    padding-right: 8px;
   }
 
   .opponent-screen .deck-list {
-    //max-height: 200px;
     max-height: calc(100vh - 453px);
     max-height: calc(100dvh - 453px);
-    overflow-y: auto;           /* Makes it scrollable when it exceeds 200px */
+    overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 8px;         /* Optional: space for scrollbar */
+    padding-right: 8px;
   }
   
   .mobile-tabs {
@@ -504,7 +492,7 @@
 /* ====================== PHASE 3: OPPONENTS ====================== */
 .opponent-screen {
   flex: 1;
-  padding: 0px; //30px 20px;
+  padding: 0px;
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -527,7 +515,7 @@
     background: rgba(30, 50, 90, 0.85);
     border: 2px solid #4488ff;
     border-radius: 12px;
-    padding: 0px; //20px 16px;
+    padding: 0px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s;
@@ -543,7 +531,7 @@
       height: 96px;
       border-radius: 50%;
       border: 3px solid #66bbff;
-      margin-bottom: 0px;//12px;
+      margin-bottom: 0px;
       object-fit: cover;
     }
 
@@ -578,7 +566,7 @@
 }
 
 .arena-footer {
-  margin-top: 0px; //20px;
+  margin-top: 0px;
   padding: 16px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.6);
@@ -605,7 +593,6 @@
         letter-spacing: 1px;
       }
 
-      /* Values */
       .value {
         font-size: 22px;
         font-weight: bold;
@@ -652,7 +639,7 @@
 
 .reward-screen {
   flex: 1;
-  padding: 0px; //30px 20px;
+  padding: 0px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -694,8 +681,6 @@
 
 /* ====================== GENERAL STYLING ====================== */
 
-
-/* Focus trap */
 button[tabindex="0"] {
   position: absolute;
   opacity: 0;

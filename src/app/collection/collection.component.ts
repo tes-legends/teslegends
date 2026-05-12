@@ -10,18 +10,16 @@ import { UtilityService } from '../tesl/utility.service';
     standalone: false
 })
 export class CollectionViewerComponent implements OnInit, AfterViewInit {
-    @ViewChild('firstFocusable') firstFocusable!: ElementRef;
-    
-  @Input() showFilters: boolean = true;           // default true → hide in deck builder
-  @Input() hideStorySet: boolean = false;         // deck builder passes true
-  @Input() attributeWhitelist: string[] | null = null;  // deck builder passes allowed attrs
+  @ViewChild('firstFocusable') firstFocusable!: ElementRef;    
+  @Input() showFilters: boolean = true;
+  @Input() hideStorySet: boolean = false;
+  @Input() attributeWhitelist: string[] | null = null;
   @Input() enableOutput: boolean = false;
   @Input() unlockAll: boolean = false;
-  @Input() unlockedCardIds: string[] = [];        // pass list of unlocked card IDs
-  @Output() cardClick = new EventEmitter<Card>();   // new output
-  // All cards from your service (assume you have a method to get them)
-  allCards: Card[] = [];               // populated from service
-  displayedCards: Card[] = [];         // filtered result
+  @Input() unlockedCardIds: string[] = [];
+  @Output() cardClick = new EventEmitter<Card>();  
+  allCards: Card[] = [];
+  displayedCards: Card[] = [];
   enlargedCard: Card | null = null;
   showTypeFilter: boolean = true;
   showSubtypeFilter: boolean = true;
@@ -29,8 +27,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   selectedType: string = 'All';
   selectedSubtype: string = 'All';
   selectedKeyword: string = 'All';
-  //allSubtypes: string[] = [];
-  //allKeywords: string[] = [];
   typeOptions: string[] = ['All', 'Creature', 'Item', 'Support', 'Action'];
   subtypeOptions: string[] = [];
   keywordOptions: string[] = [];
@@ -61,12 +57,11 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   }
 
   // Filters
-  selectedSet: string | null = 'Core Set';       // 'Core Set', 'Heroes of Skyrim', etc.
-  selectedAttribute: string | null = 'R'; // 'Intelligence', 'Dual', etc.
+  selectedSet: string | null = 'Core Set';
+  selectedAttribute: string | null = 'R';
   selectedMagicka: number | '7+' | 'X' | null = 2;
-  showUnlockedOnly: boolean = false;        // toggle: true = unlocked only
+  showUnlockedOnly: boolean = false;
 
-  // Icon paths (adjust as needed)
   setIcons: Record<string, string> = {
     'Core Set': '/assets/tesl/images/icons/LG-icon-Core_Set.webp',
     'Heroes of Skyrim': '/assets/tesl/images/icons/LG-icon-Heroes_of_Skyrim.webp',
@@ -109,7 +104,7 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit() {
-    this.allCards = this.deckService.getAllCards(); // your method
+    this.allCards = this.deckService.getAllCards();
     if (!this.deckService.customSetsAllowed) {
       this.allCards = this.allCards.filter(c => 
         c.set !== 'Custom Set'
@@ -126,7 +121,7 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
       delete this.setIcons['Clockwork City'];
     }
     this.buildFilterOptions();
-    this.applyFilters(); // initial load
+    this.applyFilters();
   }
 
   ngAfterViewInit() {
@@ -138,8 +133,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   }
 
   getIconFileName(keyword: string): string {
-    // Your files are like: LG-icon-Breakthrough.webp
-    // So we replace spaces with _, keep original casing
     let input = keyword;
     if (input === 'Stealth') input = 'Cover';
     if (['All','Charge','Ward','Betray','Exalt','Plot'].includes(input)) return '';
@@ -148,7 +141,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
   }
 
   toggleFilter(filter: 'set' | 'attribute' | 'magicka' | 'type' | 'subtype' | 'keyword' | 'rarity') {
-    // Close others, toggle this one
     this.filterExpanded = {
         set: false,
         attribute: false,
@@ -232,8 +224,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
 
   applyFilters() {
     let filtered = [...this.allCards];
-
-    // Set filter
     if (this.hideStorySet) {
       filtered = filtered.filter(c => c.set !== 'Story Set' && c.deckCodeId !== null);
       if (!this.unlockAll) filtered = filtered.filter(c => this.unlockedCardIds.includes(c.deckCodeId!));
@@ -248,21 +238,15 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     } else if (this.selectedSet && this.selectedSet === 'All') {
       filtered = filtered.filter(c => c.set !== 'Story Set' && c.deckCodeId !== null);
     }
-
     if (!this.customSetsAllowed) filtered = filtered.filter(c => c.set !== 'Custom Set');
-
-    // === NEW: Type Filter ===
     if (this.selectedType !== 'All') {
       filtered = filtered.filter(c => c.type === this.selectedType);
     }
-
-    // === NEW: Subtype Filter ===
     if (this.selectedSubtype !== 'All') {
       filtered = filtered.filter(c => 
         c.subtypes?.some(sub => sub === this.selectedSubtype || sub === 'All')
       );
     }
-
     if (this.selectedRarity !== 'All') {
       switch (this.selectedRarity) {
         case 'Common':
@@ -282,8 +266,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
           break;
       }
     }
-
-    // === NEW: Keyword Filter ===
     if (this.selectedKeyword !== 'All') {
       if (this.selectedKeyword === 'Prophecy') {
         filtered = filtered.filter(c => c.prophecy === true);
@@ -297,14 +279,9 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
         );
       }
     }
-
-    // Restrict attributes when whitelist is provided
     if (this.attributeWhitelist !== null) {
       filtered = filtered.filter(card => {
-        // Allow neutral
         if (this.attributeWhitelist!.length > 1 && card.attributes.includes('N')) return true;
-
-        // Allow if any attribute is in whitelist
         return card.attributes.every(attr => this.attributeWhitelist!.includes(attr));        
       });
     } else if (this.selectedAttribute) {
@@ -315,8 +292,6 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
             c.attributes.length === 1);
       }
     }
-
-    // Magicka filter
     if (this.selectedMagicka !== null && this.selectedMagicka !== 'X') {
       filtered = filtered.filter(c => {
         const cost = c.cost ?? 0;
@@ -324,12 +299,9 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
         return cost === this.selectedMagicka;
       });
     }
-
-    // Unlocked / locked toggle
     if (this.showUnlockedOnly) {
       filtered = filtered.filter(c => this.unlockedCardIds.includes(c.deckCodeId!));
     }
-
     this.displayedCards = filtered;
   }
 
@@ -343,34 +315,27 @@ export class CollectionViewerComponent implements OnInit, AfterViewInit {
     return card.instanceId!;
   }
 
-  // Your existing logic for locked cards
   isCardLocked(card: Card): boolean {
-    // Example – adjust to your unlock rules
-    if (card.set === 'Story Set') return true; // always locked
+    if (card.set === 'Story Set') return true;
     if (card.deckCodeId === null) return true;
     if (this.unlockAll) return false;
     if (this.unlockedCardIds.includes(card.deckCodeId!)) return false;
-    // ... other conditions (e.g. reward sets, chapter progress)
     return true;
   }
 
-  // Filter clicks
   selectSet(set: string | null) {
-    this.selectedSet = set;//this.selectedSet === set ? null : set;
-    //this.filterExpanded.set = false;
+    this.selectedSet = set;
     this.applyFilters();
   }
 
   selectAttribute(attr: string | null) {
-    this.selectedAttribute = attr;//this.selectedAttribute === attr ? null : attr;
-    //this.filterExpanded.attribute = false;
+    this.selectedAttribute = attr;
     this.applyFilters();
   }
 
   selectMagicka(cost: number | '7+' | 'X' | null) {
     if (this.hideStorySet && cost === 'X') return;
-    this.selectedMagicka = cost;//this.selectedMagicka === cost ? null : cost;
-    //this.filterExpanded.magicka = false;
+    this.selectedMagicka = cost;
     this.applyFilters();
   }
 

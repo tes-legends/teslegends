@@ -1,6 +1,6 @@
 //collection.component.scss
 .collection-viewer {
-  padding: 0px; //20px;
+  padding: 0px;
   background: #0d1b2a;
   border-radius: 12px;
   max-width: 1400px;
@@ -80,7 +80,6 @@
     flex-wrap: wrap;
     flex-direction: row;
     gap: 12px;
-    //margin-bottom: 16px;
     justify-content: center;
   }
 
@@ -167,7 +166,7 @@
         position: relative;
 
         .filter-icon {
-        width: 100%;                   // fill the button
+        width: 100%;
         height: 100%;
         object-fit: contain;
         -webkit-user-drag: none;
@@ -182,7 +181,7 @@
         font-weight: bold;
         font-size: 1.4rem;
         text-shadow: 0 0 6px black;
-        pointer-events: none;          // don't block clicks
+        pointer-events: none;
         }
     }
   }
@@ -240,6 +239,7 @@
 
   }
 }
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -250,7 +250,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0; 
-  padding: 0px; //20px;  
+  padding: 0px;
   background: #0d1b2a;
 
   app-tesl-card {
@@ -277,16 +277,16 @@
   }
 
   .collection-card.locked {
-    position: relative; /* required for overlay */
+    position: relative;
   }
 
   .collection-card.locked::after {
     content: '';
     position: absolute;
-    inset: 0; /* shorthand for top/right/bottom/left = 0 */
-    background: rgba(128, 128, 128, 0.3); /* light gray tint */
-    pointer-events: none; /* keeps clicks working */
-    border-radius: inherit; /* match card corners if any */
+    inset: 0;
+    background: rgba(128, 128, 128, 0.3);
+    pointer-events: none;
+    border-radius: inherit;
   }
 
   .no-results {

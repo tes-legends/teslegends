@@ -25,28 +25,211 @@
 
   <!-- Phase 2: Drafting -->
   @if (selectedClass && picksRemaining > 0) {
-    <div class="draft-screen">
+    <div class="draft-vertical">
       <div class="draft-header">
         <h3>Picks Remaining: {{ picksRemaining }}</h3>
       </div>
-      <div class="draft-picks">
-        @for (card of currentPicks; track card) {
-          <div class="draft-card-wrapper">
-            <div class="draft-card"
-              (click)="pickCard(card)">
-              <img [src]="getCardImage(card)" draggable="false" alt="{{ card.name }}"/>
+      <div class="draft-horizontal">
+        <div class="draft-vertical">          
+          <div class="draft-picks">
+            @for (card of currentPicks; track card) {
+              <div class="draft-card-wrapper">
+                <div class="draft-card"
+                  (click)="pickCard(card)">
+                  <img [src]="getCardImage(card)" draggable="false" alt="{{ card.name }}"/>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="draft-bottom">
+            <!-- LEFT SIDE -->
+            <div class="draft-main-panel">
+              <!-- DESKTOP: Curve + Stats -->
+              <div class="desktop-stats">
+                <!-- Mana Curve -->
+                <div class="stat-section">
+                  <div class="mana-curve">
+                    @for (count of manaCurve; track trackByIndex(i); let i = $index) {
+                      <div class="bar-container"
+                        >
+                        <div class="bar-area">
+                          <div class="bar" [style.height.%]="getBarHeight(count)">
+                            @if (count > 0) {
+                              <span class="value-label">{{ count }}</span>
+                            }
+                          </div>
+                        </div>
+                        <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <!-- Stats -->
+                <div class="stats-panel">
+                  <div class="stat-section">
+                    <div class="type-counts">
+                      @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                        <div class="type">
+                          <span class="type-name">{{ type }}</span>
+                          <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="stat-section">
+                    <div class="attribute-counts">
+                      @for (attr of getAttributeKeys(); track attr) {
+                        <div class="attr">
+                          <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                          <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- MOBILE: Tabs -->
+              <div class="mobile-tabs">
+                <div class="tab-content">
+                  <!-- Curve -->
+                  @if (activeTab==='curve') {
+                    <div>
+                      <div class="mana-curve" (click)="nextTab()">
+                        @for (count of manaCurve; track trackByIndex(i); let i = $index) {
+                          <div class="bar-container">
+                            <div class="bar-area">
+                              <div class="bar" [style.height.%]="getBarHeight(count)">
+                                @if (count > 0) {
+                                  <span class="value-label">{{ count }}</span>
+                                }
+                              </div>
+                            </div>
+                            <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <!-- Stats -->
+                  @if (activeTab==='stats') {
+                    <div (click)="nextTab()" class="stats-layout">
+                      <div class="type-counts">
+                        @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                          <div class="type">
+                            <span class="type-name">{{ type }}</span>
+                            <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                          </div>
+                        }
+                      </div>
+                      <div class="attribute-counts">
+                        @for (attr of getAttributeKeys(); track attr) {
+                          <div class="attr">
+                            <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                            <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <!-- Deck -->
+                  @if (activeTab==='deck') {
+                    <div (click)="nextTab()">
+                      <div class="current-deck-panel">
+                        <div class="deck-list">
+                          @for (entry of draftDeckList; track entry) {
+                            <div class="deck-entry"
+                              [ngClass]="[
+                              getAttributeClass(entry.card.attributes),
+                              getRarityClass(entry.card.rarity)
+                              ]">
+                              <div class="info">
+                                <span class="cost">{{ entry.card.cost }}</span>
+                                <span class="name">{{ entry.card.name }}</span>
+                                <span class="count">×{{ entry.count }}</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
             </div>
           </div>
-        }
+        </div>
+        <!-- RIGHT SIDE: Deck (Desktop only) -->
+        <div class="current-deck-panel desktop-deck">
+          <div class="deck-list">
+            @for (entry of draftDeckList; track entry) {
+              <div class="deck-entry"
+                [ngClass]="[
+                getAttributeClass(entry.card.attributes),
+                getRarityClass(entry.card.rarity)
+                  ]">
+                <div class="info">
+                  <span class="cost">{{ entry.card.cost }}</span>
+                  <span class="name">{{ entry.card.name }}</span>
+                  <span class="count">×{{ entry.count }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
       </div>
-      <div class="draft-bottom">
-        <!-- LEFT SIDE -->
-        <div class="draft-main-panel">
-          <!-- DESKTOP: Curve + Stats -->
-          <div class="desktop-stats">
-            <!-- Mana Curve -->
-            <div class="stat-section">
-              <div class="mana-curve">
+    </div>
+  }
+
+  <!-- Phase 3: Opponents -->
+  @if (selectedClass && picksRemaining === 0 && !showArenaRewards) {
+    <div class="opponent-screen">
+      <div class="draft-header">
+        <h3>{{oppHeader}}</h3>
+      </div>
+      <div class="opponents-grid">
+        @for (opp of arenaOpponents; track opp) {
+          <div class="opponent-card" (click)="selectOpponent(opp)">
+            <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : opp.avatar" class="avatar">
+          </div>
+        }
+        <!-- Boss -->
+        <div class="opponent-card boss"
+          [class.locked]="wins < 8"
+          (click)="wins >= 8 && selectOpponent(bossOpponent!)">
+          <img [src]="bossOpponent!.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : bossOpponent!.avatar" class="avatar">
+        </div>
+      </div>
+      <div class="arena-footer">
+        <div class="arena-stats">
+          <div class="stat">
+            <span class="label">Wins</span>
+            <span class="value wins">{{ wins }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Losses</span>
+            <span class="value losses">{{ losses }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Elo</span>
+            <span class="value elo">{{ arenaElo }}</span>
+          </div>
+        </div>
+        <div class="arena-actions">
+          @if (wins < 9 && losses < 3) {
+            <button (click)="retireRun()">Retire</button>
+          }
+          @if (wins > 8 || losses > 2) {
+            <button (click)="startNewRun()">New Run</button>
+          }
+        </div>
+      </div>
+      <!-- MOBILE: Tabs -->
+      <div class="arena-tabs">
+        <div class="tab-content">
+          <!-- Curve -->
+          @if (activeTab==='curve') {
+            <div>
+              <div class="mana-curve" (click)="nextTab()">
                 @for (count of manaCurve; track trackByIndex(i); let i = $index) {
                   <div class="bar-container"
                     >
@@ -62,263 +245,72 @@
                 }
               </div>
             </div>
-            <!-- Stats -->
-            <div class="stats-panel">
-              <div class="stat-section">
-                <div class="type-counts">
-                  @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
-                    <div class="type"
-                      >
-                      <span class="type-name">{{ type }}</span>
-                      <span class="type-count">{{ typeCounts[type] || 0 }}</span>
-                    </div>
-                  }
-                </div>
+          }
+          <!-- Stats -->
+          @if (activeTab==='stats') {
+            <div (click)="nextTab()" class="stats-layout">
+              <div class="type-counts">
+                @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
+                  <div class="type"
+                    >
+                    <span class="type-name">{{ type }}</span>
+                    <span class="type-count">{{ typeCounts[type] || 0 }}</span>
+                  </div>
+                }
               </div>
-              <div class="stat-section">
-                <div class="attribute-counts">
-                  @for (attr of getAttributeKeys(); track attr) {
-                    <div class="attr">
-                      <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-                      <span class="attr-count">{{ attributeCounts[attr] }}</span>
-                    </div>
-                  }
-                </div>
+              <div class="attribute-counts">
+                @for (attr of getAttributeKeys(); track attr) {
+                  <div class="attr">
+                    <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
+                    <span class="attr-count">{{ attributeCounts[attr] }}</span>
+                  </div>
+                }
               </div>
             </div>
-          </div>
-          <!-- MOBILE: Tabs -->
-          <div class="mobile-tabs">
-            <!--<div class="tab-buttons">
-            <button [class.active]="activeTab==='curve'" (click)="activeTab='curve'">Curve</button>
-            <button [class.active]="activeTab==='stats'" (click)="activeTab='stats'">Stats</button>
-            <button [class.active]="activeTab==='deck'" (click)="activeTab='deck'">Deck</button>
-          </div>-->
-          <div class="tab-content">
-            <!-- Curve -->
-            @if (activeTab==='curve') {
-              <div>
-                <div class="mana-curve" (click)="nextTab()">
-                  @for (count of manaCurve; track trackByIndex(i); let i = $index) {
-                    <div class="bar-container"
-                      >
-                      <div class="bar-area">
-                        <div class="bar" [style.height.%]="getBarHeight(count)">
-                          @if (count > 0) {
-                            <span class="value-label">{{ count }}</span>
-                          }
-                        </div>
+          }
+          <!-- Deck -->
+          @if (activeTab==='deck') {
+            <div (click)="nextTab()">
+              <div class="current-deck-panel">
+                <div class="deck-list">
+                  @for (entry of draftDeckList; track entry) {
+                    <div class="deck-entry"
+                [ngClass]="[
+                getAttributeClass(entry.card.attributes),
+                getRarityClass(entry.card.rarity)
+                  ]">
+                      <div class="info">
+                        <span class="cost">{{ entry.card.cost }}</span>
+                        <span class="name">{{ entry.card.name }}</span>
+                        <span class="count">×{{ entry.count }}</span>
                       </div>
-                      <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
                     </div>
                   }
                 </div>
-              </div>
-            }
-            <!-- Stats -->
-            @if (activeTab==='stats') {
-              <div (click)="nextTab()" class="stats-layout">
-                <div class="type-counts">
-                  @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
-                    <div class="type"
-                      >
-                      <span class="type-name">{{ type }}</span>
-                      <span class="type-count">{{ typeCounts[type] || 0 }}</span>
-                    </div>
-                  }
-                </div>
-                <div class="attribute-counts">
-                  @for (attr of getAttributeKeys(); track attr) {
-                    <div class="attr">
-                      <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-                      <span class="attr-count">{{ attributeCounts[attr] }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-            <!-- Deck -->
-            @if (activeTab==='deck') {
-              <div (click)="nextTab()">
-                <div class="current-deck-panel">
-                  <div class="deck-list">
-                    @for (entry of draftDeckList; track entry) {
-                      <div class="deck-entry"
-                  [ngClass]="[
-                  getAttributeClass(entry.card.attributes),
-                  getRarityClass(entry.card.rarity)
-                    ]">
-                        <div class="info">
-                          <span class="cost">{{ entry.card.cost }}</span>
-                          <span class="name">{{ entry.card.name }}</span>
-                          <span class="count">×{{ entry.count }}</span>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-      <!-- RIGHT SIDE: Deck (Desktop only) -->
-      <div class="current-deck-panel desktop-deck">
-        <div class="deck-list">
-          @for (entry of draftDeckList; track entry) {
-            <div class="deck-entry"
-          [ngClass]="[
-          getAttributeClass(entry.card.attributes),
-          getRarityClass(entry.card.rarity)
-            ]">
-              <div class="info">
-                <span class="cost">{{ entry.card.cost }}</span>
-                <span class="name">{{ entry.card.name }}</span>
-                <span class="count">×{{ entry.count }}</span>
               </div>
             </div>
           }
         </div>
       </div>
     </div>
-  </div>
-}
+  }
 
-<!-- Phase 3: Opponents -->
-@if (selectedClass && picksRemaining === 0 && !showArenaRewards) {
-  <div class="opponent-screen">
-    <div class="draft-header">
-      <h3>{{oppHeader}}</h3>
-    </div>
-    <div class="opponents-grid">
-      @for (opp of arenaOpponents; track opp) {
-        <div class="opponent-card" (click)="selectOpponent(opp)">
-          <img [src]="opp.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : opp.avatar" class="avatar">
-          <!--<div class="name">{{ opp.name }}</div>
-          <div class="elo">Elo {{ opp.elo }}</div>-->
-        </div>
-      }
-      <!-- Boss -->
-      <div class="opponent-card boss"
-        [class.locked]="wins < 8"
-        (click)="wins >= 8 && selectOpponent(bossOpponent!)">
-        <img [src]="bossOpponent!.beaten ? '/assets/tesl/images/icons/arena_coin.webp' : bossOpponent!.avatar" class="avatar">
-        <!--<div class="name">{{ bossOpponent.name }}</div>
-        <div class="locked-text" *ngIf="wins < 8">Defeat 8 opponents</div>-->
+  <!--Phase 4: Rewards-->
+  @if (showArenaRewards) {
+    <div class="reward-screen">
+      <div class="draft-header">
+        <h3>Rewards {{rewardStatus}}</h3>
       </div>
-    </div>
-    <div class="arena-footer">
-      <div class="arena-stats">
-        <div class="stat">
-          <span class="label">Wins</span>
-          <span class="value wins">{{ wins }}</span>
-        </div>
-        <div class="stat">
-          <span class="label">Losses</span>
-          <span class="value losses">{{ losses }}</span>
-        </div>
-        <div class="stat">
-          <span class="label">Elo</span>
-          <span class="value elo">{{ arenaElo }}</span>
-        </div>
-      </div>
-      <div class="arena-actions">
-        @if (wins < 9 && losses < 3) {
-          <button (click)="retireRun()">Retire</button>
-        }
-        @if (wins > 8 || losses > 2) {
-          <button (click)="startNewRun()">New Run</button>
-        }
-      </div>
-    </div>
-    <!-- MOBILE: Tabs -->
-    <div class="arena-tabs">
-      <div class="tab-content">
-        <!-- Curve -->
-        @if (activeTab==='curve') {
-          <div>
-            <div class="mana-curve" (click)="nextTab()">
-              @for (count of manaCurve; track trackByIndex(i); let i = $index) {
-                <div class="bar-container"
-                  >
-                  <div class="bar-area">
-                    <div class="bar" [style.height.%]="getBarHeight(count)">
-                      @if (count > 0) {
-                        <span class="value-label">{{ count }}</span>
-                      }
-                    </div>
-                  </div>
-                  <span class="bar-label">{{ i === 7 ? '7+' : i }}</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-        <!-- Stats -->
-        @if (activeTab==='stats') {
-          <div (click)="nextTab()" class="stats-layout">
-            <div class="type-counts">
-              @for (type of ['Creature', 'Action', 'Item', 'Support', 'Prophecy']; track type) {
-                <div class="type"
-                  >
-                  <span class="type-name">{{ type }}</span>
-                  <span class="type-count">{{ typeCounts[type] || 0 }}</span>
-                </div>
-              }
-            </div>
-            <div class="attribute-counts">
-              @for (attr of getAttributeKeys(); track attr) {
-                <div class="attr">
-                  <img [src]="attributeIcons[attr]" class="attr-icon" alt="">
-                  <span class="attr-count">{{ attributeCounts[attr] }}</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-        <!-- Deck -->
-        @if (activeTab==='deck') {
-          <div (click)="nextTab()">
-            <div class="current-deck-panel">
-              <div class="deck-list">
-                @for (entry of draftDeckList; track entry) {
-                  <div class="deck-entry"
-              [ngClass]="[
-              getAttributeClass(entry.card.attributes),
-              getRarityClass(entry.card.rarity)
-                ]">
-                    <div class="info">
-                      <span class="cost">{{ entry.card.cost }}</span>
-                      <span class="name">{{ entry.card.name }}</span>
-                      <span class="count">×{{ entry.count }}</span>
-                    </div>
-                  </div>
-                }
-              </div>
+      <div class="reward-picks">
+        @for (card of arenaRewardSets[currentRewardIndex]; track card) {
+          <div class="reward-card-wrapper">
+            <div class="reward-card"
+              (click)="pickReward(card)">
+              <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
             </div>
           </div>
         }
       </div>
     </div>
-  </div>
-}
-
-<!--Phase 4: Rewards-->
-@if (showArenaRewards) {
-  <div class="reward-screen">
-    <div class="draft-header">
-      <h3>Rewards {{rewardStatus}}</h3>
-    </div>
-    <div class="reward-picks">
-      @for (card of arenaRewardSets[currentRewardIndex]; track card) {
-        <div class="reward-card-wrapper">
-          <div class="reward-card"
-            (click)="pickReward(card)">
-            <img [src]="getCardImage(card)" draggable="false" alt="{{card.name}}"/>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-}
+  }
 </div>
